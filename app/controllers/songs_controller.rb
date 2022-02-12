@@ -116,18 +116,19 @@ class SongsController < ApplicationController
 
       filtered_params = song_params
 
-      # if no author specified, store a null
-      filtered_params[:OrigBand] = nil if filtered_params[:OrigBand].strip.empty?
-      filtered_params[:Author] = nil   if filtered_params[:Author].strip.empty?
-      filtered_params[:Lyrics] = nil   if filtered_params[:Lyrics].strip.empty?
-      filtered_params[:Comments] = nil if filtered_params[:Comments].strip.empty?
+      # if no value specified, store a null
+      filtered_params[:OrigBand] = nil   if filtered_params[:OrigBand].strip.empty?
+      filtered_params[:Author] = nil     if filtered_params[:Author].strip.empty?
+      filtered_params[:Lyrics] = nil     if filtered_params[:Lyrics].strip.empty?
+      filtered_params[:lyrics_ref] = nil if filtered_params[:lyrics_ref].strip.empty?
+      filtered_params[:Comments] = nil   if filtered_params[:Comments].strip.empty?
 
       filtered_params
 
     end
 
     def song_params
-      params.require(:song).permit(:full_name, :Author, :OrigBand, :Improvised, :Lyrics, :Comments).tap do |params|
+      params.require(:song).permit(:full_name, :Author, :OrigBand, :Improvised, :lyrics_ref, :show_lyrics, :Lyrics, :Comments).tap do |params|
         params.require(:full_name)
       end
     end

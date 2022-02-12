@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_10_30_010258) do
+ActiveRecord::Schema.define(version: 2022_02_05_193410) do
 
   create_table "COMP", primary_key: "COMPID", id: :integer, options: "ENGINE=MyISAM DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "Artist", limit: 64
@@ -164,33 +164,6 @@ ActiveRecord::Schema.define(version: 2021_10_30_010258) do
     t.index ["SITEID"], name: "SITEID"
   end
 
-  create_table "SONG", primary_key: "SONGID", id: :integer, options: "ENGINE=MyISAM DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "Song", null: false
-    t.string "Prefix", limit: 16
-    t.string "Versions", limit: 50
-    t.string "Band", limit: 32
-    t.integer "MUSOID", default: 0
-    t.integer "GIGID", default: 0
-    t.string "Author"
-    t.string "OrigBand", limit: 128
-    t.string "AltTitles", limit: 64
-    t.boolean "Improvised", default: false
-    t.integer "MAJRID", default: 0
-    t.datetime "ApproxDate"
-    t.text "Lyrics", limit: 4294967295
-    t.text "Tab", limit: 4294967295
-    t.text "Comments", limit: 4294967295
-    t.text "RHComments", limit: 4294967295
-    t.string "CoveredBy", limit: 32
-    t.string "Instrumentation", limit: 32
-    t.integer "SongLookup", default: 0
-    t.string "MP3Site", limit: 4
-    t.string "MP3File", limit: 64
-    t.index ["MAJRID"], name: "MAJRID"
-    t.index ["MUSOID"], name: "MUSOID"
-    t.index ["Song"], name: "Song"
-  end
-
   create_table "TRAK", primary_key: "TRAKID", id: :integer, options: "ENGINE=MyISAM DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "COMPID"
     t.integer "SONGID"
@@ -249,6 +222,35 @@ ActiveRecord::Schema.define(version: 2021_10_30_010258) do
     t.date "performance_date"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "song", primary_key: "SONGID", id: :integer, options: "ENGINE=MyISAM DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "Song", null: false
+    t.string "Prefix", limit: 16
+    t.string "Versions", limit: 50
+    t.string "Band", limit: 32
+    t.integer "MUSOID", default: 0
+    t.integer "GIGID", default: 0
+    t.string "Author"
+    t.string "OrigBand", limit: 128
+    t.string "AltTitles", limit: 64
+    t.boolean "Improvised", default: false
+    t.integer "MAJRID", default: 0
+    t.datetime "ApproxDate"
+    t.text "Lyrics", limit: 4294967295
+    t.text "Tab", limit: 4294967295
+    t.text "Comments", limit: 4294967295
+    t.text "RHComments", limit: 4294967295
+    t.string "CoveredBy", limit: 32
+    t.string "Instrumentation", limit: 32
+    t.integer "SongLookup", default: 0
+    t.string "MP3Site", limit: 4
+    t.string "MP3File", limit: 64
+    t.string "lyrics_ref"
+    t.boolean "show_lyrics", default: false
+    t.index ["MAJRID"], name: "MAJRID"
+    t.index ["MUSOID"], name: "MUSOID"
+    t.index ["Song"], name: "Song"
   end
 
   create_table "song_performances", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=latin1", force: :cascade do |t|

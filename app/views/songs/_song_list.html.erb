@@ -21,13 +21,11 @@
     <tr data-path="<%=song_path(song)%>">
       <td class="main-column"> 
         <%= song.full_name %> 
-
-        <% if song.Lyrics.present? %>
+       <% if show_lyrics(song) %>
           <a href="<%=song_path(song)%>#lyrics">
             <span title="Lyrics provided" class="glyphicon glyphicon-book" aria-hidden="true"></span>
           </a>
         <% end %>
-        
         <% if song.Tab.present? %>
         <a href="<%=song_path(song)%>#tabs">
           <span title="Tablature provided" class="glyphicon glyphicon-music" aria-hidden="true"></span>
