@@ -31,6 +31,20 @@
     </div>    
 
     <div class="row">
+        
+        <div class="col-sm-6">
+            <%= f.label :lyrics_ref, "Lyrics URL" %>
+            <%= f.text_field :lyrics_ref, :class => "form-control" %>
+        </div>
+    
+        <div class="col-sm-6">
+            <br>                    
+            <%= f.check_box :show_lyrics %> <%= f.label :show_lyrics, "Show lyrics" %>
+        </div>
+
+    </div>
+
+    <div class="row">
 
         <div class="col-sm-12">
             <%= f.label :Lyrics %>

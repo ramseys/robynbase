@@ -21,4 +21,8 @@ module SongsHelper
 
   end
 
+  def show_lyrics(song)
+    song.Lyrics.present? and song.show_lyrics
+  end
+
 end

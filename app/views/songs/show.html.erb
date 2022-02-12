@@ -10,7 +10,13 @@
         <span class="inpage-navigation">
           <% if @albums_present %> <span><a href="#albums">Albums</a></span> <% end %>
           <% if @gigs_present %> <span><a href="#gigs">Gigs</a></span> <% end %>
-          <% if @song.Lyrics.present? %> <span><a href="#lyrics">Lyrics</a></span> <% end %>
+          <% if @song.lyrics_ref %>
+            <span>
+              <a href="<%= @song.lyrics_ref %>" target="_blank">Lyrics</a>
+            </span>
+          <% elsif show_lyrics(@song) %> 
+            <span><a href="#lyrics">Lyrics</a></span>
+          <% end %>
           <% if @song.performances.present? %> <span><a href="#performances">Media</a></span> <% end %>
           <% if @song.Comments.present? %> <span><a href="#comments">Comments</a></span> <% end %>
           <% if @song.Tab %> <span><a href="#tabs">Tablature</a></span> <% end %>
@@ -152,9 +158,8 @@
 <% end %>
 
 
+<% if show_lyrics(@song) %>
 <!-- lyrics -->
-<% if @song.Lyrics.present? %>
-
 <div class="row page-section">
   <div class="col-sm-12">
 
