@@ -1,4 +1,4 @@
-<!-- Gigs#show< -->
+<!-- Gigs#show -->
 <!-- Find me in app/views/gigs/show.html.erb -->
 
 <!-- <%= link_to "Back", controller: 'robyn' %> -->
@@ -31,60 +31,100 @@
       <%= form_tag(edit_gig_path, :method => 'GET') do %>
         <%= submit_tag "Edit Gig", :name => nil %>
       <%end%>
+
     </div>
 
   <% end %>
 
 </div>
 
-<div class="row">
+<% if @gig.images.attached? %>
 
-  <div class="col-sm-12">
+<div class="gig-container">
 
-
-  <h4 class="underlined-header"> Details </h4>
-
-  <dl class="dl-horizontal">
-    <dt>Date</dt>
-    <dd><%= @gig.GigDate.to_date.to_formatted_s(:long) %> 
+  <div>
     
-      <% if @gig.Circa %> 
-        <i>(uncertain)</i>
-      <% end %>
+    <a class="gig-images" href="<%= polymorphic_url(@gig.images.first) %>">
+      <%= image_tag @gig.images.first.variant(resize: "300x300") %>
+    </a>
     
-    </dd>
+    <br/>
+    
+    <% if @gig.images.length > 1 %>
+      <div style="text-align: center; overflow: hidden">
+        <small class="subsidiary-info" >Click to see image gallery</small>
+      </div>
+    <% end %>
+  
+    <% if @gig.images.length > 1 %>
+  
+      <div style="display: none">
+  
+        <% @gig.images.drop(1).each do |img| %>
+          <a class="gig-images" href="<%= polymorphic_url(img) %>">
+            <%= image_tag img, style: "width: 300px" %>
+          </a>
+        <% end %>
+  
+      </div>  
 
-  </dl>
+    <% end %>
+    
+  </div>
 
-  <dl class="dl-horizontal">
-    <dt>Venue</dt>
-    <dd>
+</div>
 
-      <%= link_to(@gig.Venue, venue_path(@gig.VENUEID)) %> 
+<% end %>
 
-      <% if @gig.venue.present? %>
-        <span class="subsidiary-info">
-          <small><%= "#{@gig.venue.City}, #{@gig.venue.State.present? ? @gig.venue.State : @gig.venue.Country} #{@gig.venue.SubCity.present? ? '(' + @gig.venue.SubCity + ')' : ''}" %> </small>
-        </span
+<div>
+
+  <div>
+
+    <h4> Details </h4>
+
+      <dl class="dl-horizontal">
+        <dt>Date</dt>
+        <dd><%= @gig.GigDate.to_date.to_formatted_s(:long) %> 
+        
+          <% if @gig.Circa %> 
+            <i>(uncertain)</i>
+          <% end %>
+        
+        </dd>
+
+      </dl>
+
+      <dl class="dl-horizontal">
+        <dt>Venue</dt>
+        <dd>
+
+          <%= link_to(@gig.Venue, venue_path(@gig.VENUEID)) %> 
+
+          <% if @gig.venue.present? %>
+            <span class="subsidiary-info">
+              <small><%= "#{@gig.venue.City}, #{@gig.venue.State.present? ? @gig.venue.State : @gig.venue.Country} #{@gig.venue.SubCity.present? ? '(' + @gig.venue.SubCity + ')' : ''}" %> </small>
+            </span>
+          <% end %>
+    
+        </dd>
+
+      </dl>
+
+      <dl class="dl-horizontal">
+        <dt>Billed As</dt>
+        <dd><%= @gig.BilledAs.present? ? @gig.BilledAs : 'Robyn Hitchcock' %> </dd>
+      </dl>
+
+      <% if @gig.Guests.present? %>
+
+        <dl class="dl-horizontal">
+          <dt>Guests</dt>
+          <dd><%= @gig.Guests %></dd>
+        </dl>
+
       <% end %>
- 
-    </dd>
 
-  </dl>
-
-  <dl class="dl-horizontal">
-    <dt>Billed As</dt>
-    <dd><%= @gig.BilledAs.present? ? @gig.BilledAs : 'Robyn Hitchcock' %> </dd>
-  </dl>
-
-  <% if @gig.Guests.present? %>
-
-    <dl class="dl-horizontal">
-      <dt>Guests</dt>
-      <dd><%= @gig.Guests %></dd>
-    </dl>
-
-  <% end %>
+</div>
 
 <% if @gig.ShortNote.present? %>
 
@@ -92,7 +132,7 @@
   <div style="margin-top: 30px">
     
     <a class="anchor" name="notes"></a>
-    <h4 class="underlined-header"> Notes </h4>
+    <h4> Notes </h4>
     
     <div>
       <%= simple_format(@gig.ShortNote.html_safe) %>
@@ -104,26 +144,22 @@
 
 <% if @gig.get_set.present? %>
 
-<div class="row set-list-section" style="margin-top: 30px">
+<div class="set-list-section" style="margin-top: 30px">
 
-  <div class="col-sm-12">
+  <!-- songs in the set -->
+  <a class="anchor" name="setlist"></a>
+  <h4> Set List </h4>
 
-    <!-- songs in the set -->
-    <a class="anchor" name="setlist"></a>
-    <h4 class="underlined-header"> Set List </h4>
-
-    <%= render :partial => 'gig_setlist_song', :locals => {:gig_set => @gig.get_set} %>
+  <%= render :partial => 'gig_setlist_song', :locals => {:gig_set => @gig.get_set} %>
 
 
-    <% if @gig.get_set_encore.present? %>
+  <% if @gig.get_set_encore.present? %>
 
-      <!-- songs in the encore -->
-      <div class="set-list-encore"> Encore </div>
-      <%= render :partial => 'gig_setlist_song', :locals => {:gig_set => @gig.get_set_encore} %>
+    <!-- songs in the encore -->
+    <div class="set-list-encore"> Encore </div>
+    <%= render :partial => 'gig_setlist_song', :locals => {:gig_set => @gig.get_set_encore} %>
 
-    <% end %>
-
-  </div>
+  <% end %>
 
 </div>
 
@@ -134,7 +170,7 @@
   <div style="margin-top: 30px">
     
     <a class="anchor" name="media"></a>
-    <h4 class="underlined-header"> Media </h4>
+    <h4> Media </h4>
 
   <% for gig_medium in @gig.gigmedia  %>
 
@@ -203,7 +239,7 @@
 
   <!-- reviews-->
   <a class="anchor" name="reviews"></a>
-  <h4 class="underlined-header"> Reviews </h4>
+  <h4> Reviews </h4>
 
   <div>
     <%= @gig.get_reviews.html_safe %>

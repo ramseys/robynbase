@@ -29,7 +29,7 @@ set :rails_env, "production"
 # download the repository to the local machine, then upload to server
 set :deploy_via, :copy
 
-# use agent forwaring
+# use agent forwarding
 set :ssh_options, { :forward_agent => true }
 
 # keep some releases around on the server

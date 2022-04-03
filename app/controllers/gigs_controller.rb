@@ -1,5 +1,8 @@
 class GigsController < ApplicationController
 
+  # require 'mini_magick'
+  require 'image_processing/mini_magick'
+  
   authorize_resource :only => [:new, :edit, :update, :create, :destroy]
 
   RANGE_TYPE = {
@@ -85,13 +88,34 @@ class GigsController < ApplicationController
 
   end
 
+  # reduce the size of large images to a maximum width/height
+  def optimize_images(params)
+    
+    if params[:images].present?
+        
+      params[:images].each do |image|
+        
+        mini_image = MiniMagick::Image.new(image.tempfile.path)
+        
+        if mini_image.width > 1200 || mini_image.height > 1200
+          mini_image.resize '1200x1200'
+        end
+      
+      end
+      
+    end
+    
+  end
+  
   # create a new gig
   def create
     
     params, setlist_songs, media = prepare_params()
-
+  
+    optimize_images(params)
+      
     @gig = Gig.new(params)
-
+    
     if @gig.save
 
       if setlist_songs.present?
@@ -102,8 +126,8 @@ class GigsController < ApplicationController
         @gig.gigmedia.create(media)
       end
       
-      return_to_previous_page(@gig)
-
+      redirect_to(@gig)
+      
     else
       # This line overrides the default rendering behavior, which
       # would have been to render the "create" view.
@@ -131,9 +155,16 @@ class GigsController < ApplicationController
       gig.gigmedia.build(media)
     end
 
+    # purse images marked for removal
+    attachments = ActiveStorage::Attachment.where(id: params[:deleted_img_ids])
+    attachments.map(&:purge)
+
+    # optimize new images
+    optimize_images(filtered_params)
+
     gig.update(filtered_params)
     
-    return_to_previous_page(gig)
+    redirect_to(gig)
     
   end
 
@@ -285,7 +316,9 @@ class GigsController < ApplicationController
     # permit attributes we're saving
     params
       .require(:gig)
-      .permit(:VENUEID, :GigDate, :ShortNote, :Reviews, :Guests, :BilledAs, :GigType, :Venue, :Circa,
+      .permit(:VENUEID, :GigDate, :ShortNote, :Reviews, :Guests, :BilledAs, :GigType, :Venue, :Circa, :images,
+             images: [],
+             deleted_img_ids: [],
              gigsets_attributes: [ :Chrono, :SONGID, :Song, :VersionNotes, :Encore, :MediaLink],
              gigmedia_attributes: [ :Chrono, :title, :mediaid, :mediatype ]).tap do |params|
           

@@ -11,8 +11,9 @@ class Gig < ApplicationRecord
 
   has_many :gigsets, -> {order 'Chrono'}, foreign_key: "GIGID", dependent: :delete_all
   has_many :gigmedia, -> {order 'Chrono'}, foreign_key: "GIGID", dependent: :delete_all
-
   has_many :songs, through: :gigsets, foreign_key: "GIGID"
+  has_many_attached :images, :dependent => :destroy
+
   belongs_to :venue, foreign_key: "VENUEID"
 
   accepts_nested_attributes_for :gigsets, :gigmedia

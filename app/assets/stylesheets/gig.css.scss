@@ -36,12 +36,51 @@
     margin-bottom: 10px;
   }
 
+  .gig-image-table {
+
+    width: auto;
+
+    td {
+      padding: 20px;
+    }
+
+    .image-cell {
+      display: table-cell; 
+      vertical-align: middle;
+    }
+
+  }
+
 }
 
 .gig-page {
 
   .row {
     margin-bottom: 30px;
+  }
+
+  .gig-container {
+
+    padding: 20px 0;
+    
+    @media screen and (min-width: 400px) {
+      float: right;
+      padding-top: 30px;
+      padding-left: 30px;
+    }
+      
+  }
+  
+  .gig-images {
+    img {
+      border: 1px solid #dddddd;
+    }
+  }
+  
+  dl.dl-horizontal {
+    dd:after {
+      clear: left !important;
+    }
   }
 
   .set-list-section {
