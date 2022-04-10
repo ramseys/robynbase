@@ -19,8 +19,7 @@ gem 'bootsnap'
 gem 'sass-rails'
 gem 'coffee-rails'
 
-# supports active storage image manipulation
-gem 'image_processing', '>= 1.2'
+# supports active storage image variants
 gem 'mini_magick'
 
 # Gems used only for assets and not required
