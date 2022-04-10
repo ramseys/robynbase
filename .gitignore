@@ -45,3 +45,6 @@ README.rdoc
 
 # leaving secrets.yml out of the repo for now; not sure what it's for, and this seems to be the recommendation
 config/secrets.yml
+
+# directory where ActiveStorage keeps its files 
+active-storage-files/

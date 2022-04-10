@@ -48,7 +48,7 @@ set :linked_files, %w{config/database.yml}
 
 # this is used by the built-in 'deploy:symlink:linked_dirs'. links up the
 # shared album art directory to the latest release
-set :linked_dirs, %w{public/images/album-art}
+set :linked_dirs, %w{public/images/album-art active-storage-files}
 
 # Default value for :format is :pretty
 # set :format, :pretty
