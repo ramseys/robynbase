@@ -21,6 +21,7 @@ gem 'coffee-rails'
 
 # supports active storage image manipulation
 gem 'image_processing', '>= 1.2'
+gem 'mini_magick'
 
 # Gems used only for assets and not required
 # in production environments by default.
