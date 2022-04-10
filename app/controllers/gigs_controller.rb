@@ -1,6 +1,4 @@
 class GigsController < ApplicationController
-
-  require 'image_processing/mini_magick'
   
   authorize_resource :only => [:new, :edit, :update, :create, :destroy]
 
