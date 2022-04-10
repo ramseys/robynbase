@@ -43,7 +43,7 @@
 
   <div class="col-sm-12">
 
-    <h4>Details</h4>
+    <h3 class="underlined-header">Details</h4>
 
     <div class="album-description-block">
 
@@ -92,7 +92,7 @@
   <div class="col-sm-12">
 
     <a class="anchor" name="albums"></a>
-    <h4>Albums</h4>
+    <h3 class="underlined-header">Albums</h4>
     <%= render partial: '/compositions/album_list', locals: {albums: @song.get_albums, table_id: "album-song", use_paging: true, show_search: false} %>
 
   </div>
@@ -110,7 +110,7 @@
   <div class="col-sm-12">
 
     <a class="anchor" name="gigs"></a>
-    <h4>Gigs</h4>
+    <h3 class="underlined-header">Gigs</h4>
     <%= render partial: '/gigs/gig_list', locals: {gigs: @song.gigs.distinct, table_id: "gig-song", use_paging: true, show_search: false} %>
 
   </div>
@@ -128,7 +128,7 @@
   <div class="col-sm-12">
 
     <a class="anchor" name="performances"></a>
-    <h4>Media</h4>
+    <h3 class="underlined-header">Media</h4>
     <%= render partial: '/performances/performance_list', locals: {performances: @song.performances, table_id: "performance-song", use_paging: true, show_search: false} %>
 
   </div>
@@ -145,7 +145,7 @@
   <div class="col-sm-12">
 
     <a class="anchor" name="comments"></a>
-    <h4>Comments</h4>
+    <h3 class="underlined-header">Comments</h4>
 
     <div>
       <%= @song.get_comments.html_safe %>
@@ -164,7 +164,7 @@
   <div class="col-sm-12">
 
     <a class="anchor" name="lyrics"></a>
-    <h4>Lyrics</h4>
+    <h3 class="underlined-header">Lyrics</h4>
     <div class="lyrics">
       <pre><%= @song.Lyrics =%> </pre>
     </div>
@@ -180,7 +180,7 @@
   <div class="col-sm-12">
 
     <a class="anchor" name="tabs"></a>
-    <h4>Tablature</h3>
+    <h3 class="underlined-header">Tablature</h3>
     <div class="lyrics">
       <pre><%= @song.Tab =%> </pre>
     </div>

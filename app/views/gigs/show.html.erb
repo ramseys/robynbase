@@ -80,7 +80,7 @@
 
   <div>
 
-    <h4> Details </h4>
+    <h3 class="underlined-header"> Details </h3>
 
       <dl class="dl-horizontal">
         <dt>Date</dt>
@@ -132,7 +132,7 @@
   <div style="margin-top: 30px">
     
     <a class="anchor" name="notes"></a>
-    <h4> Notes </h4>
+    <h3 class="underlined-header"> Notes </h3>
     
     <div>
       <%= simple_format(@gig.ShortNote.html_safe) %>
@@ -148,7 +148,7 @@
 
   <!-- songs in the set -->
   <a class="anchor" name="setlist"></a>
-  <h4> Set List </h4>
+  <h3 class="underlined-header"> Set List </h3>
 
   <%= render :partial => 'gig_setlist_song', :locals => {:gig_set => @gig.get_set} %>
 
@@ -170,14 +170,14 @@
   <div style="margin-top: 30px">
     
     <a class="anchor" name="media"></a>
-    <h4> Media </h4>
+    <h3 class="underlined-header"> Media </h3>
 
   <% for gig_medium in @gig.gigmedia  %>
 
     <div class="gig-media">
 
       <div class="gig-media-title">
-        <h5> <%= gig_medium.title %> </h4>
+        <h5> <%= gig_medium.title %> </h3>
       </div>
 
       <div class="gig-media-content">
@@ -238,11 +238,15 @@
 <% if @gig.get_reviews.present? %>
 
   <!-- reviews-->
-  <a class="anchor" name="reviews"></a>
-  <h4> Reviews </h4>
+  <div style="margin-top: 30px">
 
-  <div>
-    <%= @gig.get_reviews.html_safe %>
+    <a class="anchor" name="reviews"></a>
+    <h3 class="underlined-header"> Reviews </h3>
+
+    <div>
+      <%= @gig.get_reviews.html_safe %>
+    </div>
+
   </div>
 
 <% end %>
