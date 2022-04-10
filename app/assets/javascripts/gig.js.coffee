@@ -13,6 +13,14 @@ $(window).on("load", (e) ->
     header.find(".glyphicon").toggleClass("glyphicon-triangle-right glyphicon-triangle-bottom")
   )
 
+  # set up gig images lightbox
+  $("a.gig-images").attr("rel", "gallery").fancybox({helpers : { 
+    thumbs : {
+      width  : 50,
+      height : 50
+    }
+  }})
+
 )
 
 

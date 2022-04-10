@@ -54,7 +54,11 @@ $(window).on("load", ->
   # we need to do this (instead of attaching the events to the rows directly) because the rows might
   # not be there when this event handler is declared (eg, because of grid paging)
   $(".main-search-list tbody").on("click", "tr", (e) ->
-    window.location = $(e.currentTarget).data("path")
+
+    # don't navigate if click is on one of the actions
+    if e.target and e.target.nodeName != "A"
+      window.location = $(e.currentTarget).data("path")
+
   )
    
 
