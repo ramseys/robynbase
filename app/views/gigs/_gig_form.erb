@@ -131,7 +131,14 @@
                         <td> <%= index + 1 %> </td>
                         <td>
                             <div data-imgid="<%=img.id%>" class="image-cell">
+
+                              <%# make sure this is an image type that active storage knows how to transform%>
+                              <% if img.variable? %>
                                 <%= image_tag img.variant(resize: "100x100") %>
+                              <% else %>  
+                                <%= image_tag img, height: "100px" %>
+                              <% end %>
+
                             </div>
                         </td>
                     </tr>

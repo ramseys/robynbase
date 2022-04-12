@@ -93,7 +93,7 @@ class GigsController < ApplicationController
       params[:images].each do |image|
         
         mini_image = MiniMagick::Image.new(image.tempfile.path)
-        
+
         if mini_image.width > 1200 || mini_image.height > 1200
           mini_image.resize '1200x1200'
         end
@@ -140,6 +140,14 @@ class GigsController < ApplicationController
 
     filtered_params, setlist_songs, media = prepare_params()
 
+    # purse images marked for removal
+    attachments = ActiveStorage::Attachment.where(id: params[:deleted_img_ids])
+    attachments.map(&:purge)
+
+    # optimize new images
+    optimize_images(filtered_params)
+
+    # TODO put all this in a transaction
     gig.gigsets.clear()
     gig.gigmedia.clear()
 
@@ -151,13 +159,6 @@ class GigsController < ApplicationController
     if media.present?
       gig.gigmedia.build(media)
     end
-
-    # purse images marked for removal
-    attachments = ActiveStorage::Attachment.where(id: params[:deleted_img_ids])
-    attachments.map(&:purge)
-
-    # optimize new images
-    optimize_images(filtered_params)
 
     gig.update(filtered_params)
     
