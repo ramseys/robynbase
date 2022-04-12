@@ -22,7 +22,8 @@ class Gig < ApplicationRecord
     QuickQuery.new('gigs', :with_setlists, [:without]),
     QuickQuery.new('gigs', :without_definite_dates),
     QuickQuery.new('gigs', :with_reviews, [:without]),
-    QuickQuery.new('gigs', :with_media)
+    QuickQuery.new('gigs', :with_media),
+    QuickQuery.new('gigs', :with_images)
   ]
 
   # returns the songs played in the gig (non-encore)
@@ -112,6 +113,8 @@ class Gig < ApplicationRecord
         gigs = quick_query_gigs_with_reviews(secondary_attribute)
       when :with_media.to_s
         gigs = quick_query_gigs_with_media
+      when :with_images.to_s
+        gigs = quick_query_gigs_with_images
     end
 
     gigs.where.not(:venue => nil)
@@ -167,6 +170,10 @@ class Gig < ApplicationRecord
 
     Gig.from(sql).order(:GigDate)
 
+  end
+
+  def self.quick_query_gigs_with_images
+    joins("JOIN active_storage_attachments asa").where("asa.record_type = 'Gig' and asa.record_id = GIG.GIGID").distinct.order(:GigDate)
   end
 
 end

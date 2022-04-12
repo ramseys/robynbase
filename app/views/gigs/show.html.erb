@@ -45,7 +45,14 @@
   <div>
     
     <a class="gig-images" href="<%= polymorphic_url(@gig.images.first) %>">
-      <%= image_tag @gig.images.first.variant(resize: "300x300") %>
+
+      <%# make sure this is an image type that active storage knows how to transform%>
+      <% if @gig.images.first.variable? %>
+        <%= image_tag @gig.images.first.variant(resize: "300x300") %>
+      <% else %>  
+        <%= image_tag @gig.images.first, height: "300px" %>
+      <% end %>
+
     </a>
     
     <br/>
