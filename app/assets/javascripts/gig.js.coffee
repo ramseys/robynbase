@@ -3,7 +3,7 @@
 # You can use CoffeeScript in this file: http://jashkenas.github.com/coffee-script/
 
 
-$(window).on("load", (e) ->
+$(window).on("DOMContentLoaded", (e) ->
 
   # hide show advanced options in list page
   $(".gig-list .advanced-options-header").on("click", (e) ->
