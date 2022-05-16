@@ -17,7 +17,6 @@
           <% elsif show_lyrics(@song) %> 
             <span><a href="#lyrics">Lyrics</a></span>
           <% end %>
-          <% if @song.performances.present? %> <span><a href="#performances">Media</a></span> <% end %>
           <% if @song.Comments.present? %> <span><a href="#comments">Comments</a></span> <% end %>
           <% if @song.Tab %> <span><a href="#tabs">Tablature</a></span> <% end %>
         </span>
@@ -118,25 +117,6 @@
 </div>
 
 <% end %>
-
-
-<!-- performances where the song was played -->
-<% if @song.performances.present? %>
-
-<div class="row page-section">
-
-  <div class="col-sm-12">
-
-    <a class="anchor" name="performances"></a>
-    <h3 class="underlined-header">Media</h4>
-    <%= render partial: '/performances/performance_list', locals: {performances: @song.performances, table_id: "performance-song", use_paging: true, show_search: false} %>
-
-  </div>
-
-</div>
-
-<% end %>
-
 
 <% if @song.Comments.present? %>
 
