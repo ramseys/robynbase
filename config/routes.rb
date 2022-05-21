@@ -8,14 +8,11 @@ Robyn2::Application.routes.draw do
   get "gigs/quick_query"
   get "venues/index"
   get "robyn/search_venues"
-  get 'performances/index'
-  get 'performances/quick_query'
   get "compositions/index"
   get "compositions/quick_query"
   get "robyn/search"
   get "robyn/search_gigs"
   get "robyn/search_compositions"
-  get "robyn/search_performances"
   
   # get 'signup', to: 'users#new', as: 'signup'
   get 'login', to: 'sessions#new', as: 'login'
@@ -25,7 +22,6 @@ Robyn2::Application.routes.draw do
   resources :gigs
   resources :venues
   resources :compositions
-  resources :performances
   resources :about
 
   # Uncomment to enable user management

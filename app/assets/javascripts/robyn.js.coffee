@@ -37,7 +37,6 @@ $(window).on("load", ->
     when currentPage.indexOf("compositions") == 0 then "robyn-compositions"
     when currentPage.indexOf("gigs") == 0 then "robyn-gigs"
     when currentPage.indexOf("venues") == 0 then "robyn-venues"
-    when currentPage.indexOf("performances") == 0 then "robyn-performances"
     when currentPage.indexOf("about") == 0 then "robyn-about"
     else "robyn-home"
 
@@ -127,27 +126,11 @@ $(window).on("load", ->
     
   });
 
-  performance_engine = new Bloodhound({
-    # name: 'all'
-    # local: [{ val: 'dog' }, { val: 'pig' }, { val: 'moose' }],
-    remote:
-      url: '/robyn/search_performances?utf8=%E2%9C%93&search_value=%QUERY'
-      filter: (results) ->
-        $.map(results, (result, index) ->
-          return {search_value: result.name, id: result.performanceid}
-        )
-    datumTokenizer: (d) -> 
-      console.log(d)
-      return Bloodhound.tokenizers.whitespace(d.search_value)
-    queryTokenizer: Bloodhound.tokenizers.whitespace
-    
-  });
 
   initComplete = song_engine.initialize()
   initComplete = gig_engine.initialize()
   initComplete = venue_engine.initialize()
   initComplete = composition_engine.initialize()
-  initComplete = performance_engine.initialize()
 
   init = () -> 
 
@@ -191,15 +174,6 @@ $(window).on("load", ->
       templates: {
         header: '<h4 class="">Venues</h4>'
       }
-    },
-
-    {
-      name: 'performances',
-      displayKey: 'search_value',
-      source: performance_engine.ttAdapter(),
-      templates: {
-        header: '<h4 class="">Performances</h4>'
-      }
     })
 
 
@@ -211,8 +185,6 @@ $(window).on("load", ->
         when "gigs" then window.location = "/gigs/" + suggestion.id
         when "venues" then window.location = "/venues/" + suggestion.id
         when "compositions" then window.location = "/compositions/" + suggestion.id
-        when "performances" then window.location = "/performances/" + suggestion.id
-
     )
 
     $("#search_value").focus()  

@@ -11,9 +11,9 @@
   <% end %>
 
   <!-- omnisearch results -->
-  <% if [@songs, @compositions, @gigs, @venues, @performances].any? { |a| not a.nil? } %>
+  <% if [@songs, @compositions, @gigs, @venues].any? { |a| not a.nil? } %>
 
-    <% if [@songs, @compositions, @gigs, @venues, @performances].all? { |a| a.empty? } %> 
+    <% if [@songs, @compositions, @gigs, @venues].all? { |a| a.empty? } %> 
 
       <%= render partial: '/robyn/nothing_found' %>
 
@@ -41,12 +41,6 @@
       <% if @venues.present? %>
         <h3 class="main-header">Venues</h3>
         <%= render partial: '/venues/venue_list', locals: { venues: @venues, table_id: "venue-omni", suppress_header: false, use_paging: true, page_length: 20 } %>
-      <% end %>
-
-      <!-- media -->
-      <% if @performances.present? %>
-        <h3 class="main-header">Media</h3>
-        <%= render partial: '/performances/performance_list', locals: { performances: @performances, table_id: "performance-omni", suppress_header: false, use_paging: true, page_length: 20 } %>
       <% end %>
 
     <% end %>

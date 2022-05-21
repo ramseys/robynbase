@@ -11,7 +11,6 @@ class RobynController < ApplicationController
       @compositions = Composition.search_by [:title], search
       @gigs = Gig.search_by [:venue], search
       @venues = Venue.search_by [:name], search
-      @performances = Performance.search_by [:name], search
     end
     
   end
@@ -79,22 +78,5 @@ class RobynController < ApplicationController
     render json: @compositions
 
   end
-
-  def search_performances
-
-    search = params[:search_value] 
-
-    logger.info "perfromances search: #{search}"
-
-    if not search.nil? 
-      @performances = Performance.search_by [:name], search
-    end
-
-    logger.info "found perfromances: #{@compositions}"
-
-    render json: @performances
-    
-  end
-
 
 end

@@ -13,10 +13,6 @@ class Song < ApplicationRecord
  
   belongs_to :album, foreign_key: "MAJRID", optional: true
   
-  # set up the many-many relationship with the performance table
-  has_many :song_performances
-  has_many :performances, :through => :song_performances
-
   @@quick_queries = [ 
     QuickQuery.new('songs', :not_written_by_robyn),
     QuickQuery.new('songs', :never_released, [:originals, :covers]),
