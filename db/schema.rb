@@ -2,15 +2,15 @@
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
 #
-# Note that this schema.rb definition is the authoritative source for your
-# database schema. If you need to create the application database on another
-# system, you should be using db:schema:load, not running all the migrations
-# from scratch. The latter is a flawed and unsustainable approach (the more migrations
-# you'll amass, the slower it'll run and the greater likelihood for issues).
+# This file is the source Rails uses to define your schema when running `rails
+# db:schema:load`. When creating a new database, `rails db:schema:load` tends to
+# be faster and is potentially less error prone than running all of your
+# migrations from scratch. Old migrations may fail to apply correctly if those
+# migrations use external dependencies or application code.
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_15_130319) do
+ActiveRecord::Schema.define(version: 2022_06_11_200308) do
 
   create_table "COMP", primary_key: "COMPID", id: :integer, options: "ENGINE=MyISAM DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "Artist", limit: 64
@@ -44,8 +44,8 @@ ActiveRecord::Schema.define(version: 2022_05_15_130319) do
     t.string "State", limit: 2
     t.string "Zip", limit: 11
     t.string "Country", limit: 20
-    t.text "EMail", limit: 4294967295
-    t.text "URL", limit: 4294967295
+    t.text "EMail", size: :long
+    t.text "URL", size: :long
     t.index ["FEGID"], name: "FEGID", unique: true
   end
 
@@ -77,7 +77,7 @@ ActiveRecord::Schema.define(version: 2022_05_15_130319) do
     t.string "Guests", limit: 512
     t.text "ShortNote"
     t.string "Shirts", limit: 24
-    t.text "Reviews", limit: 4294967295
+    t.text "Reviews", size: :long
     t.boolean "TapeExists", default: false
     t.string "Performance", limit: 1
     t.string "Sound", limit: 1
@@ -88,7 +88,7 @@ ActiveRecord::Schema.define(version: 2022_05_15_130319) do
     t.boolean "Favorite", default: false
     t.string "Master", limit: 32
     t.string "Type", limit: 32, default: "aud"
-    t.text "Archived", limit: 4294967295
+    t.text "Archived", size: :long
     t.integer "FEGID", default: 0
     t.timestamp "ModifyDate", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.index ["BilledAs"], name: "BilledAs"
@@ -124,8 +124,8 @@ ActiveRecord::Schema.define(version: 2022_05_15_130319) do
     t.string "FrontImage", limit: 32
     t.string "BackImage", limit: 32
     t.string "CoverDesigner", limit: 128
-    t.text "ProductionCredits", limit: 4294967295
-    t.text "Notes", limit: 4294967295
+    t.text "ProductionCredits", size: :long
+    t.text "Notes", size: :long
     t.index ["AlbumTitles"], name: "AlbumTitles"
     t.index ["COMPID"], name: "COMPID"
     t.index ["RecordedBy"], name: "RecordedBy"
@@ -144,7 +144,7 @@ ActiveRecord::Schema.define(version: 2022_05_15_130319) do
     t.boolean "Author", default: false
     t.boolean "Performer", default: false
     t.boolean "Guest", default: false
-    t.text "Notes", limit: 4294967295
+    t.text "Notes", size: :long
   end
 
   create_table "Paste Errors", id: false, options: "ENGINE=MyISAM DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -245,10 +245,10 @@ ActiveRecord::Schema.define(version: 2022_05_15_130319) do
     t.boolean "Improvised", default: false
     t.integer "MAJRID", default: 0
     t.datetime "ApproxDate"
-    t.text "Lyrics", limit: 4294967295
-    t.text "Tab", limit: 4294967295
-    t.text "Comments", limit: 4294967295
-    t.text "RHComments", limit: 4294967295
+    t.text "Lyrics", size: :long
+    t.text "Tab", size: :long
+    t.text "Comments", size: :long
+    t.text "RHComments", size: :long
     t.string "CoveredBy", limit: 32
     t.string "Instrumentation", limit: 32
     t.integer "SongLookup", default: 0
