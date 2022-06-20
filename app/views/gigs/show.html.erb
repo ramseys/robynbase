@@ -190,11 +190,11 @@
       <div class="gig-media-content">
         <% case gig_medium.mediatype
         
-          when Gigmedium::MEDIA_TYPE["YouTube"] %>
+          when GigMedium::MEDIA_TYPE["YouTube"] %>
             <iframe id="ytplayer" type="text/html" width="640" height="480" src="https://www.youtube.com/embed/<%=gig_medium.mediaid%>" frameborder="0"></iframe>
 
-          <% when Gigmedium::MEDIA_TYPE["ArchiveOrgVideo"], Gigmedium::MEDIA_TYPE["ArchiveOrgPlaylist"]%>
-            <iframe src="https://archive.org/embed/<%=gig_medium.mediaid%><%=gig_medium.mediatype === Gigmedium::MEDIA_TYPE["ArchiveOrgPlaylist"] ? "?playlist=1&list_height=200"  : ""%>" 
+          <% when GigMedium::MEDIA_TYPE["ArchiveOrgVideo"], GigMedium::MEDIA_TYPE["ArchiveOrgPlaylist"]%>
+            <iframe src="https://archive.org/embed/<%=gig_medium.mediaid%><%=gig_medium.mediatype === GigMedium::MEDIA_TYPE["ArchiveOrgPlaylist"] ? "?playlist=1&list_height=200"  : ""%>" 
                     height="<%= gig_media_embed_height(gig_medium) %>""
                     width="640" 
                     frameborder="0" 
@@ -203,7 +203,7 @@
                     allowfullscreen>
             </iframe>
 
-          <% when Gigmedium::MEDIA_TYPE["ArchiveOrgAudio"] %>
+          <% when GigMedium::MEDIA_TYPE["ArchiveOrgAudio"] %>
             <iframe src="https://archive.org/embed/<%=gig_medium.mediaid%>" 
                     width="500" 
                     height="30" 
@@ -213,7 +213,7 @@
                     allowfullscreen>
             </iframe>            
 
-          <% when Gigmedium::MEDIA_TYPE["Vimeo"]%>
+          <% when GigMedium::MEDIA_TYPE["Vimeo"]%>
             <iframe src="https://player.vimeo.com/video/<%=gig_medium.mediaid%>" 
                     width="640"
                     height="360" 
@@ -222,7 +222,7 @@
                     allowfullscreen>
             </iframe>
 
-          <% when Gigmedium::MEDIA_TYPE["Soundcloud"]%>
+          <% when GigMedium::MEDIA_TYPE["Soundcloud"]%>
             <iframe src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/<%=gig_medium.mediaid%>&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"
                     width="640" 
                     height="166"

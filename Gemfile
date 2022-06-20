@@ -1,12 +1,15 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 6.1.0'
+gem 'rails', '~> 7.0.0'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 # gem 'sqlite3'
 gem 'mysql2', '~> 0.5.0'
+
+# needed because rails 7 doesn't use it by default anymore
+gem "sprockets-rails"
 
 # Use ActiveModel has_secure_password
 gem 'bcrypt', '~> 3.1.7'
@@ -20,7 +23,7 @@ gem 'sass-rails'
 gem 'coffee-rails'
 
 # supports active storage image variants
-# gem 'mini_magick'
+gem 'mini_magick'
 gem 'image_processing'
 
 # Gems used only for assets and not required

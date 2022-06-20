@@ -237,7 +237,7 @@ class GigsController < ApplicationController
       b[:title] = nil if b[:title].strip.empty?
 
       # if a full youtube link was provided, extract the id
-      if b[:mediatype].to_i === Gigmedium::MEDIA_TYPE["YouTube"]
+      if b[:mediatype].to_i === GigMedium::MEDIA_TYPE["YouTube"]
         if b[:mediaid][/watch\?/].present?
           b[:mediaid] = b[:mediaid][/v=([^&]*)/, 1]
         elsif b[:mediaid][/youtu\.be/].present?
@@ -245,20 +245,20 @@ class GigsController < ApplicationController
         end
         
       # if a full archive.org "details" link was provided, extract the id
-      elsif b[:mediatype].to_i === Gigmedium::MEDIA_TYPE["ArchiveOrgVideo"] or 
-         b[:mediatype].to_i === Gigmedium::MEDIA_TYPE["ArchiveOrgPlaylist"] and 
+      elsif b[:mediatype].to_i === GigMedium::MEDIA_TYPE["ArchiveOrgVideo"] or 
+         b[:mediatype].to_i === GigMedium::MEDIA_TYPE["ArchiveOrgPlaylist"] and 
          b[:mediaid][/\/details\/.*/].present?
 
         b[:mediaid] = b[:mediaid][/\/details\/(.*)$/, 1]
   
       # if a vimeo link was provided, extract the id
-      elsif b[:mediatype].to_i === Gigmedium::MEDIA_TYPE["Vimeo"] and
+      elsif b[:mediatype].to_i === GigMedium::MEDIA_TYPE["Vimeo"] and
             b[:mediaid][/vimeo\.com\//].present?
 
         b[:mediaid] = b[:mediaid][/vimeo\.com\/([^&]*)/, 1]
 
       # if a soundcloud embed string is provided, extract the id
-      elsif b[:mediatype].to_i === Gigmedium::MEDIA_TYPE["Soundcloud"] and
+      elsif b[:mediatype].to_i === GigMedium::MEDIA_TYPE["Soundcloud"] and
             b[:mediaid][/api\.soundcloud\.com\//].present?
 
         b[:mediaid] = b[:mediaid][/api\.soundcloud\.com\/tracks\/([^&]*)/, 1]

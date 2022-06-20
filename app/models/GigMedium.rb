@@ -1,4 +1,6 @@
-class Gigmedium < ApplicationRecord
+class GigMedium < ApplicationRecord
+
+    self.table_name = "gigmedia"
 
     belongs_to :gig, foreign_key: "GIGID"
 
