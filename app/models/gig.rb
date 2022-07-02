@@ -10,7 +10,7 @@ class Gig < ApplicationRecord
   self.table_name = "GIG"
 
   has_many :gigsets, -> {order 'Chrono'}, foreign_key: "GIGID", dependent: :delete_all
-  has_many :gigmedia, -> {order 'Chrono'}, foreign_key: "GIGID", dependent: :delete_all
+  has_many :gigmedia, -> {order 'Chrono'}, foreign_key: "GIGID", dependent: :delete_all, class_name: 'GigMedium'
   has_many :songs, through: :gigsets, foreign_key: "GIGID"
   has_many_attached :images, :dependent => :destroy
 
