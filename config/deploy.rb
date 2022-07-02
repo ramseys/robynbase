@@ -47,7 +47,7 @@ set :rvm1_ruby_version, 'ruby-2.7.2'
 set :linked_files, %w{config/database.yml}
 
 # this is used by the built-in 'deploy:symlink:linked_dirs'. links up the
-# shared album art directory to the latest release
+# shared two directories to the latest release: active storage files, and album art
 set :linked_dirs, %w{public/images/album-art active-storage-files}
 
 # Default value for :format is :pretty
