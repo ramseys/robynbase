@@ -48,3 +48,6 @@ config/secrets.yml
 
 # directory where ActiveStorage keeps its files 
 active-storage-files/
+
+# never source-control the master key, you animal
+/config/master.key
