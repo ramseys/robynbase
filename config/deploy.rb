@@ -46,6 +46,9 @@ set :rvm1_ruby_version, 'ruby-2.7.2'
 # shared database.yml file to the latest release
 set :linked_files, %w{config/database.yml}
 
+# link to the master decryption key in the shared config area
+set :linked_files, %w{config/master.key}
+
 # this is used by the built-in 'deploy:symlink:linked_dirs'. links up the
 # shared two directories to the latest release: active storage files, and album art
 set :linked_dirs, %w{public/images/album-art active-storage-files}
