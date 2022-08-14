@@ -32,7 +32,7 @@
 
   <div class="col-sm-12">
 
-    <h3 class="underlined-header">Details</h4>
+    <h3 class="section-header">Details</h4>
 
     <div class="album-description-block">
 
@@ -88,7 +88,7 @@
 
     <!-- notes-->
     <a class="anchor" name="notes"></a>
-    <h3 class="underlined-header"> Notes </h4>
+    <h3 class="section-header"> Notes </h4>
 
     <div>
       <%= @venue.get_notes.html_safe %>
@@ -109,7 +109,7 @@
   <div class="col-sm-12">
 
     <a class="anchor" name="gigs"></a>
-    <h3 class="underlined-header"> Gigs </h4>
+    <h3 class="section-header"> Gigs </h4>
 
     <%= render partial: '/gigs/gig_list', locals: {gigs: @venue.gigs, table_id: "gig-venue", use_paging: true, show_search: false} %>
 

@@ -2,7 +2,10 @@ class Composition < ApplicationRecord
 
   self.table_name = "COMP"
 
-  has_many :tracks, foreign_key: "COMPID"
+  has_many :tracks, foreign_key: "COMPID", dependent: :delete_all
+  has_many :songs, through: :tracks, foreign_key: "TRAKID"
+
+  accepts_nested_attributes_for :tracks
 
   # types of media, and the order in which they should appear
   MEDIA_TYPES = {
@@ -23,11 +26,11 @@ class Composition < ApplicationRecord
 
   # types of releases, in the order in which they should appear
   RELEASE_TYPES = {
-    'Authorized'       => 0,
+    'Official Release' => 0,
     'Compilation'      => 1,
     'Promo'            => 2,
     'Radio show'       => 3,
-    'Unauthorized'     => 4,
+    'Bootleg'          => 4,
     'Internet'         => 5,
     'Fan Club release' => 6,
     'Other'            => 7
@@ -41,7 +44,16 @@ class Composition < ApplicationRecord
     QuickQuery.new('compositions', :other_bands)
   ]
     
+  # returns the songs played in the gig (non-encore)
+  def get_tracklist
+    self.tracks.includes(:song).where(bonus: false)
+  end
 
+  # returns the songs played in the encore
+  def get_tracklist_bonus
+    self.tracks.includes(:song).where(bonus: true)
+  end
+  
   def self.search_by(kind, search, media_types = nil, release_types = nil)
 
     kind = [:title, :year, :label] if kind.nil? or kind.length == 0
@@ -84,13 +96,11 @@ class Composition < ApplicationRecord
     end
 
     # order by year
-    albums = albums.order(:Year => :asc)
+    albums = albums.order(:Year => :asc, :COMPID => :asc)
 
     # remove duplicated albums (ie, albums with multiple editions)
     # TODO: why aren't i just doing this in the query? group by title?
     albums = albums.to_a.uniq { |f| [f.Title ] }
-
-    albums
 
   end 
 

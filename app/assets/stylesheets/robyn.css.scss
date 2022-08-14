@@ -144,7 +144,7 @@ table.main-search-list {
 
 }
 
-.underlined-header {
+.section-header {
   padding-bottom: 3px;
   font-size: 18px;
 }
@@ -509,6 +509,78 @@ dl.dl-horizontal {
 
   li {
     padding-top: 5px;
+  }
+
+}
+
+.robyn-page {
+
+  .row {
+    margin-bottom: 30px;
+  }
+
+
+  .image-container {
+
+    padding: 20px 0;
+    
+    @media screen and (min-width: 400px) {
+      float: right;
+      padding-top: 30px;
+      padding-left: 30px;
+    }
+      
+  }
+
+  .images {
+    img {
+      border: 1px solid #dddddd;
+    }
+  }
+
+  dl.dl-horizontal {
+    dd:after {
+      clear: left !important;
+    }
+  }
+
+  .song-list-section {
+
+    ol.song-list {
+
+      padding-left: 25px;
+
+      .song-version-notes {
+        margin-left: 5px;
+      }
+
+      &.action-item {
+
+        padding-left: 40px;
+
+        li {
+
+          position: relative;
+
+          img {
+            height: 2rem;
+            position: absolute;
+            padding-left: 10px;
+            left: -58px;
+          }
+    
+        }
+      }
+
+    }
+    
+    .additional-songs {
+      font-size: 13px;
+      color: gray;
+      font-style: italic;
+      padding: 10px 0 5px;
+    }
+  
   }
 
 }

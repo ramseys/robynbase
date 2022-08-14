@@ -1,4 +1,4 @@
-<ol class="set-list <%= (gig_set_has_media(gig_set) ? "action-item" : "") %>">
+<ol class="song-list <%= (gig_set_has_media(gig_set) ? "action-item" : "") %>">
 
 <% for gig_song in gig_set  %>
 
@@ -10,7 +10,7 @@
             <%= gig_song.Song %>
         <% end %>
 
-        <%= gig_song_details(gig_song) %>
+        <%= song_details(gig_song) %>
 
         <% if gig_song.MediaLink.present? %>
             <a target="_blank" title="Play <%=gig_song.Song%>" class="media" href="<%= gig_song.MediaLink%>">

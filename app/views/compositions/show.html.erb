@@ -3,88 +3,102 @@
 
 <!-- <%= link_to "Back", controller: 'robyn' %> -->
 
-<div class="albums-page">
+<div class="albums-page robyn-page">
 
-<h2 class="album-title"><%= @comp.Title %></h2>
+  <div class="row" style="margin-bottom: 0px">
 
-<!-- images: <%= @associated_images.to_s =%> -->
+    <div class="col-sm-10">
+      <h2><%= @comp.Title %></h2>
+    </div>
 
-<div class="row">
+    <% if can? :manage, Composition %>
 
-  <div class="col-sm-5">
+      <div class="col-sm-2">
+        <%= form_tag(edit_composition_path, :method => 'GET') do %>
+          <%= submit_tag "Edit Album", :name => nil %>
+        <%end%>
 
-    <% if @associated_images.length > 0 %>
-      <a class="album-art" href="/<%= @associated_images.first.to_s %>">
-        <img src="/<%= @associated_images.first.to_s %>"/>
-      </a>
-
-      <% if @associated_images.length > 1 %>
-        <div style="display: none">
-
-          <% for img_index in 1...@associated_images.length %>
-          <a class="album-art" href="/<%= @associated_images[img_index].to_s %>">
-            <img src="/<%= @associated_images[img_index].to_s %>" />
-          </a>
-          <% end %>
-
-        </div>  
-
-      <% end %>
+      </div>
 
     <% end %>
 
-    <div class="album-track-list">
+  </div>
 
-      <h5>Tracks</h5>
+  <!-- images: <%= @associated_images.to_s =%> -->
 
-      <ol>
+  <% if @associated_images.length > 0 %>
 
-        <% for track in @comp.tracks %>
-          <% if track.song.present? %>
-            <li> <%= link_to track.song.full_name, song_path(track.song) %></li>
-          <% else %>
-            <li> <%= track.Song %></li>
-          <% end %>
+    <div class="image-container">
+
+      <div>
+
+        <a class="album-art" href="/<%= @associated_images.first.to_s %>">
+          <img src="/<%= @associated_images.first.to_s %>"/>
+        </a>
+
+        <% if @associated_images.length > 1 %>
+          <div style="display: none">
+
+            <% for img_index in 1...@associated_images.length %>
+            <a class="album-art" href="/<%= @associated_images[img_index].to_s %>">
+              <img src="/<%= @associated_images[img_index].to_s %>" />
+            </a>
+            <% end %>
+
+          </div>  
+
         <% end %>
 
-      </ol>
+      </div>
 
     </div>
 
-  </div>
+  <% end %>
 
-  <div class="col-sm-7">
+  <div>
 
-    <h4>Details</h4>
+    <div>
 
-    <%= render partial: 'album_block', locals: {comp: @comp} %>
+        <h3 class="section-header">Details</h3>
 
-    <% if @other_editions.present? %>
+        <%= render partial: 'album_block', locals: {comp: @comp} %>
 
-      <h4>Other Editions</h4>
+    </div>
 
-      <% for comp in @other_editions %>
+    <% if @comp.Comments %>
+      <h3 class="section-header">Comments</h3>
 
-        <div class="album-block-header" data-compid="<%= comp.COMPID %>">
-          <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
-          <span class="edition-type"><%= album_block_header_title(comp) %></span>
-        </div>
+      <div>
+        <%= simple_format(@comp.Comments.html_safe) %>
+      </div>
 
-        <div class="album-block-container" style="display: none" data-compid="<%= comp.COMPID %>">
-          <%= render partial: 'album_block', locals: {comp: comp} %>
-        </div>
+  <% end %>
 
-        </br>
 
-      <% end %>
+
+    <% if @comp.get_tracklist.present? %>
+
+      <div class="song-list-section">
+
+        <h3 class="section-header">Tracks</h3>
+        <%= render :partial => 'album_track_song', :locals => {:track_list => @comp.get_tracklist} %>
+
+      </div>
 
     <% end %>
 
-  </div>
+    <% if @comp.get_tracklist_bonus.present? %>
+
+      <div class="song-list-section">
+
+        <div class="additional-songs">Additional Reissue Tracks</div>
+        <%= render :partial => 'album_track_song', :locals => {:track_list => @comp.get_tracklist_bonus} %>
+
+      </div>
+
+    <% end %>
+
+  <div>
+
 
 </div>
-
-</div>
-
-<!-- <h3 class="main-header"> Tracks </h3> -->
-

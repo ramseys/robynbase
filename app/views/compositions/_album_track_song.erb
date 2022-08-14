@@ -1,0 +1,19 @@
+<ol class="song-list">
+
+<% for track in track_list  %>
+
+    <li >
+
+        <% if track.song.present? %>
+            <%= link_to(track.Song.nil? ? track.song.full_name : track.Song, song_path(track.song)) %> 
+        <% else %>
+            <%= track.Song %>
+        <% end %>
+
+        <%= song_details(track) %>
+
+    </li>
+
+<% end %>
+
+</ol>

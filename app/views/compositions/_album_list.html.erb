@@ -14,6 +14,9 @@
       <th>Label</th>
       <th>Type</th>    
       <th>Year</th>
+      <% if can? :manage, Composition %>
+        <th>Actions</th>
+      <% end %>
     </tr>
     </thead>
   <% end %>
@@ -25,6 +28,14 @@
       <td class="main-column"> <%= comp.Label %> </td>
       <td> <%= comp.Type %> </td> 
       <td> <%= comp.Year.to_i %> </td>
+
+      <% if can? :manage, Composition %>
+        <td class="actions"> 
+          <a href="<%=composition_path(comp)%>/edit">Edit</a> &nbsp;
+          <%= link_to("Delete", composition_path(comp), method: :delete, data: { confirm: "Are you sure you want to delete the album #{comp.Title}?" }) %>
+        </td>
+      <% end %>
+
     </tr>
   <% end %>
 </table>

@@ -10,11 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_12_000636) do
+ActiveRecord::Schema[7.0].define(version: 2022_08_10_111500) do
   create_table "COMP", primary_key: "COMPID", id: :integer, charset: "utf8", options: "ENGINE=MyISAM", force: :cascade do |t|
     t.string "Artist", limit: 64
     t.string "Title", limit: 64
-    t.float "Year", limit: 53
+    t.integer "Year"
     t.string "Medium", limit: 16
     t.string "MCODE", limit: 1
     t.string "Label", limit: 64
@@ -27,6 +27,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_12_000636) do
     t.string "CoverImage", limit: 32
     t.string "Field9", limit: 2
     t.string "Field11", limit: 2
+    t.string "discogs_url"
     t.index ["Desc"], name: "Desc"
     t.index ["MAJRID"], name: "MAJRID"
     t.index ["MCODE"], name: "MCODE"
@@ -171,8 +172,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_12_000636) do
     t.string "Side", limit: 1
     t.integer "Seq", limit: 1, default: 0
     t.string "Time", limit: 6
-    t.string "VersionNotes", limit: 64
+    t.string "VersionNotes"
     t.boolean "Hidden", default: false
+    t.boolean "bonus", default: false
     t.index ["Disc"], name: "Disc"
     t.index ["SONGID"], name: "SONGID"
     t.index ["Seq"], name: "Seq"
@@ -225,6 +227,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_12_000636) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "data_migrations", primary_key: "version", id: :string, charset: "latin1", force: :cascade do |t|
   end
 
   create_table "gigmedia", charset: "latin1", force: :cascade do |t|

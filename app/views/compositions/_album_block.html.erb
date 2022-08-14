@@ -11,18 +11,8 @@
   </dl>
 
   <dl class="dl-horizontal">
-    <dt>Medium</dt>
-    <dd><%= comp.Medium %></dd>
-  </dl>
-
-  <dl class="dl-horizontal">
-    <dt>Label</dt>
+    <dt>Original Label</dt>
     <dd><%= comp.Label %> </dd>
-  </dl>
-
-  <dl class="dl-horizontal">
-    <dt>Catalog Number</dt>
-    <dd><%= comp.CatNo %></dd>
   </dl>
 
   <dl class="dl-horizontal">
@@ -30,13 +20,10 @@
     <dd><%= comp.Type %></dd>
   </dl>
 
-  <% if comp.Comments %>
-    <dl class="dl-horizontal">
-      <dt>Comments</dt>
-      <dd><%= comp.Comments %></dd>
-    </dl>
+  <% if comp.discogs_url.present? %>
+    <div style="padding-top: 10px">
+      <a href="<%=@comp.discogs_url%>" target="_blank">More Information at Discogs.com</a>
+    </div>
   <% end %>
 
-  </br>
-  
 </div>
