@@ -584,3 +584,19 @@ dl.dl-horizontal {
   }
 
 }
+
+
+table.image-table {
+
+  width: auto;
+
+  td {
+    padding: 20px;
+  }
+
+  .image-cell {
+    display: table-cell; 
+    vertical-align: middle;
+  }
+
+}

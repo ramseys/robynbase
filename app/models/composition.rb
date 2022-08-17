@@ -4,6 +4,7 @@ class Composition < ApplicationRecord
 
   has_many :tracks, foreign_key: "COMPID", dependent: :delete_all
   has_many :songs, through: :tracks, foreign_key: "TRAKID"
+  has_many_attached :images, :dependent => :destroy
 
   accepts_nested_attributes_for :tracks
 
@@ -126,7 +127,7 @@ class Composition < ApplicationRecord
 
   ## quick queries
   def self.quick_query_major_releases
-    where("majrid IS NOT NULL AND majrid <> 0 AND type = 'Authorized' AND medium = 'CD'").order(:year)
+    where("majrid IS NOT NULL AND majrid <> 0 AND type = 'Official Release' AND medium = 'CD'").order(:year)
   end
 
   def self.quick_query_other_bands

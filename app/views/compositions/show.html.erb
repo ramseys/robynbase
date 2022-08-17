@@ -26,13 +26,17 @@
 
   <!-- images: <%= @associated_images.to_s =%> -->
 
-  <% if @associated_images.length > 0 %>
+  <% if @comp.images.attached? %>
+
+    <%= render :partial => 'robyn/image_section', :locals => { object: @comp } %>
+
+  <% elsif @associated_images.length > 0 %>
 
     <div class="image-container">
 
       <div>
 
-        <a class="album-art" href="/<%= @associated_images.first.to_s %>">
+        <a class="album-art image-gallery" href="/<%= @associated_images.first.to_s %>">
           <img src="/<%= @associated_images.first.to_s %>"/>
         </a>
 
@@ -40,7 +44,7 @@
           <div style="display: none">
 
             <% for img_index in 1...@associated_images.length %>
-            <a class="album-art" href="/<%= @associated_images[img_index].to_s %>">
+            <a class="album-art image-gallery" href="/<%= @associated_images[img_index].to_s %>">
               <img src="/<%= @associated_images[img_index].to_s %>" />
             </a>
             <% end %>

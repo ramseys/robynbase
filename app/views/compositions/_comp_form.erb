@@ -74,6 +74,19 @@
 
     </div>
 
+    <!-- image attachments -->
+    <div class="row">
+
+        <div class="col-sm-12">
+
+            <h3>Images</h3>
+            
+            <%= render partial: '/robyn/image_table', :locals => {:object => @comp, :form => f} %>
+
+        </div>
+
+    </div>
+
     <br>
 
     <%= f.submit "Save", class: "btn btn-large btn-primary" %>

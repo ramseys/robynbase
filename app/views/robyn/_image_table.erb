@@ -1,0 +1,38 @@
+<% if object.images.attached? %>
+
+    Select the images to remove
+
+    <table class="image-table">
+
+        <tbody>
+
+        <% object.images.each_with_index do |img, index| %>
+            <tr>
+                <td style="text-align: center">
+                    <%= check_box_tag "deleted_img_ids[]", img.id %>
+                </td>
+                <td> <%= index + 1 %> </td>
+                <td>
+                    <div data-imgid="<%=img.id%>" class="image-cell">
+
+                        <%# make sure this is an image type that active storage knows how to transform%>
+                        <% if img.variable? %>
+                            <%= image_tag img.variant(resize: "100x100") %>
+                        <% else %>  
+                            <%= image_tag img, height: "100px" %>
+                        <% end %>
+
+                    </div>
+                </td>
+            </tr>
+        <% end %>
+
+        </tbody>
+
+    </table>
+
+<% end %>
+
+<br/>
+
+<%= form.file_field :images, :multiple => true %>

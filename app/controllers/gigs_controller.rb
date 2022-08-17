@@ -1,5 +1,7 @@
 class GigsController < ApplicationController
   
+  include ImageUtils
+
   authorize_resource :only => [:new, :edit, :update, :create, :destroy]
 
   RANGE_TYPE = {
@@ -85,24 +87,6 @@ class GigsController < ApplicationController
 
   end
 
-  # reduce the size of large images to a maximum width/height
-  def optimize_images(params)
-    
-    if params[:images].present?
-        
-      params[:images].each do |image|
-        
-        mini_image = MiniMagick::Image.new(image.tempfile.path)
-
-        if mini_image.width > 1200 || mini_image.height > 1200
-          mini_image.resize '1200x1200'
-        end
-      
-      end
-      
-    end
-    
-  end
   
   # create a new gig
   def create
@@ -140,9 +124,8 @@ class GigsController < ApplicationController
 
     filtered_params, setlist_songs, media = prepare_params()
 
-    # purse images marked for removal
-    attachments = ActiveStorage::Attachment.where(id: params[:deleted_img_ids])
-    attachments.map(&:purge)
+    # purge images marked for removal
+    purge_marked_images(params)
 
     # optimize new images
     optimize_images(filtered_params)
@@ -323,7 +306,7 @@ class GigsController < ApplicationController
           # every gig needs at least a venue id and a date
           params.require([:VENUEID, :GigDate])
 
-          # every item in a setlist requires a sequence number and a song id
+          # every item in a setlist requires a sequence number
           if params["gigsets_attributes"].present? 
             params["gigsets_attributes"].each do |key, params|
               params.require([:Chrono])

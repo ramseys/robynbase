@@ -1,5 +1,7 @@
 class CompositionsController < ApplicationController
 
+  include ImageUtils
+  
   authorize_resource :only => [:new, :edit, :update, :create, :destroy]
 
   def index
@@ -76,7 +78,7 @@ class CompositionsController < ApplicationController
     
     params, tracks = prepare_params()
   
-    # optimize_images(params)
+    optimize_images(params)
       
     @comp = Composition.new(params)
     
@@ -103,12 +105,11 @@ class CompositionsController < ApplicationController
 
     filtered_params, tracks = prepare_params()
 
-    # purse images marked for removal
-    # attachments = ActiveStorage::Attachment.where(id: params[:deleted_img_ids])
-    # attachments.map(&:purge)
+    # purge images marked for removal
+    purge_marked_images(params)
 
     # optimize new images
-    # optimize_images(filtered_params)
+    optimize_images(filtered_params)
 
     # TODO put all this in a transaction
     comp.tracks.clear()
@@ -200,11 +201,10 @@ class CompositionsController < ApplicationController
     # permit attributes we're saving
     params
       .require(:composition)
-      .permit(:Title, :Artist, :Year, :Label, :discogs_url, :Comments, :Type,
+      .permit(:Title, :Artist, :Year, :Label, :discogs_url, :Comments, :Type, :images,
+              images: [],
               tracks_attributes: [ :Seq, :SONGID, :Song, :VersionNotes, :bonus, :id ]).tap do |params|
           
-          # byebug
-
           # every gig needs at least a title and artist
           params.require([:Title, :Artist])
 

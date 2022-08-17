@@ -1,0 +1,40 @@
+<div class="image-container">
+
+  <div>
+    
+    <a class="image-gallery images" href="<%= polymorphic_url(object.images.first) %>">
+
+      <%# make sure this is an image type that active storage knows how to transform %>
+      <% if object.images.first.variable? %>
+        <%= image_tag object.images.first.variant(resize: "300x300") %>
+      <% else %>  
+        <%= image_tag object.images.first, height: "300px" %>
+      <% end %>
+
+    </a>
+    
+    <br/>
+    
+    <% if object.images.length > 1 %>
+      <div style="text-align: center; overflow: hidden">
+        <small class="subsidiary-info" >Click to see image gallery</small>
+      </div>
+    <% end %>
+  
+    <% if object.images.length > 1 %>
+  
+      <div style="display: none">
+  
+        <% object.images.drop(1).each do |img| %>
+          <a class="image-gallery images" href="<%= polymorphic_url(img) %>">
+            <%= image_tag img, style: "width: 300px" %>
+          </a>
+        <% end %>
+  
+      </div>  
+
+    <% end %>
+    
+  </div>
+
+</div>
