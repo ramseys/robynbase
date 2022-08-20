@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_19_213903) do
+ActiveRecord::Schema[7.0].define(version: 2022_08_20_201604) do
   create_table "COMP", primary_key: "COMPID", id: :integer, charset: "utf8", options: "ENGINE=MyISAM", force: :cascade do |t|
     t.string "Artist", limit: 64
     t.string "Title", limit: 64
@@ -22,7 +22,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_19_213903) do
     t.string "Type", limit: 16
     t.boolean "Single", default: false
     t.string "Desc", limit: 64
-    t.string "Comments", limit: 128
+    t.text "Comments"
     t.integer "MAJRID", default: 0
     t.string "CoverImage", limit: 32
     t.string "Field9", limit: 2
@@ -147,6 +147,35 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_19_213903) do
     t.index ["SITEID"], name: "SITEID"
   end
 
+  create_table "SONG", primary_key: "SONGID", id: :integer, charset: "utf8", options: "ENGINE=MyISAM", force: :cascade do |t|
+    t.string "Song", null: false
+    t.string "Prefix", limit: 16
+    t.string "Versions", limit: 50
+    t.string "Band", limit: 32
+    t.integer "MUSOID", default: 0
+    t.integer "GIGID", default: 0
+    t.string "Author"
+    t.string "OrigBand", limit: 128
+    t.string "AltTitles", limit: 64
+    t.boolean "Improvised", default: false
+    t.integer "MAJRID", default: 0
+    t.datetime "ApproxDate", precision: nil
+    t.text "Lyrics", size: :long
+    t.text "Tab", size: :long
+    t.text "Comments", size: :long
+    t.text "RHComments", size: :long
+    t.string "CoveredBy", limit: 32
+    t.string "Instrumentation", limit: 32
+    t.integer "SongLookup", default: 0
+    t.string "MP3Site", limit: 4
+    t.string "MP3File", limit: 64
+    t.string "lyrics_ref"
+    t.boolean "show_lyrics", default: false
+    t.index ["MAJRID"], name: "MAJRID"
+    t.index ["MUSOID"], name: "MUSOID"
+    t.index ["Song"], name: "Song"
+  end
+
   create_table "TRAK", primary_key: "TRAKID", id: :integer, charset: "utf8", options: "ENGINE=MyISAM", force: :cascade do |t|
     t.integer "COMPID"
     t.integer "SONGID"
@@ -224,35 +253,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_19_213903) do
     t.integer "Chrono", default: 10
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-  end
-
-  create_table "song", primary_key: "SONGID", id: :integer, charset: "utf8", options: "ENGINE=MyISAM", force: :cascade do |t|
-    t.string "Song", null: false
-    t.string "Prefix", limit: 16
-    t.string "Versions", limit: 50
-    t.string "Band", limit: 32
-    t.integer "MUSOID", default: 0
-    t.integer "GIGID", default: 0
-    t.string "Author"
-    t.string "OrigBand", limit: 128
-    t.string "AltTitles", limit: 64
-    t.boolean "Improvised", default: false
-    t.integer "MAJRID", default: 0
-    t.datetime "ApproxDate", precision: nil
-    t.text "Lyrics", size: :long
-    t.text "Tab", size: :long
-    t.text "Comments", size: :long
-    t.text "RHComments", size: :long
-    t.string "CoveredBy", limit: 32
-    t.string "Instrumentation", limit: 32
-    t.integer "SongLookup", default: 0
-    t.string "MP3Site", limit: 4
-    t.string "MP3File", limit: 64
-    t.string "lyrics_ref"
-    t.boolean "show_lyrics", default: false
-    t.index ["MAJRID"], name: "MAJRID"
-    t.index ["MUSOID"], name: "MUSOID"
-    t.index ["Song"], name: "Song"
   end
 
   create_table "users", charset: "latin1", force: :cascade do |t|
