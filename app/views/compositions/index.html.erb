@@ -36,24 +36,6 @@
           <!-- advanced option block -->
           <div class="row advanced-options <%= expand_advanced ? 'expanded' : '' %>">
 
-            <!-- media types -->
-            <div class="col-sm-6">
-
-              <div class="criteria">
-
-                <div class="header-name">Media</div>
-
-                <div class="criteria-body criteria-options" >
-                  <% Composition::MEDIA_TYPES.each do |name, key| %>    
-                    <%= check_box_tag 'media_type[]', key, Array(params['media_type']).include?(key.to_s) %>  
-                    <span class="radio-label"> <%= name %> </span> <br/>
-                  <% end %>
-                </div>
-
-              </div>
-
-            </div>
-
             <!-- release types -->
             <div class="col-sm-6">
 
@@ -86,7 +68,7 @@
 
       <div class="col-sm-1">
         <%= form_tag(new_composition_path, :method => 'GET') do %>
-          <%= submit_tag "New Album", :name => nil %>
+          <%= submit_tag "New Release", :name => nil %>
         <%end%>
       </div>
 
@@ -101,7 +83,7 @@
     <% if @compositions.empty? %> 
       <%= render partial: '/robyn/nothing_found' %>
     <% else %>
-      <%= render partial: '/compositions/album_list', locals: {albums: @compositions, table_id: "album-main"} %>
+      <%= render partial: '/compositions/release_list', locals: {albums: @compositions, table_id: "album-main"} %>
     <% end %>
 
   <% else %>

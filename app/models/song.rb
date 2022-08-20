@@ -10,9 +10,7 @@ class Song < ApplicationRecord
 
   has_many :tracks, foreign_key: "SONGID"
   has_many :compositions, through: :tracks, foreign_key: "SONGID"
- 
-  belongs_to :album, foreign_key: "MAJRID", optional: true
-  
+   
   @@quick_queries = [ 
     QuickQuery.new('songs', :not_written_by_robyn),
     QuickQuery.new('songs', :never_released, [:originals, :covers]),

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_10_111500) do
+ActiveRecord::Schema[7.0].define(version: 2022_08_19_213903) do
   create_table "COMP", primary_key: "COMPID", id: :integer, charset: "utf8", options: "ENGINE=MyISAM", force: :cascade do |t|
     t.string "Artist", limit: 64
     t.string "Title", limit: 64
@@ -112,23 +112,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_10_111500) do
     t.index ["GIGID"], name: "GIGID"
     t.index ["SETID"], name: "SETID"
     t.index ["SONGID"], name: "SONGID"
-  end
-
-  create_table "MAJR", primary_key: "MAJRID", id: :integer, default: 0, charset: "utf8", options: "ENGINE=MyISAM", force: :cascade do |t|
-    t.string "AlbumTitles", limit: 64
-    t.string "RecordedBy", limit: 64
-    t.float "ReleaseYear", limit: 53
-    t.integer "COMPID", default: 0
-    t.string "AltVersion", limit: 128
-    t.integer "COMPID2", default: 0
-    t.string "FrontImage", limit: 32
-    t.string "BackImage", limit: 32
-    t.string "CoverDesigner", limit: 128
-    t.text "ProductionCredits", size: :long
-    t.text "Notes", size: :long
-    t.index ["AlbumTitles"], name: "AlbumTitles"
-    t.index ["COMPID"], name: "COMPID"
-    t.index ["RecordedBy"], name: "RecordedBy"
   end
 
   create_table "MEDIA", primary_key: "MCODE", id: { type: :string, limit: 1 }, charset: "utf8", options: "ENGINE=MyISAM", force: :cascade do |t|

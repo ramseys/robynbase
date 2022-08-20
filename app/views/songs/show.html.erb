@@ -8,7 +8,7 @@
 
       <small>
         <span class="inpage-navigation">
-          <% if @albums_present %> <span><a href="#albums">Albums</a></span> <% end %>
+          <% if @albums_present %> <span><a href="#albums">Releases</a></span> <% end %>
           <% if @gigs_present %> <span><a href="#gigs">Gigs</a></span> <% end %>
           <% if @song.lyrics_ref %>
             <span>
@@ -91,8 +91,8 @@
   <div class="col-sm-12">
 
     <a class="anchor" name="albums"></a>
-    <h3 class="section-header">Albums</h4>
-    <%= render partial: '/compositions/album_list', locals: {albums: @song.get_albums, table_id: "album-song", use_paging: true, show_search: false} %>
+    <h3 class="section-header">Releases</h4>
+    <%= render partial: '/compositions/release_list', locals: {albums: @song.get_albums, table_id: "album-song", use_paging: true, show_search: false} %>
 
   </div>
 

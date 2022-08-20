@@ -10,10 +10,12 @@
     <dd><%= comp.Year.to_i %></dd>
   </dl>
 
-  <dl class="dl-horizontal">
-    <dt>Original Label</dt>
-    <dd><%= comp.Label %> </dd>
-  </dl>
+  <% if comp.Label.present? %>
+    <dl class="dl-horizontal">
+      <dt>Original Label</dt>
+      <dd><%= comp.Label %> </dd>
+    </dl>
+  <% end %>
 
   <dl class="dl-horizontal">
     <dt>Type</dt>

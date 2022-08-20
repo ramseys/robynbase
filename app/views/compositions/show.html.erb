@@ -15,7 +15,7 @@
 
       <div class="col-sm-2">
         <%= form_tag(edit_composition_path, :method => 'GET') do %>
-          <%= submit_tag "Edit Album", :name => nil %>
+          <%= submit_tag "Edit Release", :name => nil %>
         <%end%>
 
       </div>
@@ -65,7 +65,7 @@
 
         <h3 class="section-header">Details</h3>
 
-        <%= render partial: 'album_block', locals: {comp: @comp} %>
+        <%= render partial: 'release_block', locals: {comp: @comp} %>
 
     </div>
 
@@ -85,7 +85,7 @@
       <div class="song-list-section">
 
         <h3 class="section-header">Tracks</h3>
-        <%= render :partial => 'album_track_song', :locals => {:track_list => @comp.get_tracklist} %>
+        <%= render :partial => 'release_track_song', :locals => {:track_list => @comp.get_tracklist} %>
 
       </div>
 
@@ -96,7 +96,7 @@
       <div class="song-list-section">
 
         <div class="additional-songs">Additional Reissue Tracks</div>
-        <%= render :partial => 'album_track_song', :locals => {:track_list => @comp.get_tracklist_bonus} %>
+        <%= render :partial => 'release_track_song', :locals => {:track_list => @comp.get_tracklist_bonus} %>
 
       </div>
 

@@ -7,7 +7,6 @@ class CompositionsController < ApplicationController
   def index
 
     search_type_param  = params[:search_type]
-    media_type_param   = params[:media_type]
     release_type_param = params[:release_type]
 
     if search_type_param.nil?
@@ -15,19 +14,16 @@ class CompositionsController < ApplicationController
     end
 
     # if the user entered any search terms at all    
-    if search_type_param.present? || media_type_param.present? || release_type_param.present?
+    if search_type_param.present? || release_type_param.present?
 
       # textual search
       search_type = search_type_param.present? ? search_type_param.to_sym : nil
-
-      # media types
-    media_types = media_type_param.map {|type| type.to_i} if media_type_param.present?
 
       # release types
       release_types = release_type_param.map {|type| type.to_i} if release_type_param.present?
 
       # grab the albums, based on the given search criteria
-      @compositions = Composition.search_by(search_type, params[:album_search_value], media_types, release_types)
+      @compositions = Composition.search_by(search_type, params[:album_search_value], release_types)
 
     end
 
@@ -191,6 +187,9 @@ class CompositionsController < ApplicationController
     # get rid of now-extraneous track list params
     new_params.delete("tracks_attributes")
 
+    # empty comments are stored as nil
+    new_params[:Comments] = nil  if new_params[:Comments].strip.empty?
+    
     return [new_params, tracks.present? ? tracks.values : nil]
 
   end
