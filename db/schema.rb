@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_20_201604) do
+ActiveRecord::Schema[7.0].define(version: 2022_08_21_191200) do
   create_table "COMP", primary_key: "COMPID", id: :integer, charset: "utf8", options: "ENGINE=MyISAM", force: :cascade do |t|
     t.string "Artist", limit: 64
     t.string "Title", limit: 64
@@ -182,7 +182,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_20_201604) do
     t.string "Song"
     t.integer "Disc", limit: 1, default: 0
     t.string "Side", limit: 1
-    t.integer "Seq", limit: 1, default: 0
+    t.integer "Seq", default: 0
     t.string "Time", limit: 6
     t.string "VersionNotes"
     t.boolean "Hidden", default: false

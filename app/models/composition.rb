@@ -2,7 +2,7 @@ class Composition < ApplicationRecord
 
   self.table_name = "COMP"
 
-  has_many :tracks, foreign_key: "COMPID", dependent: :delete_all
+  has_many :tracks, -> {order 'Seq'}, foreign_key: "COMPID", dependent: :delete_all
   has_many :songs, through: :tracks, foreign_key: "TRAKID"
   has_many_attached :images, :dependent => :destroy
 
