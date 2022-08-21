@@ -154,7 +154,7 @@ $(window).on("load", ->
       displayKey: 'search_value',
       source: composition_engine.ttAdapter(),
       templates: {
-        header: '<h4 class="">Albums</h4>'
+        header: '<h4 class="">Releases</h4>'
       }
     },
 

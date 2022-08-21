@@ -1,0 +1,31 @@
+<div class="album-description-block">
+
+  <dl class="dl-horizontal">
+    <dt>Artist</dt>
+    <dd><%= comp.Artist %></dd>
+  </dl>
+
+  <dl class="dl-horizontal">
+    <dt>Year</dt>
+    <dd><%= comp.Year.to_i %></dd>
+  </dl>
+
+  <% if comp.Label.present? %>
+    <dl class="dl-horizontal">
+      <dt>Original Label</dt>
+      <dd><%= comp.Label %> </dd>
+    </dl>
+  <% end %>
+
+  <dl class="dl-horizontal">
+    <dt>Type</dt>
+    <dd><%= comp.Type %></dd>
+  </dl>
+
+  <% if comp.discogs_url.present? %>
+    <div style="padding-top: 10px">
+      <a href="<%=@comp.discogs_url%>" target="_blank">More Information at Discogs.com</a>
+    </div>
+  <% end %>
+
+</div>

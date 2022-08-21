@@ -5,7 +5,7 @@
 $(window).on("load", (e) ->
 
   # set up album art lightbox
-  $("a.album-art").attr("rel", "gallery").fancybox({helpers : { 
+  $("a.image-gallery").attr("rel", "gallery").fancybox({helpers : { 
     thumbs : {
       width  : 50,
       height : 50
@@ -29,3 +29,79 @@ $(window).on("load", (e) ->
   )
 
 )
+
+# Adds a song selection dropdown, containing all available songs
+addSongSelector = (parent, index) ->
+
+  # grab another song selector from elsewhere on the page and make a copy
+  referenceSelector = $("#template-song-selector")
+  selectorCopy = referenceSelector.clone()
+
+  # configure for the current index
+  selectorCopy.attr("name", "composition[tracks_attributes][#{index}][SONGID]")
+  selectorCopy.attr("id", "composition_tracks_attributes_#{index}_SONGID")
+  selectorCopy.val("")
+
+  parent.append(selectorCopy)
+
+
+window.removeCompositionTableRow = (tableId, rowId) ->
+  row = $("##{tableId} tr[data-row=#{rowId}]");
+  identifier = row.next("input")
+
+  row.remove()
+  identifier.remove()
+
+
+songIndex = 100
+
+window.addCompositionTableRow = (tableId, bonus) ->
+
+  maxSequence = 0;
+
+  # find largest order index
+  $("##{tableId} tr").each((index, row) ->
+    sequence = $(row).find("td:first input").val();
+    maxSequence = Math.max(maxSequence, sequence) if sequence
+  )
+      
+
+  newRow = $("""
+    <tr data-row="#{songIndex}">
+        <td>
+            <input class="form-control" size="3" type="text" 
+                   value="#{maxSequence + 1}" 
+                   name="composition[tracks_attributes][#{songIndex}][Seq]" 
+                   id="composition_tracks_attributes_#{songIndex}_Seq">
+        </td>
+        <td></td>
+        <td>
+            <input class="form-control" type="text" value="" 
+                   name="composition[tracks_attributes][#{songIndex}][Song]" 
+                   id="composition_tracks_attributes_#{songIndex}_Song">
+        </td>
+        <td>
+            <input class="form-control" type="text" 
+                   name="composition[tracks_attributes][#{songIndex}][VersionNotes]" 
+                   id="composition_tracks_attributes_#{songIndex}_VersionNotes">
+            <input type="hidden" 
+                   value="#{bonus}" 
+                   name="composition[tracks_attributes][#{songIndex}][bonus]" 
+                   id="composition_tracks_attributes_#{songIndex}_bonus">
+
+        </td>
+        <td> 
+            <button type="button" onclick="removeTableRow('#{tableId}', #{songIndex})">
+                Remove
+            </button>
+        </td>
+    </tr>
+  """)
+
+  $("##{tableId}").append(newRow)
+
+  songSelectorCell = newRow.find("td:nth(1)")
+
+  addSongSelector(songSelectorCell, songIndex)
+
+  songIndex++

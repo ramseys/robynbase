@@ -40,6 +40,9 @@ gem 'image_processing'
 
 gem 'uglifier', '>= 1.3.0'
 
+# used to handle data (as opposed to schema) migrations
+gem 'data_migrate'
+
 gem 'jquery-rails'
 
 # To use ActiveModel has_secure_password

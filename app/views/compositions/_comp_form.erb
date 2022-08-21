@@ -1,0 +1,96 @@
+<%= form_for(@comp) do |f| %>
+
+<div class="item-form">
+        
+    <div class="row">
+
+        <div class="col-sm-6">
+            <%= f.label :Title, "Title" %> <span class="required">*</span>
+            <%= f.text_field :Title, :class => "form-control" %>
+        </div>
+
+        <div class="col-sm-6">
+            <%= f.label :Artist, "Artist" %> <span class="required">*</span>
+            <%= f.text_field :Artist, :class => "form-control" %>
+        </div>
+    
+    </div>
+
+    <div class="row">
+
+        <div class="col-sm-6">
+            <%= f.label :Year, "Year" %>
+            <%= f.text_field :Year, :class => "form-control" %>
+        </div>
+    
+        <div class="col-sm-6">
+            <%= f.label :Type, "Type" %>
+            <%= f.select(:Type, options_for_select(Composition::RELEASE_TYPES.keys, @comp.Type), { }, {class: "form-control"}) %>
+        </div>
+
+    </div>
+
+    <div class="row">
+
+        <div class="col-sm-6">
+            <%= f.label :discogs_url, "Discogs URL" %>
+            <%= f.text_field :discogs_url, :class => "form-control" %>
+        </div>
+
+        <div class="col-sm-6">
+            <%= f.label :Label, "Original Label" %>
+            <%= f.text_field :Label, :class => "form-control"  %>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <%= f.label :Comments, "Comments" %>
+            <%= f.text_area :Comments, :class => "form-control" %>
+        </div>
+    </div>
+
+
+    <div class="row">
+
+        <div class="col-sm-12">
+
+            <h3>Tracks</h3>
+            <%= render 'comp_track_table', {tracks: @comp.get_tracklist, f: f, bonus: false, id: "comp-tracks"} %>
+
+        </div>
+
+    </div>
+
+    <div class="row">
+
+        <div class="col-sm-12">
+
+            <h3>Additional Reissue Tracks</h3>
+            <%= render 'comp_track_table', {tracks: @comp.get_tracklist_bonus, f: f, bonus: true, id: "comp-tracks-bonus"} %>
+
+        </div>
+
+    </div>
+
+    <!-- image attachments -->
+    <div class="row">
+
+        <div class="col-sm-12">
+
+            <h3>Images</h3>
+            
+            <%= render partial: '/robyn/image_table', :locals => {:object => @comp, :form => f} %>
+
+        </div>
+
+    </div>
+
+    <br>
+
+    <%= f.submit "Save", class: "btn btn-large btn-primary" %>
+    
+</div>
+
+<% end %>

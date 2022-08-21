@@ -10,18 +10,6 @@
 
 .albums-page {
 
-  h4 {
-    margin-top: 0;
-  }
-
-  .album-title {
-    padding-bottom: 20px;
-  }
-  
-  .album-track-list {
-    padding-top: 10px;
-  }
-
   .album-block-header {
 
     cursor: pointer;
@@ -40,12 +28,6 @@
       }
     }
 
-
-    .album-comments {
-      font-style: italic;
-      font-weight: normal;
-    }
-
   }
 
   .album-block-container {
@@ -61,6 +43,39 @@
       width: 300px;
       height: 300px;
     }
+  }
+
+}
+
+.comp-edit-page {
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  td, th {
+    border: 1px solid #999;
+    padding: 0.5rem;
+  }
+
+  .row {
+    margin-bottom: 10px;
+  }
+
+  .comp-image-table {
+
+    width: auto;
+
+    td {
+      padding: 20px;
+    }
+
+    .image-cell {
+      display: table-cell; 
+      vertical-align: middle;
+    }
+
   }
 
 }

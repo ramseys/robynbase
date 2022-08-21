@@ -1,0 +1,54 @@
+<table id="<%=id%>">
+
+    <thead>
+        <tr>
+            <th>Order</th>
+            <th>Song</th>
+            <th>Song Name Override</th>
+            <th>Version Notes</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+
+    <tbody>
+
+    <% sequenceIndex = 1 %>
+
+    <div style="display: none">
+        <select id="template-song-selector" class="form-control song-selector">
+            <option value=""></option>
+            <% @song_list.map do |s| %>
+                <option value="<%= s[1] %>"><%= s[0] %></option>
+            <% end %>
+        </select>
+    </div>
+
+    <%= f.fields_for :tracks, tracks do |track_fields| %>
+        <tr data-row=<%= sequenceIndex %>>
+            <td> <%= track_fields.text_field :Seq, { class: "form-control", size: 3, value: sequenceIndex }%></td>
+            <td> <%= track_fields.select(:SONGID, @song_list, {include_blank: true}, { class: "form-control song-selector" })%> </td>
+            <td> <%= track_fields.text_field :Song, :class => "form-control" %></td>
+            <td> 
+                <%= track_fields.text_field :VersionNotes, :class => "form-control" %>
+                <%= track_fields.hidden_field :bonus %> 
+            </td>
+            <td> 
+                <Button type="button" onClick="removeCompositionTableRow('<%=id%>', <%=sequenceIndex%>)">
+                    Remove
+                </Button>
+            </td>
+
+        </tr>
+
+        <% sequenceIndex+=1 %>
+
+    <% end %>
+
+    </tbody>
+
+</table>
+
+<br/>
+
+<button type="button" onClick="addCompositionTableRow('<%=id%>', <%=bonus%>)">Add Song</button>

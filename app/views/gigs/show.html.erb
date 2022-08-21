@@ -3,7 +3,7 @@
 
 <!-- <%= link_to "Back", controller: 'robyn' %> -->
 
-<div class="gig-page">
+<div class="gig-page robyn-page">
 
 <div class="row" style="margin-bottom: 0px">
   <div class="col-sm-10">
@@ -40,11 +40,11 @@
 
 <% if @gig.images.attached? %>
 
-<div class="gig-container">
+<div class="image-container">
 
   <div>
     
-    <a class="gig-images" href="<%= polymorphic_url(@gig.images.first) %>">
+    <a class="gig-images images" href="<%= polymorphic_url(@gig.images.first) %>">
 
       <%# make sure this is an image type that active storage knows how to transform%>
       <% if @gig.images.first.variable? %>
@@ -68,7 +68,7 @@
       <div style="display: none">
   
         <% @gig.images.drop(1).each do |img| %>
-          <a class="gig-images" href="<%= polymorphic_url(img) %>">
+          <a class="gig-images images" href="<%= polymorphic_url(img) %>">
             <%= image_tag img, style: "width: 300px" %>
           </a>
         <% end %>
@@ -87,7 +87,7 @@
 
   <div>
 
-    <h3 class="underlined-header"> Details </h3>
+    <h3 class="section-header"> Details </h3>
 
       <dl class="dl-horizontal">
         <dt>Date</dt>
@@ -139,7 +139,7 @@
   <div style="margin-top: 30px">
     
     <a class="anchor" name="notes"></a>
-    <h3 class="underlined-header"> Notes </h3>
+    <h3 class="section-header"> Notes </h3>
     
     <div>
       <%= simple_format(@gig.ShortNote.html_safe) %>
@@ -151,11 +151,11 @@
 
 <% if @gig.get_set.present? %>
 
-<div class="set-list-section" style="margin-top: 30px">
+<div class="song-list-section" style="margin-top: 30px">
 
   <!-- songs in the set -->
   <a class="anchor" name="setlist"></a>
-  <h3 class="underlined-header"> Set List </h3>
+  <h3 class="section-header"> Set List </h3>
 
   <%= render :partial => 'gig_setlist_song', :locals => {:gig_set => @gig.get_set} %>
 
@@ -163,7 +163,7 @@
   <% if @gig.get_set_encore.present? %>
 
     <!-- songs in the encore -->
-    <div class="set-list-encore"> Encore </div>
+    <div class="additional-songs"> Encore </div>
     <%= render :partial => 'gig_setlist_song', :locals => {:gig_set => @gig.get_set_encore} %>
 
   <% end %>
@@ -177,7 +177,7 @@
   <div style="margin-top: 30px">
     
     <a class="anchor" name="media"></a>
-    <h3 class="underlined-header"> Media </h3>
+    <h3 class="section-header"> Media </h3>
 
   <% for gig_medium in @gig.gigmedia  %>
 
@@ -248,7 +248,7 @@
   <div style="margin-top: 30px">
 
     <a class="anchor" name="reviews"></a>
-    <h3 class="underlined-header"> Reviews </h3>
+    <h3 class="section-header"> Reviews </h3>
 
     <div>
       <%= @gig.get_reviews.html_safe %>
@@ -257,6 +257,5 @@
   </div>
 
 <% end %>
-
 
 </div>

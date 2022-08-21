@@ -33,8 +33,8 @@
 
       <!-- albums -->
       <% if @compositions.present? %>
-        <h3 class="main-header">Albums</h3>
-        <%= render partial: '/compositions/album_list', locals: { albums: @compositions, table_id: "album-omni", suppress_header: false, use_paging: true, page_length: 20 } %>
+        <h3 class="main-header">Releases</h3>
+        <%= render partial: '/compositions/release_list', locals: { albums: @compositions, table_id: "album-omni", suppress_header: false, use_paging: true, page_length: 20 } %>
       <% end %>
 
       <!-- venues -->

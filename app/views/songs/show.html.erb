@@ -8,7 +8,7 @@
 
       <small>
         <span class="inpage-navigation">
-          <% if @albums_present %> <span><a href="#albums">Albums</a></span> <% end %>
+          <% if @albums_present %> <span><a href="#albums">Releases</a></span> <% end %>
           <% if @gigs_present %> <span><a href="#gigs">Gigs</a></span> <% end %>
           <% if @song.lyrics_ref %>
             <span>
@@ -42,7 +42,7 @@
 
   <div class="col-sm-12">
 
-    <h3 class="underlined-header">Details</h4>
+    <h3 class="section-header">Details</h4>
 
     <div class="album-description-block">
 
@@ -91,8 +91,8 @@
   <div class="col-sm-12">
 
     <a class="anchor" name="albums"></a>
-    <h3 class="underlined-header">Albums</h4>
-    <%= render partial: '/compositions/album_list', locals: {albums: @song.get_albums, table_id: "album-song", use_paging: true, show_search: false} %>
+    <h3 class="section-header">Releases</h4>
+    <%= render partial: '/compositions/release_list', locals: {albums: @song.get_albums, table_id: "album-song", use_paging: true, show_search: false} %>
 
   </div>
 
@@ -109,7 +109,7 @@
   <div class="col-sm-12">
 
     <a class="anchor" name="gigs"></a>
-    <h3 class="underlined-header">Gigs</h4>
+    <h3 class="section-header">Gigs</h4>
     <%= render partial: '/gigs/gig_list', locals: {gigs: @song.gigs.distinct, table_id: "gig-song", use_paging: true, show_search: false} %>
 
   </div>
@@ -125,7 +125,7 @@
   <div class="col-sm-12">
 
     <a class="anchor" name="comments"></a>
-    <h3 class="underlined-header">Comments</h4>
+    <h3 class="section-header">Comments</h4>
 
     <div>
       <%= @song.get_comments.html_safe %>
@@ -144,7 +144,7 @@
   <div class="col-sm-12">
 
     <a class="anchor" name="lyrics"></a>
-    <h3 class="underlined-header">Lyrics</h4>
+    <h3 class="section-header">Lyrics</h4>
     <div class="lyrics">
       <pre><%= @song.Lyrics =%> </pre>
     </div>
@@ -160,7 +160,7 @@
   <div class="col-sm-12">
 
     <a class="anchor" name="tabs"></a>
-    <h3 class="underlined-header">Tablature</h3>
+    <h3 class="section-header">Tablature</h3>
     <div class="lyrics">
       <pre><%= @song.Tab =%> </pre>
     </div>
