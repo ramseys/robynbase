@@ -68,7 +68,7 @@ class Song < ApplicationRecord
   end
 
   def get_albums
-    compositions = self.compositions.order('Year')
+    compositions = self.compositions.order(:Year => :asc, :COMPID => :asc)
     compositions.to_a.uniq { |f| [f.Title ] }    
   end
 
