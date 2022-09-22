@@ -19,6 +19,7 @@ class Composition < ApplicationRecord
     'Bootleg'          => 6,
     'Internet'         => 7,
     'Fan Club release' => 8,
+    'Video'            => 10,
     'Other'            => 9
   }
 
