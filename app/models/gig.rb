@@ -43,6 +43,12 @@ class Gig < ApplicationRecord
     end
   end
 
+  # returns all gigs that occured on the given day (ie, the give day/month, ignoring year).
+  # gigs without setlists are excluded
+  def self.get_gigs_on_this_day(day)
+    Gig.where("extract(month from GigDate) = #{day.month} and extract(day from GigDate) = #{day.day} and EXISTS (SELECT 1 from GSET where GIG.GIGID = GSET.GIGID)")
+  end 
+
   def self.search_by(kind, search, date_criteria = nil)
 
     logger.info ("::::::::::: gigs: #{search}")

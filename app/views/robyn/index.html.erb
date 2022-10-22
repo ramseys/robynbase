@@ -47,9 +47,31 @@
 
   <% else %>
   
-    <% quick_queries = get_random_quick_queries([Gig, Song, Composition]) %>
 
-    <%= render partial: '/robyn/quick_queries', locals: {quick_queries: quick_queries} %>
+    <% 
+
+      today = Date.today
+      today_gigs = Gig.get_gigs_on_this_day(today)
+    
+    %>
+
+    <% if today_gigs.present? %>
+
+      <div class="quick-queries bg-warning">
+
+        <p class="header text-muted"><%= today.strftime('%B %e') %></p>
+        
+        <%= on_this_day_blurb(today_gigs) %>
+
+      </div>
+
+    <% else %>
+
+      <% quick_queries = get_random_quick_queries([Gig, Song, Composition]) %>%
+
+      <%= render partial: '/robyn/quick_queries', locals: {quick_queries: quick_queries} %>
+
+    <% end %>
 
   <% end %>
 
