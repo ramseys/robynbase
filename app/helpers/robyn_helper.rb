@@ -31,7 +31,7 @@ module RobynHelper
                #{location.empty? ? "" : "in #{location}"}.</p>%
     
         if setlist.present?
-            
+
             if setlist.length > 1
                 text = text + %Q%<p>He started the show with #{get_song_name(first_song)}, and ended with #{get_song_name(last_song)}.%
             else 
