@@ -23,7 +23,8 @@ class Gig < ApplicationRecord
     QuickQuery.new('gigs', :without_definite_dates),
     QuickQuery.new('gigs', :with_reviews, [:without]),
     QuickQuery.new('gigs', :with_media),
-    QuickQuery.new('gigs', :with_images)
+    QuickQuery.new('gigs', :with_images),
+    QuickQuery.new('gigs', :on_this_day)
   ]
 
   # returns the songs played in the gig (non-encore)
@@ -42,12 +43,6 @@ class Gig < ApplicationRecord
       self.Reviews.gsub(/\r\n/, '<br>')
     end
   end
-
-  # returns all gigs that occured on the given day (ie, the give day/month, ignoring year).
-  # gigs without setlists are excluded
-  def self.get_gigs_on_this_day(day)
-    Gig.where("extract(month from GigDate) = #{day.month} and extract(day from GigDate) = #{day.day} and EXISTS (SELECT 1 from GSET where GIG.GIGID = GSET.GIGID)")
-  end 
 
   def self.search_by(kind, search, date_criteria = nil)
 
@@ -121,6 +116,8 @@ class Gig < ApplicationRecord
         gigs = quick_query_gigs_with_media
       when :with_images.to_s
         gigs = quick_query_gigs_with_images
+      when :on_this_day.to_s
+        gigs = quick_query_gigs_on_this_day
     end
 
     gigs.where.not(:venue => nil)
@@ -180,6 +177,12 @@ class Gig < ApplicationRecord
 
   def self.quick_query_gigs_with_images
     joins("JOIN active_storage_attachments asa").where("asa.record_type = 'Gig' and asa.record_id = GIG.GIGID").distinct.order(:GigDate)
+  end
+
+  # returns all gigs that occured on the given day (ie, the give day/month, ignoring year).
+  # gigs without setlists are excluded
+  def self.quick_query_gigs_on_this_day(day = Date.today)
+    Gig.where("extract(month from GigDate) = #{day.month} and extract(day from GigDate) = #{day.day} and EXISTS (SELECT 1 from GSET where GIG.GIGID = GSET.GIGID)")
   end
 
 end

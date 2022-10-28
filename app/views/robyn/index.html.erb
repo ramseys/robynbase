@@ -51,7 +51,7 @@
     <% 
 
       today = request.query_parameters["random_otd"].present? ? Date.today - (rand * (40 * 365)) : Date.today
-      today_gigs = Gig.get_gigs_on_this_day(today)
+      today_gigs = Gig.quick_query_gigs_on_this_day(today)
     
     %>
 
@@ -59,7 +59,7 @@
 
       <div class="quick-queries bg-warning">
 
-        <p class="header text-muted"><%= today.strftime('%B %e') %></p>
+        <p class="header text-muted">On this Day - <%= today.strftime('%B %e') %></p>
         
         <%= on_this_day_blurb(today_gigs) %>
 

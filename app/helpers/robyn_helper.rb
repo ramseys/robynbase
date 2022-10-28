@@ -52,6 +52,8 @@ module RobynHelper
 
         text = text + %Q%<p><a href="#{gig_url(selected_gig)}">More details here.</a></p>%
 
+        text = text + %Q%<p><a href="#{gigs_url()}/quick_query?query_id=on_this_day">See all gigs on this day.</a></p>%
+
         text.html_safe
 
     end
