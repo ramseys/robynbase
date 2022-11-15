@@ -51,7 +51,7 @@
     <% 
 
       today = request.query_parameters["random_otd"].present? ? Date.today - (rand * (40 * 365)) : Date.today
-      today_gigs = Gig.quick_query_gigs_on_this_day(today)
+      today_gigs = Gig.quick_query_gigs_on_this_day(today, false)
     
     %>
 
