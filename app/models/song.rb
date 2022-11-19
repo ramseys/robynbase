@@ -15,6 +15,7 @@ class Song < ApplicationRecord
     QuickQuery.new('songs', :not_written_by_robyn),
     QuickQuery.new('songs', :never_released, [:originals, :covers]),
     QuickQuery.new('songs', :has_guitar_tabs, [:no_tabs]),
+    QuickQuery.new('songs', :improvised),
     QuickQuery.new('songs', :released_never_played_live)
   ]
 
@@ -167,6 +168,8 @@ class Song < ApplicationRecord
         songs = quick_query_lyrics(secondary_attribute)
       when :released_never_played_live.to_s
         songs = quick_query_released_no_live_performances
+      when :improvised.to_s
+        songs = quick_query_improvised
     end
 
     songs
@@ -209,6 +212,11 @@ class Song < ApplicationRecord
 
   def self.quick_query_released_no_live_performances
     songs = joins("INNER JOIN TRAK ON SONG.songid = TRAK.songid").joins("LEFT OUTER JOIN GSET ON SONG.songid = GSET.songid").where("GSET.songid IS NULL").distinct
+    self.prepare_query(songs)
+  end
+
+  def self.quick_query_improvised
+    songs = where(:Improvised => true);
     self.prepare_query(songs)
   end
 
