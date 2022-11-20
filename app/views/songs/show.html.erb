@@ -6,12 +6,6 @@
 
     <h2 class="main-header"><%= @song.full_name %> 
 
-      <% if @song.Improvised? %>
-        <small class="improvised">
-          (Improvised)
-        </small>
-      <% end %>
-
       <small>
         <span class="inpage-navigation">
           <% if @albums_present %> <span><a href="#albums">Releases</a></span> <% end %>
@@ -29,6 +23,10 @@
       </small>
 
     </h2>
+
+    <% if @song.Improvised? %>
+      <div class="subheader">Improvised</div>
+    <% end %>
 
   </div>
 
