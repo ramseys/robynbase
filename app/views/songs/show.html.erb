@@ -24,6 +24,10 @@
 
     </h2>
 
+    <% if @song.Improvised? %>
+      <div class="subheader">Improvised</div>
+    <% end %>
+
   </div>
 
   <% if can? :manage, Song %>

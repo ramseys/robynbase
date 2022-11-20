@@ -43,6 +43,7 @@ en:
       has_lyrics: Songs for which lyrics have been entered
       has_lyrics_no_lyrics: No lyrics
       released_never_played_live: Released songs that Robyn has never played live
+      improvised: Songs that were improvised
     gigs:
       without_definite_dates: "Gigs with uncertain dates"
       with_setlists: "Gigs with setlists"
