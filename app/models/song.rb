@@ -15,6 +15,7 @@ class Song < ApplicationRecord
     QuickQuery.new('songs', :not_written_by_robyn),
     QuickQuery.new('songs', :never_released, [:originals, :covers]),
     QuickQuery.new('songs', :has_guitar_tabs, [:no_tabs]),
+    QuickQuery.new('songs', :has_lyrics, [:no_lyrics]),
     QuickQuery.new('songs', :improvised),
     QuickQuery.new('songs', :released_never_played_live)
   ]
