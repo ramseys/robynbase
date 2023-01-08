@@ -20,7 +20,6 @@ gem 'cancancan', '~> 3.2.1'
 gem 'listen'
 gem 'bootsnap'
 gem 'sass-rails'
-gem 'coffee-rails'
 
 # supports active storage image variants
 gem 'mini_magick'

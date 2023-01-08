@@ -30,7 +30,7 @@
     <div class="col-sm-2">
       <%= form_tag(edit_gig_path, :method => 'GET') do %>
         <%= submit_tag "Edit Gig", :name => nil %>
-      <%end%>
+      <% end %>
 
     </div>
 
@@ -184,7 +184,7 @@
     <div class="gig-media">
 
       <div class="gig-media-title">
-        <h5> <%= gig_medium.title %> </h3>
+        <h5> <%= gig_medium.title %> </h5>
       </div>
 
       <div class="gig-media-content">
@@ -195,7 +195,7 @@
 
           <% when GigMedium::MEDIA_TYPE["ArchiveOrgVideo"], GigMedium::MEDIA_TYPE["ArchiveOrgPlaylist"]%>
             <iframe src="https://archive.org/embed/<%=gig_medium.mediaid%><%=gig_medium.mediatype === GigMedium::MEDIA_TYPE["ArchiveOrgPlaylist"] ? "?playlist=1&list_height=200"  : ""%>" 
-                    height="<%= gig_media_embed_height(gig_medium) %>""
+                    height="<%= gig_media_embed_height(gig_medium) %>"
                     width="640" 
                     frameborder="0" 
                     webkitallowfullscreen="true" 

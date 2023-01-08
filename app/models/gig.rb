@@ -72,7 +72,7 @@ class Gig < ApplicationRecord
 
     end
 
-    if search
+    if search.present?
 
       gigs = left_outer_joins(:venue).where(conditions.join(" OR "), *Array.new(conditions.length, "%#{search}%"))
 
@@ -91,7 +91,7 @@ class Gig < ApplicationRecord
       gigs.includes(:venue).sort { |x,y | x.GigDate <=> y.GigDate }
 
     else
-      all
+      all.includes(:venue)
     end
 
   end
