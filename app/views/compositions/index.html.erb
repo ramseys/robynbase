@@ -1,15 +1,13 @@
 
 <div class="album-list">
 
-<div class="search-criteria">
+  <div class="container search-criteria">
 
-  <div class="row">
+    <div class="row">
 
-    <%= form_tag('/compositions/index', :method => 'GET') do %>
+      <div class="<%= (can? :manage, Composition) ? 'col-sm-10' : 'col-sm-12' %>">
 
-      <div class="<%= (can? :manage, Composition) ? 'col-sm-11' : 'col-sm-12' %>">
-
-        <div class="col-sm-12">
+        <%= form_tag('/compositions/index', :method => 'GET') do %>
 
           <%= text_field_tag :album_search_value, params['album_search_value'], :class=> 'search-field', :placeholder => 'Search albums' %>
 
@@ -22,33 +20,33 @@
             <%= radio_button_tag 'search_type', 'year', params['search_type'] == 'year' %>      <span class="radio-label">Year</span>
           </span>
 
-        </div>
+          <div>
 
-        <div>
+            <% expand_advanced = ( params["media_type"].present? or params["release_type"].present? ) %>
 
-          <% expand_advanced = ( params["media_type"].present? or params["release_type"].present? ) %>
+            <div class="advanced-options-header">
+              <span class="advanced-options-disclosure <%= expand_advanced ? "bi-caret-down-fill" : "bi-caret-right-fill" %>" aria-hidden="true"></span>
+              <span class="header-name">Advanced Options</span>
+            </div>
 
-          <div class="advanced-options-header">
-            <span class="glyphicon glyphicon-triangle-<%= expand_advanced ? 'bottom' : 'right'%>" aria-hidden="true"></span>
-            <span class="header-name">Advanced Options</span>
-          </div>
+            <!-- advanced option block -->
+            <div class="row advanced-options <%= expand_advanced ? 'expanded' : '' %>">
 
-          <!-- advanced option block -->
-          <div class="row advanced-options <%= expand_advanced ? 'expanded' : '' %>">
+              <!-- release types -->
+              <div class="col-sm-6">
 
-            <!-- release types -->
-            <div class="col-sm-6">
+                <div class="criteria">
 
-              <div class="criteria">
+                  <div class="header-name">Release Type</div>
 
-                <div class="header-name">Release Type</div>
+                  <div class="criteria-body criteria-options">
 
-                <div class="criteria-body criteria-options">
+                    <% Composition::RELEASE_TYPES.each do |name, key| %>    
+                      <%= check_box_tag 'release_type[]', key, Array(params['release_type']).include?(key.to_s) %> 
+                      <span class="radio-label"> <%= name %> </span> <br/>
+                    <% end %>
 
-                  <% Composition::RELEASE_TYPES.each do |name, key| %>    
-                    <%= check_box_tag 'release_type[]', key, Array(params['release_type']).include?(key.to_s) %> 
-                    <span class="radio-label"> <%= name %> </span> <br/>
-                  <% end %>
+                  </div>
 
                 </div>
 
@@ -58,42 +56,43 @@
 
           </div>
 
+        <% end %>
+
+      </div>
+
+      <% if can? :manage, Composition %>
+
+        <div class="col-sm-1">
+          <%= form_tag(new_composition_path, :method => 'GET') do %>
+            <%= submit_tag "New Release", :name => nil %>
+          <%end%>
         </div>
 
-      </div>
+      <% end %>
 
-    <% end %>
+    </div>
 
-    <% if can? :manage, Composition %>
+  </div>
 
-      <div class="col-sm-1">
-        <%= form_tag(new_composition_path, :method => 'GET') do %>
-          <%= submit_tag "New Release", :name => nil %>
-        <%end%>
-      </div>
+  <div class="search-results">
 
+    <% if not @compositions.nil? %>
+      <% if @compositions.empty? %> 
+        <%= render partial: '/robyn/nothing_found' %>
+      <% else %>
+        <%= render partial: '/compositions/release_list', locals: {albums: @compositions, table_id: "album-main"} %>
+      <% end %>
+
+    <% else %>
+    
+      <% quick_queries = get_all_quick_queries(Composition) %>
+
+      <%= render partial: '/robyn/quick_queries', locals: {quick_queries: quick_queries} %>
+    
     <% end %>
 
   </div>
 
-
-<div class="search-results">
-
-  <% if not @compositions.nil? %>
-    <% if @compositions.empty? %> 
-      <%= render partial: '/robyn/nothing_found' %>
-    <% else %>
-      <%= render partial: '/compositions/release_list', locals: {albums: @compositions, table_id: "album-main"} %>
-    <% end %>
-
-  <% else %>
-  
-    <% quick_queries = get_all_quick_queries(Composition) %>
-
-    <%= render partial: '/robyn/quick_queries', locals: {quick_queries: quick_queries} %>
-
-  <% end %>
-
 </div>
 
-</div>
+<%= javascript_include_tag "compositions", "data-turbo-track": "reload", defer: true %>

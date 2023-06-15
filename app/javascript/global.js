@@ -1,4 +1,9 @@
-$(window).on("load", function(e) {
+import jQuery from 'jquery';
+import Cookies from 'js-cookie';
+import DataTable from 'datatables.net-dt';
+
+// $(window).on("load", function(e) {
+$(document).ready(function(e) {
 
   // loop through every table on the current page, and convert it into a datatable
   $("table.main-search-list").each( function(index, tableElement) {
@@ -11,7 +16,8 @@ $(window).on("load", function(e) {
     const tableSort = table.data("custom-order");
 
     // look for any previous sorts for this grid (in the current session)
-    const orderCookie = Cookies.getJSON("order-" + tableId);
+    const orderCookieRaw = Cookies.get("order-" + tableId);
+    const orderCookie = orderCookieRaw ? JSON.parse(orderCookieRaw) : undefined;
 
     // no table ordering by default (just display the records in the order they were returned)
     let order = [];
@@ -25,18 +31,20 @@ $(window).on("load", function(e) {
       order = [[orderCookie.column, orderCookie.direction]];
     }
 
-    return $(table).dataTable({
+    // return $(table).dataTable({
+    // table.DataTable({
+    new DataTable(table, {
 
       // change the label of the search control
-      language: {
-        search: "Filter: "
-      },
+      // language: {
+      //   search: "Filter: "
+      // },
 
       // hide the pagination controls if the table only has one page
       // (solution taken from http://stackoverflow.com/a/12393232)
       fnDrawCallback(oSettings) {
         if (oSettings._iDisplayLength > oSettings.fnRecordsDisplay()) {
-          return $(oSettings.nTableWrapper).find('.dataTables_paginate').hide();
+          $(oSettings.nTableWrapper).find('.dataTables_paginate').hide();
         }
       },
           
@@ -49,24 +57,22 @@ $(window).on("load", function(e) {
       // render each row as it arrives, rather than pre-rendering the whole table (supposedly faster)
       deferRender: true
 
+    }).on("order.dt", function(e, settings) {
+    
+      console.log("ORDER");
+      
+      const order = settings.oInstance.DataTable().order();
+      const column = order[0][0];
+      const direction = order[0][1];
+    
+      const tableId = settings.oInstance.data("id");
+    
+      console.log(`col ${column}, direction ${direction}`);
+      Cookies.set("order-" + tableId, JSON.stringify({ column, direction}));
+    
+    
     });
-
-  });
-
-
-  // remember the last sort column/direction for all search lists
-  return $(".main-search-list").on("order.dt", function(e, settings) {
-
-    const order = settings.oInstance.DataTable().order();
-    const column = order[0][0];
-    const direction = order[0][1];
-
-    const tableId = settings.oInstance.data("id");
-
-    Cookies.set("order-" + tableId, { column, direction});
-
-    // console.log(`col ${column}, direction ${direction}`);
-
+    
   });
 
 });

@@ -23,8 +23,6 @@
 //   return cb(matches);
 
 // });
-  
-
 
 $(window).on("load", function() { 
 
@@ -83,6 +81,8 @@ $(window).on("load", function() {
     queryTokenizer: Bloodhound.tokenizers.whitespace
     
   });
+  
+  console.log("song-engine", song_engine)
 
   const gig_engine = new Bloodhound({
     // name: 'all'
@@ -152,6 +152,9 @@ $(window).on("load", function() {
 
   const init = function() { 
 
+    console.log("typeahead", $(".typeahead").typeahead);
+    
+    // $(".typeahead").typeahead({
     $(".typeahead").typeahead({
       hint: true,
       highlight: true,

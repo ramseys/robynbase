@@ -6,78 +6,79 @@
   <%= favicon_link_tag 'images/favicon.ico' %>
   
   <%= stylesheet_link_tag "application", :media => "all" %>
-
-  <%= javascript_include_tag "application" %>
   
   <%= csrf_meta_tags %>
 
   <meta charset="utf-8" name="viewport" content="width=device-width, scale=1.0">
 
   <meta name="description" content="Comprehensive fan-made database covering the songs, concerts and releases of English singer-songwriter Robyn Hitchcock.">
+    
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: false %>
+  <%= javascript_include_tag "robyn", "data-turbo-track": "reload", defer: false %>
+  <%= javascript_include_tag "global", "data-turbo-track": "reload", defer: false %>
 
 </head>
 <body>
 
 
 <!-- Fixed navbar -->
-<nav class="navbar navbar-inverse navbar-robyn navbar-fixed-top" role="navigation">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="/">The Asking Tree</a>
-    </div>
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav navbar-left">
-        <li id="robyn-home"><a href="/">Home</a></li>
-        <li id="robyn-gigs"><a href="/gigs">Gigs</a></li>
-        <li id="robyn-songs"><a href="/songs">Songs</a></li>
-        <li id="robyn-compositions"><a href="/compositions">Releases</a></li>
-        <li id="robyn-venues"><a href="/venues">Venues</a></li>
-        <li id="robyn-about"><a href="/about">About</a></li>
-      </ul>
+<div class="container-sm">
 
-      <ul class="nav navbar-nav navbar-right">
+  <nav class="navbar navbar-expand-md navbar-dark navbar-robyn fixed-top" role="navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <a class="navbar-brand me-0 me-md-2" href="/">The Asking Tree</a>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item" id="robyn-home"><a class="nav-link" href="/">Home</a></li>
+            <li class="nav-item" id="robyn-gigs"><a class="nav-link" href="/gigs">Gigs</a></li>
+            <li class="nav-item" id="robyn-songs"><a class="nav-link" href="/songs">Songs</a></li>
+            <li class="nav-item" id="robyn-compositions"><a class="nav-link" href="/compositions">Releases</a></li>
+            <li class="nav-item" id="robyn-venues"><a class="nav-link" href="/venues">Venues</a></li>
+            <li class="nav-item" id="robyn-about"><a class="nav-link" href="/about">About</a></li>
+          </ul>
 
-      <% if URI.parse(request.original_url).path != "/" and not request.fullpath.starts_with? "/robyn/index" %>
+          <ul class="nav navbar-nav">
 
-        <li>
-          <%= form_tag('/robyn/index', :method => 'GET', :id => 'main-search') do %>
+          <% if URI.parse(request.original_url).path != "/" and not request.fullpath.starts_with? "/robyn/index" %>
 
-            <div class="search-block">
-            <%= text_field_tag :search_value, params['search_value'], 
-                               :class => 'typeahead', 
-                               :placeholder => 'Search Everything' %>
-            </div>
-            
+            <li>
+              <%= form_tag('/robyn/index', :method => 'GET', :id => 'main-search') do %>
+
+                <div class="search-block">
+                <%= text_field_tag :search_value, params['search_value'], 
+                                  :class => 'typeahead', 
+                                  :placeholder => 'Search Everything' %>
+                </div>
+                
 
 
+              <% end %>
+            </li>
+
+          <% elsif current_user.present? or request.query_parameters["login"].present? %>         
+            <li>
+              <% if current_user.nil? %>
+                <a href="/login">Login</a>
+              <% else %>
+                <a href="/logout">Logout</a>
+              <% end %>  
+            </li>  
           <% end %>
-        </li>
 
-      <% elsif current_user.present? or request.query_parameters["login"].present? %>         
-        <li>
-          <% if current_user.nil? %>
-            <a href="/login">Login</a>
-          <% else %>
-            <a href="/logout">Logout</a>
-          <% end %>  
-        </li>  
-      <% end %>
+          </ul>
 
-      </ul>
+        </div><!--/.nav-collapse -->
+  </nav>
 
-    </div><!--/.nav-collapse -->
+  <div class="top-container">
+  <%= yield %>
   </div>
-</nav>
 
-<div class="container top-container">
-<%= yield %>
-</div>
+</div> <!-- constainer-sm -->
 
 </body>
 </html>

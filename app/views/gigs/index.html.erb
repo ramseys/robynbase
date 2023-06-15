@@ -1,68 +1,68 @@
+<%= javascript_include_tag "gig", "data-turbo-track": "reload", defer: false %>
+
 <div class="gig-list">
 
-  <div class="search-criteria">
 
-    <div class="row">
+  <div class="container search-criteria">
 
-      <%= form_tag('/gigs/index', :method => 'GET') do %>
+    <div class="row">     
 
-      <div class="<%= (can? :manage, Gig) ? 'col-sm-11' : 'col-sm-12' %>">
+      <div class="<%= (can? :manage, Gig) ? 'col-sm-10' : 'col-sm-12' %>">
 
-        <div class="col-sm-12">
+          <%= form_tag('/gigs/index', :method => 'GET') do %>
           
-            <%= text_field_tag :gig_search_value, params['gig_search_value'], :class=> 'search-field', :placeholder => 'Search gigs' %>
+          <%= text_field_tag :gig_search_value, params['gig_search_value'], :class=> 'search-field', :placeholder => 'Search gigs' %>
 
-            <%= submit_tag "Search", :name => nil %>
+          <%= submit_tag "Search", :name => nil %>
 
-            <span class="criteria search-type-criteria">
-              <%= radio_button_tag 'search_type', 'venue', params['search_type'] =='venue' %>                  <span class="radio-label">Venue</span>
-              <%= radio_button_tag 'search_type', 'venue_city', params['search_type'] == 'venue_city' %>       <span class="radio-label">City</span>
-              <%= radio_button_tag 'search_type', 'venue_state', params['search_type'] == 'venue_state' %>     <span class="radio-label">State</span>
-              <%= radio_button_tag 'search_type', 'venue_country', params['search_type'] == 'venue_country' %> <span class="radio-label">Country</span>
-              <%= radio_button_tag 'search_type', 'gig_year', params['search_type'] == 'gig_year' %>           <span class="radio-label">Gig Year</span>
-            </span>
+          <span class="criteria search-type-criteria">
+            <%= radio_button_tag 'search_type', 'venue', params['search_type'] =='venue' %>                  <span class="radio-label">Venue</span>
+            <%= radio_button_tag 'search_type', 'venue_city', params['search_type'] == 'venue_city' %>       <span class="radio-label">City</span>
+            <%= radio_button_tag 'search_type', 'venue_state', params['search_type'] == 'venue_state' %>     <span class="radio-label">State</span>
+            <%= radio_button_tag 'search_type', 'venue_country', params['search_type'] == 'venue_country' %> <span class="radio-label">Country</span>
+            <%= radio_button_tag 'search_type', 'gig_year', params['search_type'] == 'gig_year' %>           <span class="radio-label">Gig Year</span>
+          </span>
 
+          <div>
 
-        </div>
+            <% expand_advanced = ( params["gig_date"].present? ) %>
 
-        <div>
+            <div class="advanced-options-header">
+              <span class="advanced-options-disclosure <%= expand_advanced ? "bi-caret-down-fill" : "bi-caret-right-fill" %>" aria-hidden="true"></span>
+              <span class="header-name">Advanced Options</span>
+            </div>
 
-          <% expand_advanced = ( params["gig_date"].present? ) %>
+            <!-- advanced option block -->
+            <div class="row advanced-options <%= expand_advanced ? 'expanded' : '' %>">
 
-          <div class="advanced-options-header">
-            <span class="glyphicon glyphicon-triangle-<%= expand_advanced ? 'bottom' : 'right'%>" aria-hidden="true"></span>
-            <span class="header-name">Advanced Options</span>
-          </div>
+              <!-- media types -->
+              <div class="col-sm-12">
 
-          <!-- advanced option block -->
-          <div class="row advanced-options <%= expand_advanced ? 'expanded' : '' %>">
+                <div class="criteria dates">
+                  <div class="header-name">Gig happened</div>
 
-            <!-- media types -->
-            <div class="col-sm-6">
+                  <div class="criteria-body" >
 
-              <div class="criteria dates">
-                <div class="header-name">Gig happened</div>
+                    <span>within</span>
 
-                <div class="criteria-body" >
+                    <span>
+                      <%= text_field_tag :gig_range, params['gig_range'], { :size => 4 } %>
+                    </span>
 
-                  <span>within</span>
+                    <span>
+                      <%= select_tag :gig_range_type, options_for_select({
+                              "Days" => GigsController::RANGE_TYPE[:days],
+                              "Months" => GigsController::RANGE_TYPE[:months], 
+                              "Years"=> GigsController::RANGE_TYPE[:years]                      
+                            }, params['gig_range_type'].to_i)
+                    %>
+                    </span>
 
-                  <span>
-                    <%= text_field_tag :gig_range, params['gig_range'], { :size => 4 } %>
-                  </span>
+                    <span>of</span>
 
-                  <span>
-                    <%= select_tag :gig_range_type, options_for_select({
-                            "Days" => GigsController::RANGE_TYPE[:days],
-                            "Months" => GigsController::RANGE_TYPE[:months], 
-                            "Years"=> GigsController::RANGE_TYPE[:years]                      
-                          }, params['gig_range_type'].to_i)
-                  %>
-                  </span>
+                    <%= date_field_tag :gig_date, params['gig_date'], { :size => 11, :placeholder => "mm/dd/yyyy" } %>
 
-                  <span>of</span>
-
-                  <%= date_field_tag :gig_date, params['gig_date'], { :size => 11, :placeholder => "mm/dd/yyyy" } %>
+                  </div>
 
                 </div>
 
@@ -72,23 +72,21 @@
 
           </div>
 
-        </div>
+          <% end %>
 
       </div>
-
-      <% end %>
 
       <% if can? :manage, Gig %>
 
         <div class="col-sm-1">
           <%= form_tag(new_gig_path, :method => 'GET') do %>
             <%= submit_tag "New Gig", :name => nil %>
-          <%end%>
+          <% end %>
         </div>
+        
+      <% end %>
 
-      <% end %>  
-
-    </div>
+    </div> 
 
   </div>
 

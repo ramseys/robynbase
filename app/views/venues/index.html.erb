@@ -4,7 +4,7 @@
 
   <div class="row">
 
-    <div class="<%= (can? :manage, Venue) ? 'col-sm-11' : 'col-sm-12' %>">
+    <div class="<%= (can? :manage, Venue) ? 'col-sm-10' : 'col-sm-12' %>">
 
       <%= form_tag('/venues/index', :method => 'GET') do %>
 

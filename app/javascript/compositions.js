@@ -16,15 +16,16 @@ $(window).on("load", function(e) {
     const albumHeader = $(e.target).parents(".album-block-header");
     const albumBlock = $(".album-block-container[data-compid=" + albumHeader.data("compid") + "]");
     albumBlock.toggle();
-    albumHeader.find(".glyphicon").toggleClass("glyphicon-triangle-right glyphicon-triangle-bottom");
+    albumHeader.find(".advanced-options-disclosure").toggleClass("bi-caret-right-fill bi-caret-down-fill");
   });
 
   // hide show advanced options in list page
   $(".album-list .advanced-options-header").on("click", function(e) {
+    console.log("hello!");
     const header = $(e.target).parents(".advanced-options-header");
     const criteriaBlock = header.next();
     criteriaBlock.toggleClass("expanded");
-    header.find(".glyphicon").toggleClass("glyphicon-triangle-right glyphicon-triangle-bottom");
+    header.find(".advanced-options-disclosure").toggleClass("bi-caret-right-fill bi-caret-down-fill");
   });
 
 });
