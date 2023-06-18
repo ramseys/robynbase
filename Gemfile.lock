@@ -122,7 +122,7 @@ GEM
     mini_portile2 (2.8.1)
     minitest (5.18.0)
     msgpack (1.7.0)
-    mysql2 (0.5.4)
+    mysql2 (0.5.5)
     net-imap (0.3.4)
       date
       net-protocol
@@ -230,7 +230,7 @@ DEPENDENCIES
   jquery-rails
   listen
   mini_magick
-  mysql2 (= 0.5.4)
+  mysql2 (= 0.5.5)
   rails (~> 7.0.0)
   rvm1-capistrano3
   sass-rails
