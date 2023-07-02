@@ -5,7 +5,7 @@
 <% table_id = "" unless local_assigns.has_key? :table_id %>
 <% show_lyrics_snippet = nil unless local_assigns.has_key? :show_lyrics_snippet %>
 
-<table class="table table-hover main-search-list" data-id="<%= table_id %>" data-paging="<%= use_paging %>" data-searching="<%= show_search %>" data-page-length="<%= page_length %>" data-length-change="false">
+<table class="row-border stripe table-hover main-search-list" data-id="<%= table_id %>" data-paging="<%= use_paging %>" data-searching="<%= show_search %>" data-page-length="<%= page_length %>" data-length-change="false">
   <thead>
   <tr>
   <th>Name</th>
@@ -45,7 +45,7 @@
       <td> <%= song.gig_count %> </td>
 
       <% if can? :manage, Song %>
-        <td> 
+        <td class="actions"> 
           <a href="<%=song_path(song)%>/edit">Edit</a> &nbsp; &nbsp;
           <%= link_to("Delete", song_path(song), method: :delete, data: { confirm: "Are you sure you want to delete #{song.Song}" }) %>
         </td>

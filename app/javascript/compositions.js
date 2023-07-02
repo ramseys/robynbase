@@ -95,7 +95,7 @@ window.addCompositionTableRow = function(tableId, bonus) {
 
     </td>
     <td> 
-        <button type="button" onclick="removeTableRow('${tableId}', ${compositionSongIndex})">
+        <button type="button" class="btn btn-link" onclick="removeTableRow('${tableId}', ${compositionSongIndex})">
             Remove
         </button>
     </td>

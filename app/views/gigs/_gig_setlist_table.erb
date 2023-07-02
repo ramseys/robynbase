@@ -36,7 +36,7 @@
             </td>            
             <td> <%= gigset_fields.text_field :MediaLink, :class => "form-control" %></td>
             <td> 
-                <Button type="button" onClick="removeTableRow('<%=id%>', <%=sequenceIndex%>)">
+                <Button type="button" class="btn btn-link" onClick="removeTableRow('<%=id%>', <%=sequenceIndex%>)">
                     Remove
                 </Button>
             </td>
@@ -53,4 +53,4 @@
 
 <br/>
 
-<button type="button" onClick="addTableRow('<%=id%>', <%=encore%>)">Add Song</button>
+<button type="button" class="btn btn-primary" onClick="addTableRow('<%=id%>', <%=encore%>)">Add Song</button>

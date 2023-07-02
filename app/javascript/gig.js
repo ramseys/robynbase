@@ -93,7 +93,7 @@ window.$(window).on("DOMContentLoaded", function(e) {
       </td>
 
       <td> 
-          <button type="button" onclick="removeTableRow('${tableId}', ${gigSongIndex})">
+          <button class="btn btn-link" type="button" onclick="removeTableRow('${tableId}', ${gigSongIndex})">
               Remove
           </button>
       </td>
@@ -157,7 +157,7 @@ window.$(window).on("DOMContentLoaded", function(e) {
       </td>
 
       <td> 
-          <button type="button" onclick="removeTableRow('${tableId}', ${mediaIndex})">
+          <button type="button" class="btn btn-link" onclick="removeTableRow('${tableId}', ${mediaIndex})">
               Remove
           </button>
       </td>

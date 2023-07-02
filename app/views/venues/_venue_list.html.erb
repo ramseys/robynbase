@@ -4,7 +4,7 @@
 <% page_length = 10 unless local_assigns.has_key? :page_length %>
 <% table_id = "" unless local_assigns.has_key? :table_id %>
 
-<table class="table table-hover main-search-list" data-id="<%= table_id %>" data-paging="<%= use_paging %>" data-searching="<%= show_search %>" data-page-length="<%= page_length %>" data-length-change="false">
+<table class="row-border stripe table-hover main-search-list" data-id="<%= table_id %>" data-paging="<%= use_paging %>" data-searching="<%= show_search %>" data-page-length="<%= page_length %>" data-length-change="false">
   <thead>
   <th>Venue</th>
   <th>City</th>
