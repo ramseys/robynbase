@@ -31,14 +31,7 @@ $(document).ready(function(e) {
       order = [[orderCookie.column, orderCookie.direction]];
     }
 
-    // return $(table).dataTable({
-    // table.DataTable({
     new DataTable(table, {
-
-      // change the label of the search control
-      // language: {
-      //   search: "Filter: "
-      // },
 
       // hide the pagination controls if the table only has one page
       // (solution taken from http://stackoverflow.com/a/12393232)

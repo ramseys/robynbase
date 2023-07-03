@@ -82,8 +82,6 @@ $(window).on("load", function() {
     
   });
   
-  console.log("song-engine", song_engine)
-
   const gig_engine = new Bloodhound({
     // name: 'all'
     // local: [{ val: 'dog' }, { val: 'pig' }, { val: 'moose' }],
@@ -152,8 +150,6 @@ $(window).on("load", function() {
 
   const init = function() { 
 
-    console.log("typeahead", $(".typeahead").typeahead);
-    
     // $(".typeahead").typeahead({
     $(".typeahead").typeahead({
       hint: true,
