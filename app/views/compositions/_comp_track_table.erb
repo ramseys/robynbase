@@ -34,7 +34,7 @@
                 <%= track_fields.hidden_field :bonus %> 
             </td>
             <td> 
-                <Button type="button" onClick="removeCompositionTableRow('<%=id%>', <%=sequenceIndex%>)">
+                <Button type="button" class="btn btn-link" onClick="removeCompositionTableRow('<%=id%>', <%=sequenceIndex%>)">
                     Remove
                 </Button>
             </td>
@@ -51,4 +51,4 @@
 
 <br/>
 
-<button type="button" onClick="addCompositionTableRow('<%=id%>', <%=bonus%>)">Add Song</button>
+<button type="button" class="btn btn-primary" onClick="addCompositionTableRow('<%=id%>', <%=bonus%>)">Add Song</button>

@@ -1,5 +1,11 @@
 /** adapted from the typeahead examples here: https://twitter.github.io/typeahead.js/examples/ */
 
+/** 
+ * renamed from bootstrap-typeahead to typeahead, because for whatever reason it wasn't loading via
+ * an @import from applicaiton.bootstrap.scss; maybe there's some magic in the bootstrap cssbundler
+ * that looks for a 'bootstrap' prefix?
+ */
+
 .typeahead,
 .tt-query,
 .tt-hint {

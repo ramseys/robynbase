@@ -44,6 +44,10 @@ gem 'data_migrate'
 
 gem 'jquery-rails'
 
+gem "jsbundling-rails", "~> 1.1"
+
+gem "cssbundling-rails", "~> 1.1"
+
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 
@@ -63,3 +67,4 @@ group :development do
   gem 'web-console'
   gem 'byebug'
 end
+

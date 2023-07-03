@@ -33,7 +33,7 @@
                 { class: "form-control song-selector" })%> 
             </td>
             <td> 
-                <Button type="button" onClick="removeTableRow('<%=id%>', <%=sequenceIndex%>)">
+                <Button type="button" class="btn btn-link" onClick="removeTableRow('<%=id%>', <%=sequenceIndex%>)">
                     Remove
                 </Button>
             </td>
@@ -50,4 +50,4 @@
 
 <br/>
 
-<button type="button" onClick="addMediaTableRow('<%=id%>')">Add Media</button>
+<button type="button" class="btn btn-primary" onClick="addMediaTableRow('<%=id%>')">Add Media</button>
