@@ -27,7 +27,7 @@ module RobynHelper
         encore = selected_gig.get_set_encore
 
         text = %Q%<p>On this day in #{selected_gig.GigDate.year}, Robyn performed at 
-               <b><a href="#{venue_url(venue.id)}">#{venue.Name}</a></b>, 
+               <a href="#{venue_url(venue.id)}">#{venue.Name}</a>, 
                #{location.empty? ? "" : "in #{location}"}.</p>%
     
         if setlist.present?
@@ -62,7 +62,7 @@ module RobynHelper
 
     def get_song_name(set_song) 
         if (set_song.song.present?) 
-            %Q%<b><a href="#{song_url(set_song.song)}">#{set_song.Song}</a></b>%
+            %Q%<a href="#{song_url(set_song.song)}">#{set_song.Song}</a>%
         else
             "<b>#{set_song.Song}</b>"
         end

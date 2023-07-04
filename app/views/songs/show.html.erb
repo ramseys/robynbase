@@ -1,10 +1,12 @@
 
 <!-- <%= link_to "Back", controller: 'robyn' %> -->
 
-<div class="row" style="margin-bottom: 0px">
+<div class="robyn-page">
+
+<div class="row">
   <div class="col-sm-10">
 
-    <h2 class="main-header"><%= @song.full_name %> 
+    <h2><%= @song.full_name %> 
 
       <small>
         <span class="inpage-navigation">
@@ -78,8 +80,6 @@
         <dt>Performances</dt>
         <dd><%= @song.get_gig_count %></dd>
       </dl>
-
-      <br/>
       
     </div>
 
@@ -90,7 +90,7 @@
 <!-- albums on which the song appears-->
 <% if @song.compositions.present? %>
 
-<div class="row page-section">
+<div class="row">
 
   <div class="col-sm-12">
 
@@ -108,7 +108,7 @@
 <!-- gigs at whichs the song was played -->
 <% if @song.gigs.present? %>
 
-<div class="row page-section">
+<div class="row">
 
   <div class="col-sm-12">
 
@@ -124,7 +124,7 @@
 
 <% if @song.Comments.present? %>
 
-<div class="row page-section">
+<div class="row">
 
   <div class="col-sm-12">
 
@@ -144,7 +144,7 @@
 
 <% if show_lyrics(@song) %>
 <!-- lyrics -->
-<div class="row page-section">
+<div class="row">
   <div class="col-sm-12">
 
     <a class="anchor" name="lyrics"></a>
@@ -160,7 +160,7 @@
 <!-- tablature -->
 <% if @song.Tab.present? %>
 
-<div class="row page-section">
+<div class="row">
   <div class="col-sm-12">
 
     <a class="anchor" name="tabs"></a>
@@ -172,3 +172,5 @@
 </div>
 
 <% end %>
+
+</div>
