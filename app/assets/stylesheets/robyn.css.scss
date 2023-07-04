@@ -6,6 +6,10 @@ html {
   font-size: 14px;
 }
 
+body {
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
 a {
   text-decoration: none;
 }
@@ -106,6 +110,7 @@ table.main-search-list {
 
 .inpage-navigation {
   font-size: 14px;
+  font-weight: 400;
 
   span {
     padding-left: 7px;
@@ -219,10 +224,6 @@ table.main-search-list {
 }
 
 
-.page-section {
-  padding-top: 20px;
-}
-
 /* typeahead overrides */
 
 .typeahead,
@@ -319,20 +320,27 @@ table.main-search-list {
 }
 
 
-/* override bootstrap description styles */
-dl.dl-horizontal {
-  margin-bottom: 0px;
-  dt {
-    text-align: left;
-    width: 140px;
-    font-weight: 400;
-    font-style: italic;
-  }
-  dd {
-    margin-left: 20px;
-  }
-}
+/* override bootstrap description styles for larger viewports */
+dl {
+  @media screen and (min-width: 500px) {
+    display: grid;
+    grid-template-columns: max-content auto;
+    margin-bottom: 0px;
 
+    dt {
+      grid-column-start: 1;
+      text-align: left;
+      width: 7rem;
+      font-weight: 400;
+      font-style: italic;
+    }
+    
+    dd {
+      grid-column-start: 2;
+    }
+  }
+    
+}
 
 .lyrics {
   pre {
@@ -471,8 +479,6 @@ dl.dl-horizontal {
 
 .robyn-page {
 
-  padding-top: 20px;
-  
   .row {
     margin-bottom: 30px;
   }
@@ -482,7 +488,7 @@ dl.dl-horizontal {
 
     padding: 20px 0;
     
-    @media screen and (min-width: 400px) {
+    @media screen and (min-width: 500px) {
       float: right;
       padding-top: 30px;
       padding-left: 30px;
@@ -493,12 +499,6 @@ dl.dl-horizontal {
   .images {
     img {
       border: 1px solid #dddddd;
-    }
-  }
-
-  dl.dl-horizontal {
-    dd:after {
-      clear: left !important;
     }
   }
 
