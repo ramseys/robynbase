@@ -1,3 +1,16 @@
+/** these functions are here to deal with an annoying an instructable problem in production
+ *
+ * basically — for reasons i haven't been able to figure out yet, the asset pipeline precompile
+ * on the production machine insists on trying to sass-compile this file, even thought it's CSS,
+ * and is not included in the main application.bootstrap.scss file (it's linked in the manifest,
+ * and included separately
+ *
+ * the sass compile fails because this stylesheet using CSS max, which is *also* a sass function,
+ * so the compiler gets confused and break the build
+ *
+ * the only way to deal with this, that i could find, was to redefine the min & max functions to e
+ * standard CSS functions.
+ */
 @function max($numbers...) {
     @return m#{a}x(#{$numbers})
 }
