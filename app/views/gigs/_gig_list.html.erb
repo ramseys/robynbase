@@ -4,7 +4,7 @@
 <% page_length = 10 unless local_assigns.has_key? :page_length %>
 <% table_id = "" unless local_assigns.has_key? :table_id %>
 
-<table class="row-border stripe table-hover main-search-list" data-id="<%= table_id %>" data-paging="<%= use_paging %>" data-searching="<%= show_search %>" data-page-length="<%= page_length %>" data-length-change="false" >
+<table class="row-border stripe order-column table-hover main-search-list" data-id="<%= table_id %>" data-paging="<%= use_paging %>" data-searching="<%= show_search %>" data-page-length="<%= page_length %>" data-length-change="false" >
 
   <% if not suppress_header %>
     <thead>
@@ -29,7 +29,10 @@
       <td> <%= gig.venue.nil? ? nil : gig.venue.City %> </td>
       <td> <%= gig.venue.nil? || gig.venue.State.nil? ? nil : gig.venue.State %> </td>
       <td> <%= gig.venue.nil? ? nil : gig.venue.Country %> </td>
-      <td> <%= gig.GigDate.to_date.to_formatted_s(:long) %> </td>      
+      <td data-sort="<%= gig.GigDate.to_date.to_formatted_s(:number)%>">
+        <%= gig.GigDate.to_date.strftime('%m/%d/%Y') %>
+      </td>      
+      
 
       <% if can? :manage, Gig %>
         <td class="actions"> 
