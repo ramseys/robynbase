@@ -192,7 +192,7 @@ class Gig < ApplicationRecord
       no_media_both = no_gig_media & no_song_media
 
       # convert the array of the intersection of no gig media and no song (gigset) media back into a relation
-      Gig.where(gigid: no_media_both.map(&:GIGID))
+      Gig.where(gigid: no_media_both.map(&:GIGID)).order(:GigDate)
 
     end
     
