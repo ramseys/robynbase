@@ -22,7 +22,7 @@ class Gig < ApplicationRecord
     QuickQuery.new('gigs', :with_setlists, [:without]),
     QuickQuery.new('gigs', :without_definite_dates),
     QuickQuery.new('gigs', :with_reviews, [:without]),
-    QuickQuery.new('gigs', :with_media),
+    QuickQuery.new('gigs', :with_media, [:without]),
     QuickQuery.new('gigs', :with_images),
     QuickQuery.new('gigs', :on_this_day)
   ]
@@ -113,7 +113,7 @@ class Gig < ApplicationRecord
       when :with_reviews.to_s
         gigs = quick_query_gigs_with_reviews(secondary_attribute)
       when :with_media.to_s
-        gigs = quick_query_gigs_with_media
+        gigs = quick_query_gigs_with_media(secondary_attribute)
       when :with_images.to_s
         gigs = quick_query_gigs_with_images
       when :on_this_day.to_s
@@ -161,18 +161,41 @@ class Gig < ApplicationRecord
     end
   end
 
-  def self.quick_query_gigs_with_media
+  def self.quick_query_gigs_with_media(no_media)
 
-    # look for media in both the gig proper and in setlists
-    sets_with_media = joins("LEFT JOIN GSET on GIG.gigid = GSET.gigid").where("GSET.MediaLink IS NOT NULL").distinct
-    gigs_with_media = joins("RIGHT OUTER JOIN gigmedia on GIG.gigid = gigmedia.gigid")
+    # gigs with media
+    if (no_media.nil?)
+
+      sets_with_media = joins("LEFT JOIN GSET on GIG.gigid = GSET.gigid").where("GSET.MediaLink IS NOT NULL").distinct
+      gigs_with_media = joins("RIGHT OUTER JOIN gigmedia on GIG.gigid = gigmedia.gigid")
+
+      sql = Gig.connection.unprepared_statement {
+        "((#{sets_with_media.to_sql}) UNION (#{gigs_with_media.to_sql})) AS GIG"
+      }
+
+      Gig.from(sql).order(:GigDate)
+
+    # gigs with no media
+    else
+
+      # gigs that have no direct media
+      no_gig_media = joins("LEFT JOIN gigmedia on GIG.gigid = gigmedia.gigid").where("gigmedia.gigid IS NULL").to_a
+      
+      # gigs whose gigsets have no media
+      no_song_media = Gig.find_by_sql(
+        "SELECT * 
+        FROM GIG 
+        where NOT EXISTS (SELECT 1 FROM GSET WHERE GSET.gigid = GIG.gigid and GSET.MediaLink IS NOT NULL)"
+      )
+
+      # get the intersection of the two, to determine which gig entries have no media
+      no_media_both = no_gig_media & no_song_media
+
+      # convert the array of the intersection of no gig media and no song (gigset) media back into a relation
+      Gig.where(gigid: no_media_both.map(&:GIGID)).order(:GigDate)
+
+    end
     
-    sql = Gig.connection.unprepared_statement {
-      "((#{sets_with_media.to_sql}) UNION (#{gigs_with_media.to_sql})) AS GIG"
-    }
-
-    Gig.from(sql).order(:GigDate)
-
   end
 
   def self.quick_query_gigs_with_images

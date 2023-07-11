@@ -51,6 +51,7 @@ en:
       with_reviews: "Gigs with reviews"
       with_reviews_without: "Without"
       with_media: "Gigs with media"
+      with_media_without: "Without"
       with_images: "Gigs with images"
       on_this_day: "Gigs on this day"
     compositions:
