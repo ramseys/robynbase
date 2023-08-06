@@ -12,10 +12,11 @@
     "jquery": "3.6.3",
     "jquery-ui": "1.13.2",
     "js-cookie": "3.0.1",
+    "leaflet": "^1.9.4",
     "sass": "^1.62.1"
   },
   "scripts": {
-    "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets",
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets --loader:.png=file",
     "build:css": "sass ./app/assets/stylesheets/application.bootstrap.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules"
   }
 }

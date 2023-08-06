@@ -1,0 +1,15 @@
+<%= javascript_include_tag "map", "data-turbo-track": "reload", defer: false %>
+
+<div id="map" class="all-venues-map"></div>
+
+<%= javascript_tag type: 'application/javascript' do -%>
+
+  let venues = [];
+
+  <% @venues.each do |venue| -%>
+      venues.push(<%= raw(venue.to_json) %>);
+  <% end -%>
+
+  loadVenueOmniMap(venues, "<%= venues_path %>", "<%= gigs_path %>");
+
+<% end -%>

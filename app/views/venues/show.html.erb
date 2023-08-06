@@ -1,3 +1,5 @@
+<%= javascript_include_tag "venues", "data-turbo-track": "reload", defer: false %>
+
 <div class="robyn-page">
 
 <div class="row" style="margin-bottom: 0px">
@@ -29,10 +31,19 @@
 
 </div>
 
+<% if @venue.latitude.present? %>
 
-<div class="row">
+  <div class="image-container">
+    <div id="map" class="venue-map"></div>
 
-  <div class="col-sm-12">
+    <%= javascript_tag type: 'application/javascript' do -%>
+      loadVenueMap(<%= raw(@venue.to_json) %>);
+    <% end -%>
+  </div>
+
+<% end %>
+
+  <div>
 
     <h3 class="section-header">Details</h4>
 
@@ -77,16 +88,9 @@
       
     </div>
 
-  </div>
-
-</div>
-
-
 <% if @venue.get_notes.present? %>
 
-<div class="row">
-
-  <div class="col-sm-12">
+  <div class="content-section">
 
     <!-- notes-->
     <a class="anchor" name="notes"></a>
@@ -98,17 +102,13 @@
 
   </div>
 
-</div>
-
 <% end %>
 
 
 <!-- gigs at this venue -->
 <% if @venue.gigs.present? %>
 
-<div class="row">
-
-  <div class="col-sm-12">
+  <div class="content-section gig-section">
 
     <a class="anchor" name="gigs"></a>
     <h3 class="section-header"> Gigs </h4>
@@ -120,5 +120,9 @@
 </div>
 
 <% end %>
+
+</div>
+
+</div>
 
 </div>

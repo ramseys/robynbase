@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_08_21_191200) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_16_232139) do
   create_table "COMP", primary_key: "COMPID", id: :integer, charset: "utf8", options: "ENGINE=MyISAM", force: :cascade do |t|
     t.string "Artist", limit: 64
     t.string "Title", limit: 64
@@ -203,6 +203,10 @@ ActiveRecord::Schema[7.0].define(version: 2022_08_21_191200) do
     t.string "NameSearch", limit: 48
     t.string "SubCity"
     t.text "Notes"
+    t.float "latitude"
+    t.float "longitude"
+    t.string "street_address1"
+    t.string "street_address2"
     t.index ["Name"], name: "Name"
     t.index ["NameSearch"], name: "NameSearch"
   end
