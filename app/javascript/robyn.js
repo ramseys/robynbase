@@ -34,6 +34,7 @@ $(window).on("load", function() {
     case currentPage.indexOf("compositions") !== 0: return "robyn-compositions";
     case currentPage.indexOf("gigs") !== 0: return "robyn-gigs";
     case currentPage.indexOf("venues") !== 0: return "robyn-venues";
+    case currentPage.indexOf("map") !== 0: return "venue-map";
     case currentPage.indexOf("about") !== 0: return "robyn-about";
     default: return "robyn-home";
   } })();

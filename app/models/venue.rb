@@ -6,6 +6,10 @@ class Venue < ApplicationRecord
 
   has_many :gigs, foreign_key: "VENUEID"
 
+  def self.get_venues_with_location
+    where.not(:latitude => nil)
+  end
+
   def self.search_by(kind, search)
 
     kind = [:name, :city, :country] if kind.nil? or kind.length == 0

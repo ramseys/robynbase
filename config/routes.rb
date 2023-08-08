@@ -1,7 +1,8 @@
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
-
+  
   resources :sessions, only: [:new, :create, :destroy]
+  get 'map/index'
   get "robyn/index"
   get "songs/index"
   get "songs/quick_query"
@@ -24,8 +25,8 @@ Rails.application.routes.draw do
   resources :venues
   resources :compositions
   resources :about
+  resources :map
 
-  
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.

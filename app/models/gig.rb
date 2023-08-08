@@ -37,6 +37,10 @@ class Gig < ApplicationRecord
     self.gigsets.includes(:song).where(encore: true)
   end
 
+  def self.get_gigs_by_venueid(venueid)
+    where(:venueid => venueid)
+  end
+
   # returns the reviews for this gig (if any), formatted to display correctly in html
   def get_reviews
     if self.Reviews.present?
