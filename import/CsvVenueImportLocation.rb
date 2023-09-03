@@ -17,6 +17,14 @@ module CsvVenueImportLocation
     "#{v[:id]}|#{v[:SubCotu]}|#{v[:street_address1]}|#{v[:street_address2]}|#{v[:latitude]}|#{v[:longitude]}"
   end
 
+  def self.significant_digits(num, significant_digits)
+    return 0 if num.zero?
+    log = Math.log10(num.abs)
+    val = num.round(-(log.ceil - significant_digits))
+    val
+
+  end
+    
   # compares the given column and csv values
   def self.values_eq(col_value, csv_value)
     (col_value.blank? and csv_value.blank?) or
@@ -26,12 +34,28 @@ module CsvVenueImportLocation
   # determines if the venue info changed values in an existing venue
   def self.venue_changed(venue, venue_info)
     ["SubCity", "street_address1", "street_address2", "latitude", "longitude"].any? {|col|
-      not self.values_eq(venue[col], venue_info[col.downcase.to_sym])
+      
+      new_value = venue_info[col.downcase.to_sym]
+
+      if new_value.nil? 
+        false
+
+      else
+
+        # the db has a limit of 6 significant digits 
+        if (col == "latitude" or col == "longitude") 
+            new_value = self.significant_digits(new_value.to_f, 6)
+        end
+
+        not self.values_eq(venue[col], new_value)
+
+      end
+      
     }
   end
 
   # populate the given venue with updated venue info
-  def self.populate_venue(venue, venue_info)    
+  def self.populate_venue(venue, venue_info)
     venue.SubCity = venue_info[:subcity]
     venue.street_address1 = venue_info[:street_address1]
     venue.street_address2 = venue_info[:street_address2]
