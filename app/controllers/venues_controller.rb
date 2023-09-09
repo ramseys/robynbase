@@ -66,6 +66,10 @@ class VenuesController < ApplicationController
 
   end
 
+  def quick_query
+    @venues = Venue.quick_query(params[:query_id], params[:query_attribute])
+    render "index"
+  end
 
   private
     

@@ -54,6 +54,11 @@ en:
       with_media_without: "Without"
       with_images: "Gigs with images"
       on_this_day: "Gigs on this day"
+    venues:
+      with_notes: "Venues with notes"
+      with_notes_without: "Without"
+      with_location: "Venues with location"
+      with_location_without: "Without"
     compositions:
       major_cd_releases: "Somewhat chronological list of major releases on CD"
       other_bands: "Records recorded with non-Robyn bands"

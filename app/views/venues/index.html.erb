@@ -45,6 +45,12 @@
         <%= render partial: '/venues/venue_list', locals: {venues: @venues, table_id: "venue-main"} %>
       <% end %>
 
+    <% else %>
+    
+      <% quick_queries = get_all_quick_queries(Venue) %>
+
+      <%= render partial: '/robyn/quick_queries', locals: {quick_queries: quick_queries} %>
+
     <% end %>
 
   </div>
