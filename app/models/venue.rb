@@ -10,6 +10,11 @@ class Venue < ApplicationRecord
     where.not(:latitude => nil)
   end
 
+  @@quick_queries = [ 
+    QuickQuery.new('venues', :with_notes, [:without]),
+    QuickQuery.new('venues', :with_location, [:without]),
+  ]
+
   def self.search_by(kind, search)
 
     kind = [:name, :city, :country] if kind.nil? or kind.length == 0
@@ -58,6 +63,50 @@ class Venue < ApplicationRecord
     if self.Notes.present?
       self.Notes.gsub(/\r\n/, '<br>')
     end
+  end
+
+
+  ## quick queries
+
+  # an array of all available quick queries
+  def self.get_quick_queries 
+    @@quick_queries
+  end
+
+
+  # look up venues based on the given quick query
+  def self.quick_query(id, secondary_attribute)
+
+    case id
+      when :with_notes.to_s
+        venues = quick_query_venues_with_notes(secondary_attribute)
+      when :with_location.to_s
+        venues = quick_query_venues_with_location(secondary_attribute)
+    end
+
+    venues
+
+  end
+  
+
+  def self.quick_query_venues_with_notes(secondary_attribute)
+
+    venues = secondary_attribute.nil? ?
+      where.not(Notes: nil) :
+      where(Notes: nil)
+
+    self.prepare_query(venues)
+
+  end
+
+  def self.quick_query_venues_with_location(secondary_attribute)
+
+    venues = secondary_attribute.nil? ?
+      where.not(latitude: nil) :
+      where(latitude: nil)
+
+    self.prepare_query(venues)
+
   end
 
 end

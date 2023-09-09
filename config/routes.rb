@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   get "gigs/index"
   get "gigs/quick_query"
   get "venues/index"
+  get "venues/quick_query"
   get "robyn/search_venues"
   get "compositions/index"
   get "compositions/quick_query"
