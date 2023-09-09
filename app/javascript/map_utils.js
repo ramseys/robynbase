@@ -31,22 +31,38 @@ export function addMarker(venue, map, venuePath, gigsPath) {
 
     const marker = L.marker([venue.latitude, venue.longitude]).addTo(map);
 
-    let popperText = venuePath ? 
-        `<b><a href="${venuePath}/${venue.VENUEID}">${venue.Name}</a></b><br/><br/>` :
-        `<b>${venue.Name}</b><br/><br/>`;
+    // we use the presence of venuePath as a signal to render the tooltip and popup
+    if (venuePath) {
 
-    popperText += venue.street_address1 ?`${venue.street_address1}<br/>` : '';
-    popperText += venue.street_address2 ? `${venue.street_address2}<br/>` : '';
-    popperText += venue.SubCity ? `${venue.SubCity}<br/>` : '';
-    popperText += venue.City ? `${venue.City}` : '';
-    popperText += venue.State ? `, ${venue.State}` : '';
+        let popperText = venuePath ? 
+            `<b><a href="${venuePath}/${venue.VENUEID}">${venue.Name}</a></b><br/><br/>` :
+            `<b>${venue.Name}</b><br/><br/>`;
 
-    if (gigsPath) {
-        popperText += `<br/><br/><a href="${gigsPath}?venue_id=${venue.VENUEID}">Show Gigs</a>`;
+        popperText += venue.street_address1 ?`${venue.street_address1}<br/>` : '';
+        popperText += venue.street_address2 ? `${venue.street_address2}<br/>` : '';
+        popperText += venue.SubCity ? `${venue.SubCity}<br/>` : '';
+        popperText += venue.City ? `${venue.City}` : '';
+        popperText += venue.State ? `, ${venue.State}` : '';
+
+        if (gigsPath) {
+            popperText += `<br/><br/><a href="${gigsPath}?venue_id=${venue.VENUEID}">Show Gigs</a>`;
+        }
+        
+        marker.bindPopup(popperText);
+
+        marker.bindTooltip(venue.Name);
+
+        // these event handlers hide the marker's tooltip when its popup is opened;
+        // they do it by setting the opacity because closeTooltip doesn't seem to be
+        // working        
+        marker.addEventListener('popupclose', (e) => {
+            marker.getTooltip().setOpacity(0.9);
+        });
+        
+        marker.addEventListener('popupopen', (e) => {
+            marker.getTooltip().setOpacity(0);
+        });
+
     }
-    
-    marker.bindPopup(popperText);
-
-    marker.bindTooltip(venue.Name);
 
 }

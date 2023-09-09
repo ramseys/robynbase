@@ -47,46 +47,13 @@
 
     <h3 class="section-header">Details</h4>
 
-    <div class="album-description-block">
+    <%= build_address(@venue) %>
 
-      <dl class="dl-horizontal">
-        <dt>City</dt>
-        <dd><%= @venue.City %></dd>
-      </dl>
+    <br/> <br/>
 
-      <% if @venue.SubCity %>
-
-        <dl class="dl-horizontal">
-          <dt>Subcity</dt>
-          <dd><%= @venue.SubCity %></dd>
-        </dl>
-
-      <% end %>
+    Robyn has played this venue <%= pluralize(@venue.gigs.length, "time") %>.
       
-      <% if @venue.State %>
-
-        <dl class="dl-horizontal">
-          <dt>State</dt>
-          <dd><%= @venue.State %></dd>
-        </dl>
-
-      <% end %>
-
-      <dl class="dl-horizontal">
-        <dt>Country</dt>
-        <dd><%= @venue.Country %></dd>
-      </dl>
-
-      <% if @venue.gigs.present? %>
-
-        <dl class="dl-horizontal">
-          <dt>Gigs Played</dt>
-          <dd><%= @venue.gigs.length %></dd>
-        </dl>
-
-      <% end %>
-      
-    </div>
+  </div>
 
 <% if @venue.get_notes.present? %>
 
