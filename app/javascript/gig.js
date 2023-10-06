@@ -149,8 +149,8 @@ window.$(window).on("DOMContentLoaded", function(e) {
                 name="gig[gigmedia_attributes][${mediaIndex}][mediatype]">              
             <option value="1">YouTube</option>
             <option value="2">Archive.org Video</option>
-            <option selected="selected" value="4">Archive.org Audio</option>
-            <option value="3">Archive.org Playlist</option>
+            <option value="4">Archive.org Audio</option>
+            <option selected="selected" value="3">Archive.org Playlist</option>
             <option value="5">Vimeo</option>
             <option value="6">Soundcloud</option>
         </select>
