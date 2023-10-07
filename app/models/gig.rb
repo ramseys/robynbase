@@ -80,23 +80,25 @@ class Gig < ApplicationRecord
 
       gigs = left_outer_joins(:venue).where(conditions.join(" OR "), *Array.new(conditions.length, "%#{search}%"))
 
-      if date_criteria.present?
-        date = date_criteria[:date]
-        range_type = date_criteria[:range_type]
-        range = date_criteria[:range]
-
-        # debugger
-        
-        gigs = gigs.where(:gigdate => date.advance(range_type => -range) .. date.advance(range_type => range))
-
-      end
-
       # sort final results by date
       gigs.includes(:venue).sort { |x,y | x.GigDate <=> y.GigDate }
 
     else
-      all.includes(:venue)
+      gigs = all.includes(:venue)
+      
     end
+
+    # if advanced date criteria were provided, narrow the search to the requested data range
+    if date_criteria.present?
+      date = date_criteria[:date]
+      range_type = date_criteria[:range_type]
+      range = date_criteria[:range]
+
+      gigs = gigs.where(:gigdate => date.advance(range_type => -range) .. date.advance(range_type => range))
+
+    end
+
+    gigs
 
   end
 

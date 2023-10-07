@@ -20,7 +20,7 @@ class GigsController < ApplicationController
 
       # if the user specified a gig date as one of the criteria, prepare all the other data
       # that goes along with doing a date query
-      if params[:gig_date].present?
+      if params[:gig_date].present? and params[:gig_range].present?
 
         gig_date = DateTime.strptime(params[:gig_date], "%Y-%m-%d")
         range_type = :months
