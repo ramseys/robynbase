@@ -167,6 +167,12 @@ class GigsController < ApplicationController
     render "index"
   end
 
+  def on_this_day
+    date = Time.new(1983, params['date']['month'], params['date']['day']);
+    @gigs = Gig.quick_query_gigs_on_this_day(date)
+    render "index"
+  end
+
   private
   
   def return_to_previous_page(gig)

@@ -73,6 +73,29 @@
 
     <% end %>
 
+    <!-- on that day modal -->
+    <div class="modal fade" id="on-this-day-modal" tabindex="-1" aria-labelledby="onThisDayModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+
+          <%= form_tag('/gigs/on_this_day', :method => 'GET') do %>
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="on-this-day-modal">On That Day</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Choose a month and day</p>
+                <%= select_month params['on_this_day_month'] %>
+                <%= select_day params['on_this_day_day'] %>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Show</button>
+            </div>
+          <% end %> 
+        </div>
+      </div>
+    </div>
+
   <% end %>
 
 </div>
