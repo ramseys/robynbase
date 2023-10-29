@@ -50,8 +50,23 @@
 
     <% 
 
-      today = request.query_parameters["random_otd"].present? ? Date.today - (rand * (40 * 365)) : Date.today
-      today_gigs = Gig.quick_query_gigs_on_this_day(today, false)
+      # random day requested?
+      if request.query_parameters["random_otd"].present? then
+        today = Date.today - (rand * (40 * 365))
+        today_gigs = Gig.quick_query_gigs_on_this_day(today, false)
+
+      # specific gig requested?  
+      elsif request.query_parameters["gig_id_otd"].present?
+        today_gigs = [Gig.find(request.query_parameters["gig_id_otd"])]
+        today = today_gigs.first.GigDate
+
+      # default to today
+      else
+        today = Date.today
+        today_gigs = Gig.quick_query_gigs_on_this_day(today, false)
+      end
+
+      selected_gig = today_gigs[rand(today_gigs.length)]
     
     %>
 
@@ -59,9 +74,30 @@
 
       <div class="quick-queries">
 
-        <p class="header text-muted">On this Day - <%= today.strftime('%B %e') %></p>
+        <div>
+          <p class="header text-muted">On this Day - <%= today.strftime('%B %e') %></p>
+        </div>
+
+        <div class="blurb">
         
-        <%= on_this_day_blurb(today_gigs) %>
+          <% if selected_gig.images.attached? %>
+            <div class="gig-image">
+              <a class="gig-images images" href="<%= polymorphic_url(selected_gig.images.first) %>">
+                <%= image_tag selected_gig.images.first.variant(resize: "200x200") %>
+              </a>
+            </div>
+          <% end %>
+
+          <div>
+            <%= on_this_day_blurb(selected_gig) %>
+          </div>
+
+        </div>
+
+        <div class="footer">
+          <%= on_this_day_footer(selected_gig) %>
+        </div>
+
 
       </div>
 

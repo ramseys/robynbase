@@ -1,8 +1,6 @@
 module RobynHelper
 
-    def on_this_day_blurb(gigs_on_this_day)
-
-        selected_gig = gigs_on_this_day[rand(gigs_on_this_day.length)]
+    def on_this_day_blurb(selected_gig)
 
         venue = selected_gig.venue;
         location = ""
@@ -50,11 +48,17 @@ module RobynHelper
             text += %Q%<p>He was joined by #{selected_gig.Guests}.</p>%
         end
 
-        text = text + %Q%<p><a href="#{gig_url(selected_gig)}">More details here</a></p>%
+        text.html_safe
 
-        text = text + %Q%<p><a href="#{gigs_url()}/quick_query?query_id=on_this_day">See all gigs on this day</a></p>%
+    end
 
-        text = text + %Q%<p><a href="#" data-bs-toggle="modal" data-bs-target="#on-this-day-modal">See all gigs on another day</a></p>%
+    def on_this_day_footer(gig)
+
+        text = %Q%<span><a href="#{gig_url(gig)}">More details</a></span> <span>|</span> %
+
+        text = text + %Q%<span><a href="#{gigs_url()}/quick_query?query_id=on_this_day">Gigs on this day</a></span> <span>|</span> %
+
+        text = text + %Q%<span><a href="#" data-bs-toggle="modal" data-bs-target="#on-this-day-modal">Gigs on another day</a></span>%
 
         text.html_safe
 
