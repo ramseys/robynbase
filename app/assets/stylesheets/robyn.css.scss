@@ -448,7 +448,18 @@ dl {
   .header {
     font-size: 16px;
     font-variant: small-caps;
+  }
+  
+  .gig-image {
+    float: left;
+    padding-right: 10px;
     padding-bottom: 5px;    
+  }
+  
+  .footer {
+    justify-content: space-between;
+    padding-top: 10px;
+    clear: left;
   }
 
   small {

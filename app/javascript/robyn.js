@@ -61,6 +61,11 @@ $(window).on("load", function() {
 
   });
    
+  // add lightbox for any on this day image (if present)
+  $().fancybox({
+    selector : 'a.gig-images',
+    loop: true
+  });
 
   const song_engine = new Bloodhound({
     // name: 'all'
