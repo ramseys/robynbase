@@ -168,8 +168,8 @@ class GigsController < ApplicationController
   end
 
   def on_this_day
-    date = Time.new(1983, params['date']['month'], params['date']['day']);
-    @gigs = Gig.quick_query_gigs_on_this_day(date)
+    # date = Time.new(1983, params['date']['month'], params['date']['day']);
+    @gigs = Gig.quick_query_gigs_on_this_day(params['date']['month'], params['date']['day'])
     render "index"
   end
 
