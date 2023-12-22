@@ -214,12 +214,19 @@ class Gig < ApplicationRecord
 
   # returns all gigs that occured on the given day (ie, the give day/month, ignoring year).
   # gigs without setlists are excluded
-  def self.quick_query_gigs_on_this_day(day = Date.today, allow_empty_sets = true)
+  def self.quick_query_gigs_on_this_day(month = nil, day = nil, allow_empty_sets = true)
+
+    # if no date was provided, use today
+    if month.nil?
+      today = Date.today
+      day = today.day
+      month = today.month
+    end
 
     if allow_empty_sets 
-      Gig.where("extract(month from GigDate) = #{day.month} and extract(day from GigDate) = #{day.day}")
+      Gig.where("extract(month from GigDate) = #{month} and extract(day from GigDate) = #{day}")
     else
-      Gig.where("extract(month from GigDate) = #{day.month} and extract(day from GigDate) = #{day.day} and EXISTS (SELECT 1 from GSET where GIG.GIGID = GSET.GIGID)")
+      Gig.where("extract(month from GigDate) = #{month} and extract(day from GigDate) = #{day} and EXISTS (SELECT 1 from GSET where GIG.GIGID = GSET.GIGID)")
     end
 
   end
