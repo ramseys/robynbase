@@ -21,7 +21,6 @@ $(window).on("load", function(e) {
 
   // hide show advanced options in list page
   $(".album-list .advanced-options-header").on("click", function(e) {
-    console.log("hello!");
     const header = $(e.target).parents(".advanced-options-header");
     const criteriaBlock = header.next();
     criteriaBlock.toggleClass("expanded");

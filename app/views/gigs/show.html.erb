@@ -122,6 +122,15 @@
         <dd><%= @gig.BilledAs.present? ? @gig.BilledAs : 'Robyn Hitchcock' %> </dd>
       </dl>
 
+      <% if @gig.GigType.present? %>
+
+        <dl class="dl-horizontal">
+          <dt>Gig Type</dt>
+          <dd><%= @gig.GigType %></dd>
+        </dl>
+
+      <% end %>
+
       <% if @gig.Guests.present? %>
 
         <dl class="dl-horizontal">

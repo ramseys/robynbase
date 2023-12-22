@@ -386,9 +386,8 @@ dl {
   .criteria {
 
     .header-name {
-      font-style: italic;
       font-size: 13px;
-      font-weight: normal;
+      font-weight: strong;
     }
 
     .criteria-body {
@@ -572,4 +571,14 @@ table.image-table {
     vertical-align: middle;
   }
 
+}
+
+.about {
+  .date-list {
+    display: flex;
+    gap: 10px;
+  }
+  span:first-of-type {
+    font-weight: bold;
+  }
 }
