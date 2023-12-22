@@ -38,12 +38,11 @@
               <!-- media types -->
               <div class="col-sm-12">
 
-                <div class="criteria dates">
-                  <div class="header-name">Gig happened</div>
+                <div class="criteria">
 
                   <div class="criteria-body" >
 
-                    <span>within</span>
+                    <span class="header-name">Gig Date within: </span>
 
                     <span>
                       <%= text_field_tag :gig_range, params['gig_range'], { :size => 4 } %>
@@ -61,6 +60,13 @@
                     <span>of</span>
 
                     <%= date_field_tag :gig_date, params['gig_date'], { :size => 11, :placeholder => "mm/dd/yyyy" } %>
+
+                    <br/> <br/>
+
+                    <div>
+                      <span class="header-name">Gig Type: </span> 
+                      <%= select_tag :gig_type, options_for_select(Gig::GIG_TYPES, params['gig_type']), { include_blank: "All" } %>
+                    </div>
 
                   </div>
 

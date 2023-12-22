@@ -9,6 +9,8 @@ class Gig < ApplicationRecord
 
   self.table_name = "GIG"
 
+  GIG_TYPES = ["Concert", "Online", "Radio", "Televison", "In-Store", "Promotional"]
+
   has_many :gigsets, -> {order 'Chrono'}, foreign_key: "GIGID", dependent: :delete_all
   has_many :gigmedia, -> {order 'Chrono'}, foreign_key: "GIGID", dependent: :delete_all, class_name: 'GigMedium'
   has_many :songs, through: :gigsets, foreign_key: "GIGID"
@@ -48,7 +50,7 @@ class Gig < ApplicationRecord
     end
   end
 
-  def self.search_by(kind, search, date_criteria = nil)
+  def self.search_by(kind, search, date_criteria = nil, type = nil)
 
     logger.info ("::::::::::: gigs: #{search}")
 
@@ -80,9 +82,6 @@ class Gig < ApplicationRecord
 
       gigs = left_outer_joins(:venue).where(conditions.join(" OR "), *Array.new(conditions.length, "%#{search}%"))
 
-      # sort final results by date
-      gigs.includes(:venue).sort { |x,y | x.GigDate <=> y.GigDate }
-
     else
       gigs = all.includes(:venue)
       
@@ -98,7 +97,12 @@ class Gig < ApplicationRecord
 
     end
 
-    gigs
+    if type.present?
+      gigs = gigs.where(:gigType => type)
+    end
+
+    # sort final results by date
+    gigs.order(GigDate: :asc)
 
   end
 
