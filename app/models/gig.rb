@@ -9,7 +9,7 @@ class Gig < ApplicationRecord
 
   self.table_name = "GIG"
 
-  GIG_TYPES = ["Concert", "Online", "Radio", "Televison", "In-Store", "Promotional"]
+  GIG_TYPES = ["Concert", "Online", "Radio", "Televison", "In-Store", "Promotional", "Podcast"]
 
   has_many :gigsets, -> {order 'Chrono'}, foreign_key: "GIGID", dependent: :delete_all
   has_many :gigmedia, -> {order 'Chrono'}, foreign_key: "GIGID", dependent: :delete_all, class_name: 'GigMedium'

@@ -24,7 +24,7 @@
 
 // });
 
-$(window).on("load", function() { 
+$(window).on("DOMContentLoaded", function() { 
 
   const currentPage = window.location.pathname.substring(1);
 
@@ -49,6 +49,16 @@ $(window).on("load", function() {
 
   });
 
+  // set all hrefs in notes/comments sections to open in a new tab/window
+  $(".notes-section a").each((index, anchor) => {
+    $(anchor).attr("target", "_blank");
+  });
+
+  // show overlays when hovering over images / image galleries
+  $(".image-box")
+    .on("mouseenter", (e) => { $(e.currentTarget).addClass("overlay")})
+    .on("mouseleave", (e) => { $(e.currentTarget).removeClass("overlay")});
+
   // note that this event is delegated to the body of main search tables, and selects for tr's; 
   // we need to do this (instead of attaching the events to the rows directly) because the rows might
   // not be there when this event handler is declared (eg, because of grid paging)
@@ -61,9 +71,9 @@ $(window).on("load", function() {
 
   });
    
-  // add lightbox for any on this day image (if present)
+  // add lightbox for any image galleries
   $().fancybox({
-    selector : 'a.gig-images',
+    selector : 'a.image-gallery',
     loop: true
   });
 
