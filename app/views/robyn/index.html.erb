@@ -82,7 +82,7 @@
         
           <% if selected_gig.images.attached? %>
             <div class="gig-image">
-              <a class="gig-images images" href="<%= polymorphic_url(selected_gig.images.first) %>">
+              <a class="image-gallery images" href="<%= polymorphic_url(selected_gig.images.first) %>">
                 <%= image_tag selected_gig.images.first.variant(resize: "200x200") %>
               </a>
             </div>

@@ -40,46 +40,7 @@
 
 <% if @gig.images.attached? %>
 
-<div class="image-container">
-
-  <div>
-    
-    <a class="gig-images images" href="<%= polymorphic_url(@gig.images.first) %>">
-
-      <%# make sure this is an image type that active storage knows how to transform%>
-      <% if @gig.images.first.variable? %>
-        <%= image_tag @gig.images.first.variant(resize: "300x300") %>
-      <% else %>  
-        <%= image_tag @gig.images.first, height: "300px" %>
-      <% end %>
-
-    </a>
-    
-    <br/>
-    
-    <% if @gig.images.length > 1 %>
-      <div style="text-align: center; overflow: hidden">
-        <small class="subsidiary-info" >Click to see image gallery</small>
-      </div>
-    <% end %>
-  
-    <% if @gig.images.length > 1 %>
-  
-      <div style="display: none">
-  
-        <% @gig.images.drop(1).each do |img| %>
-          <a class="gig-images images" href="<%= polymorphic_url(img) %>">
-            <%= image_tag img, style: "width: 300px" %>
-          </a>
-        <% end %>
-  
-      </div>  
-
-    <% end %>
-    
-  </div>
-
-</div>
+<%= render :partial => 'robyn/image_section', :locals => { object: @gig } %>
 
 <% end %>
 
@@ -147,7 +108,7 @@
 <% if @gig.ShortNote.present? %>
 
   <!-- notes about the gig -->
-  <div style="margin-top: 30px">
+  <div style="margin-top: 30px" class="notes-section">
     
     <a class="anchor" name="notes"></a>
     <h3 class="section-header"> Notes </h3>
@@ -256,7 +217,7 @@
 <% if @gig.get_reviews.present? %>
 
   <!-- reviews-->
-  <div style="margin-top: 30px">
+  <div style="margin-top: 30px" class="notes-section">
 
     <a class="anchor" name="reviews"></a>
     <h3 class="section-header"> Reviews </h3>

@@ -12,16 +12,6 @@ window.$(window).on("DOMContentLoaded", function(e) {
     return header.find(".advanced-options-disclosure").toggleClass("bi-caret-right-fill bi-caret-down-fill");
   });
 
-  // debugger
-
-  // set up gig images lightbox
-  // $("a.gig-images").attr("rel", "gallery").fancybox();
-
-  $().fancybox({
-    selector : 'a.gig-images',
-    loop: true
-  });
-
 
   // Adds a song selection dropdown, containing all available songs
   const addGigSongSelector = function(parent, index) {

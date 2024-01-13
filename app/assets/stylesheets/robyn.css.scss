@@ -415,8 +415,7 @@ dl {
 
 .subsidiary-info {
   margin-left: 5px;
-  color: gray;
-  font-style: italic;
+  font-size: 14px;
 }
 
 /* used to position href anchors to take the fixed header into account (http://goo.gl/HyQBPH) */
@@ -488,13 +487,16 @@ dl {
 }
 
 .robyn-page {
-
+  
   .row {
     margin-bottom: 30px;
   }
 
-
   .image-container {
+
+    & > div {
+      display: inline-block;
+    }
 
     padding: 0 0 20px 0;
 
@@ -506,9 +508,19 @@ dl {
   }
 
   .images {
+
+    // disable focus ring around images (only seems to be needed by safari)
+    &:active, &:focus {
+      outline: 0;
+      border: none;
+      -moz-outline-style: none;
+    }
+
     img {
       border: 1px solid #dddddd;
+      border-radius: 5px;
     }
+
   }
 
   .song-list-section {
@@ -581,4 +593,77 @@ table.image-table {
   span:first-of-type {
     font-weight: bold;
   }
+}
+
+.image-box {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  border: 1px solid rgba(198, 195, 188, 0.48);
+  border-radius: 5px;
+  // z-index: 5;
+  
+  div {
+    position: relative;
+  }
+
+  &.overlay {
+
+    position: relative;
+    
+    div::before {
+      content: "Show Gallery";
+      cursor: pointer;
+      z-index: 40;
+      font-size: 24px;
+      color: white;
+      width: 100%;
+      height: 100%;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      border: 1px solid white;
+      border-radius: 5px;
+      align-items: last baseline;
+      position: absolute;
+      background: linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 100%);
+      // background-color: gray;
+      // opacity: 50%;
+      flex-wrap: nowrap;
+      flex-direction: row;
+    }
+
+    &.single {
+      div::before {
+        content: "Expand"
+      }
+    }
+
+  }
+
+  &.multiple {
+
+    position: relative;
+    z-index: 0;
+
+    &::before {
+      content: "";
+      background-color: #c0bec9b0;
+      position: absolute;
+      display: flex;
+      width: 100%;
+      height: 100%;
+      margin-left: 5px;
+      margin-top: -5px;
+      border-radius: 5px;
+      border: 1px solid rgba(198, 195, 188, 0.48);
+    }
+
+    img {
+      z-index: 20;
+      position: relative;
+    }
+
+  }
+
 }
