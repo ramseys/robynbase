@@ -40,7 +40,7 @@ set :pty, true
 
 # had to do this because i don't have any indication in the home directory
 # of which version of ruby rvm is on
-set :rvm1_ruby_version, 'ruby-2.7.2'
+set :rvm1_ruby_version, 'ruby-2.7.8'
 
 # this is used by the built-in 'deploy:symlink:linked_files'. links up the
 # shared database.yml file to the latest release
