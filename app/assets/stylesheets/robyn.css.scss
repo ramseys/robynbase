@@ -481,6 +481,7 @@ dl {
 }
 
 .homepage-heading {
+
     margin: auto;
     width: 50%;
     text-align: center;
@@ -500,6 +501,12 @@ dl {
 
 .homepage-blurb {
     
+    display: none;
+
+    @media only screen and (min-height: 680px) {
+        display: block;
+    }
+
     position: fixed;
     bottom: 0;
     left: 0;
