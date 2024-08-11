@@ -132,6 +132,9 @@ class Gig < ApplicationRecord
 
     gigs.where.not(:venue => nil)
 
+    # sort final results by date
+    gigs.order(GigDate: :asc)
+
   end
 
   # get the number of venues gigs have been performed at
@@ -165,9 +168,9 @@ class Gig < ApplicationRecord
 
   def self.quick_query_gigs_with_reviews(no_reviews)
     if (no_reviews.nil?)
-      where("Reviews IS NOT NULL AND Reviews <> ''").order(:GigDate)
+      where("Reviews IS NOT NULL AND Reviews <> ''")
     else 
-      where("Reviews IS NULL OR Reviews = ''").order(:GigDate)
+      where("Reviews IS NULL OR Reviews = ''")
     end
   end
 
@@ -183,7 +186,7 @@ class Gig < ApplicationRecord
         "((#{sets_with_media.to_sql}) UNION (#{gigs_with_media.to_sql})) AS GIG"
       }
 
-      Gig.from(sql).order(:GigDate)
+      Gig.from(sql)
 
     # gigs with no media
     else
@@ -202,14 +205,14 @@ class Gig < ApplicationRecord
       no_media_both = no_gig_media & no_song_media
 
       # convert the array of the intersection of no gig media and no song (gigset) media back into a relation
-      Gig.where(gigid: no_media_both.map(&:GIGID)).order(:GigDate)
+      Gig.where(gigid: no_media_both.map(&:GIGID))
 
     end
     
   end
 
   def self.quick_query_gigs_with_images
-    joins("JOIN active_storage_attachments asa").where("asa.record_type = 'Gig' and asa.record_id = GIG.GIGID").distinct.order(:GigDate)
+    joins("JOIN active_storage_attachments asa").where("asa.record_type = 'Gig' and asa.record_id = GIG.GIGID").distinct
   end
 
   # returns all gigs that occured on the given day (ie, the give day/month, ignoring year).
@@ -224,10 +227,13 @@ class Gig < ApplicationRecord
     end
 
     if allow_empty_sets 
-      Gig.where("extract(month from GigDate) = #{month} and extract(day from GigDate) = #{day}")
+      gigs = Gig.where("extract(month from GigDate) = #{month} and extract(day from GigDate) = #{day}")
     else
-      Gig.where("extract(month from GigDate) = #{month} and extract(day from GigDate) = #{day} and EXISTS (SELECT 1 from GSET where GIG.GIGID = GSET.GIGID)")
+      gigs = Gig.where("extract(month from GigDate) = #{month} and extract(day from GigDate) = #{day} and EXISTS (SELECT 1 from GSET where GIG.GIGID = GSET.GIGID)")
     end
+
+    # sort final results by date
+    gigs.order(GigDate: :asc)
 
   end
 

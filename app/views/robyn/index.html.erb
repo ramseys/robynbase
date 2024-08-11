@@ -1,19 +1,24 @@
 <div class="main-page">
 
+  <div class="homepage-heading">
+    <h1>The Asking Tree</h1>
+    <p>A Robyn Hitchcock Catalog </p>
+  </div>
+    
   <%= form_tag('/robyn/index', :method => 'GET', :class => 'main-search', :id => 'main-search') do %>
 
     <div class="search-block">
-    <%= text_field_tag :search_value, params['search_value'], 
-                       :class => 'typeahead', 
+    <%= text_field_tag :search_value, params['search_value'],
+                       :class => 'typeahead',
                        :placeholder => 'Search Everything' %>
     </div>
-    
+
   <% end %>
 
   <!-- omnisearch results -->
   <% if [@songs, @compositions, @gigs, @venues].any? { |a| not a.nil? } %>
 
-    <% if [@songs, @compositions, @gigs, @venues].all? { |a| a.empty? } %> 
+    <% if [@songs, @compositions, @gigs, @venues].all? { |a| a.empty? } %>
 
       <%= render partial: '/robyn/nothing_found' %>
 
@@ -46,16 +51,15 @@
     <% end %>
 
   <% else %>
-  
 
-    <% 
+    <%
 
       # random day requested?
       if request.query_parameters["random_otd"].present? then
         today = Date.today - (rand * (40 * 365))
         today_gigs = Gig.quick_query_gigs_on_this_day(today.month, today.day, false)
 
-      # specific gig requested?  
+      # specific gig requested?
       elsif request.query_parameters["gig_id_otd"].present?
         today_gigs = [Gig.find(request.query_parameters["gig_id_otd"])]
         today = today_gigs.first.GigDate
@@ -67,7 +71,7 @@
       end
 
       selected_gig = today_gigs[rand(today_gigs.length)]
-    
+
     %>
 
     <% if today_gigs.present? %>
@@ -79,7 +83,7 @@
         </div>
 
         <div class="blurb">
-        
+
           <% if selected_gig.images.attached? %>
             <div class="gig-image">
               <a class="image-gallery images" href="<%= polymorphic_url(selected_gig.images.first) %>">
@@ -97,7 +101,6 @@
         <div class="footer">
           <%= on_this_day_footer(selected_gig) %>
         </div>
-
 
       </div>
 
@@ -127,9 +130,17 @@
             <div class="modal-footer">
               <button type="submit" class="btn btn-primary">Show</button>
             </div>
-          <% end %> 
+          <% end %>
         </div>
       </div>
+    </div>
+
+    <div class="homepage-blurb">
+    <p>
+      The Asking Tree is powered by Robynbase.<br/>
+      Brought to you by Robyn Hitchcock fans since 1994.<br/>
+      <a href="/about">Learn More</a>.
+    </p>
     </div>
 
   <% end %>
