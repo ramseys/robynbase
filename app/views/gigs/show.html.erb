@@ -163,8 +163,7 @@
         <% case gig_medium.mediatype
         
           when GigMedium::MEDIA_TYPE["YouTube"] %>
-            <iframe id="ytplayer" type="text/html" width="640" height="480" src="https://www.youtube.com/embed/<%=gig_medium.mediaid%>" frameborder="0"></iframe>
-
+            <lite-youtube id="ytplayer" videoid="<%=gig_medium.mediaid%>"></lite-youtube>
           <% when GigMedium::MEDIA_TYPE["ArchiveOrgVideo"], GigMedium::MEDIA_TYPE["ArchiveOrgPlaylist"]%>
             <iframe src="https://archive.org/embed/<%=gig_medium.mediaid%><%=gig_medium.mediatype === GigMedium::MEDIA_TYPE["ArchiveOrgPlaylist"] ? "?playlist=1&list_height=200"  : ""%>" 
                     height="<%= gig_media_embed_height(gig_medium) %>"

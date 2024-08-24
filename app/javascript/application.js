@@ -4,6 +4,7 @@ import './src/jquery.js'
 
 import './vendor/typeahead.js';
 import '@fancyapps/fancybox';
+import 'lite-youtube-embed/src/lite-yt-embed.js';
 
 import * as bootstrap from "bootstrap"
 
