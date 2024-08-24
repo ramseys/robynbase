@@ -232,9 +232,9 @@ class GigsController < ApplicationController
       # if a full youtube link was provided, extract the id
       if b[:mediatype].to_i === GigMedium::MEDIA_TYPE["YouTube"]
         if b[:mediaid][/watch\?/].present?
-          b[:mediaid] = b[:mediaid][/v=([^&]*)/, 1]
+          b[:mediaid] = b[:mediaid][/v=([^&?]*)[\?]/, 1]
         elsif b[:mediaid][/youtu\.be/].present?
-          b[:mediaid] = b[:mediaid][/youtu\.be\/([^&]*)/, 1]
+          b[:mediaid] = b[:mediaid][/youtu\.be\/([^&?]*)/, 1]
         end
         
       # if a full archive.org "details" link was provided, extract the id
