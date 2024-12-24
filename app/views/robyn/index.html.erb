@@ -26,26 +26,38 @@
 
       <!-- gigs -->
       <% if @gigs.present? %>
-        <h3 class="main-header">Gigs</h3>
-        <%= render partial: '/gigs/gig_list', locals: { gigs: @gigs, table_id: "gig-omni", suppress_header: false, use_paging: true, page_length: 20 } %>
-      <% end %>
+        <div class="row">
+          <div class="col-sm-12">
+            <%= render partial: '/gigs/gig_list', locals: { gigs: @gigs, table_id: "gig-omni", suppress_header: false, use_paging: true, page_length: 20 } %>
+          <% end %>
+        </div>
+      </div>
 
       <!-- songs -->
       <% if @songs.present? %>
-        <h3 class="main-header">Songs</h3>
-        <%= render partial: '/songs/song_list', locals: { songs: @songs, table_id: "song-omni", use_paging: true, page_length: 20 } %>
+        <div class="row">
+          <div class="col-sm-12">
+            <%= render partial: '/songs/song_list', locals: { songs: @songs, table_id: "song-omni", use_paging: true, page_length: 20 } %>
+          </div>
+        </div>
       <% end %>
 
       <!-- albums -->
       <% if @compositions.present? %>
-        <h3 class="main-header">Releases</h3>
-        <%= render partial: '/compositions/release_list', locals: { albums: @compositions, table_id: "album-omni", suppress_header: false, use_paging: true, page_length: 20 } %>
+        <div class="row">
+          <div class="col-sm-12">
+            <%= render partial: '/compositions/release_list', locals: { albums: @compositions, table_id: "album-omni", suppress_header: false, use_paging: true, page_length: 20 } %>
+          </div>
+        </div>
       <% end %>
 
       <!-- venues -->
       <% if @venues.present? %>
-        <h3 class="main-header">Venues</h3>
-        <%= render partial: '/venues/venue_list', locals: { venues: @venues, table_id: "venue-omni", suppress_header: false, use_paging: true, page_length: 20 } %>
+        <div class="row">
+          <div class="col-sm-12">
+            <%= render partial: '/venues/venue_list', locals: { venues: @venues, table_id: "venue-omni",  suppress_header: false, use_paging: true, page_length: 20 } %>
+          </div>
+        </div>
       <% end %>
 
     <% end %>

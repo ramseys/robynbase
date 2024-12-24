@@ -14,6 +14,7 @@ $(document).ready(function(e) {
     // on the table definition
     const tableId = table.data("id");
     const tableSort = table.data("custom-order");
+    const tableName = table.data("table-name");
 
     // look for any previous sorts for this grid (in the current session)
     const orderCookieRaw = Cookies.get("order-" + tableId);
@@ -35,20 +36,23 @@ $(document).ready(function(e) {
 
       // hide the pagination controls if the table only has one page
       // (solution taken from http://stackoverflow.com/a/12393232)
-      fnDrawCallback(oSettings) {
-        if (oSettings._iDisplayLength > oSettings.fnRecordsDisplay()) {
-          $(oSettings.nTableWrapper).find('.dataTables_paginate').hide();
-        }
-      },
           
       // put the "results per page" control below the grid (when paging is active)
-      sDom: '<"top">rt<"bottom"flp><"clear">',
 
       // the column to sort by, and the sort direction
       order,
 
       // render each row as it arrives, rather than pre-rendering the whole table (supposedly faster)
-      deferRender: true
+      deferRender: true,
+
+      layout: {
+        topStart: {
+          div: {
+            html: `<h3 class='section-header'>${tableName}</h3>`,
+          }
+        },
+        topEnd: "search",
+      },
 
     }).on("order.dt", function(e, settings) {
     
