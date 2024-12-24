@@ -78,9 +78,8 @@
   <div class="content-section gig-section">
 
     <a class="anchor" name="gigs"></a>
-    <h3 class="section-header"> Gigs </h4>
 
-    <%= render partial: '/gigs/gig_list', locals: {gigs: @venue.gigs, table_id: "gig-venue", use_paging: true } %>
+    <%= render partial: '/gigs/gig_list', locals: {gigs: @venue.gigs, table_id: "gig-venue", use_paging: true, show_search: true } %>
 
   </div>
 
