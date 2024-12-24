@@ -4,7 +4,7 @@
 <% page_length = 10 unless local_assigns.has_key? :page_length %>
 <% table_id = "" unless local_assigns.has_key? :table_id %>
 
-<table class="row-border stripe table-hover main-search-list" data-id="<%= table_id %>" data-paging="<%= use_paging %>" data-searching="<%= show_search %>" data-page-length="<%= page_length %>" data-length-change="false" data-ordering="true" data-custom-order="<%= get_initial_sort() %>">
+<table class="row-border stripe table-hover main-search-list" data-id="<%= table_id %>" data-table-name="Releases" data-paging="<%= use_paging %>" data-searching="<%= show_search %>" data-page-length="<%= page_length %>" data-length-change="false" data-ordering="true" data-custom-order="<%= get_initial_sort() %>">
 
   <% if not suppress_header %>
     <thead>

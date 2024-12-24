@@ -6,6 +6,8 @@
 <div class="row">
   <div class="col-sm-10">
 
+    <% performance_info = @song.performance_info %>
+
     <h2><%= @song.full_name %> 
 
       <small>
@@ -76,10 +78,25 @@
 
       <% end %>
 
-      <dl class="dl-horizontal">
-        <dt>Performances</dt>
-        <dd><%= @song.gigs.distinct.count %></dd>
-      </dl>
+      <% if performance_info["total"] > 1 %>
+
+        <div>
+          According to our records, Robyn has played this song <%= @song.gigs.distinct.length %> times, most recently at <a href="<%= gig_path(performance_info["last"])%>%"><%= performance_info["last"].Venue %></a>
+          on <%= performance_info["last"].GigDate.to_date.to_formatted_s(:long) %>. 
+
+          He first performed it at <a href="<%= gig_path(performance_info["first"])%>"><%= performance_info["first"].Venue %></a>
+          on <%= performance_info["first"].GigDate.to_date.to_formatted_s(:long) %>, <%= performance_info["duration"] %> earlier.
+        </div>
+
+      <% elsif performance_info["total"] == 1 %>
+
+        <div>
+          Robyn has only performed this song once, at <a href="<%= gig_path(performance_info["first"])%>"><%= performance_info["first"].Venue %></a>,
+          on <%= performance_info["first"].GigDate.to_date.to_formatted_s(:long) %>.
+        </div>
+
+      <% end%>
+
       
     </div>
 
@@ -95,8 +112,7 @@
   <div class="col-sm-12">
 
     <a class="anchor" name="albums"></a>
-    <h3 class="section-header">Releases</h4>
-    <%= render partial: '/compositions/release_list', locals: {albums: @song.get_albums, table_id: "album-song", use_paging: true, show_search: false} %>
+    <%= render partial: '/compositions/release_list', locals: {albums: @song.get_albums, table_id: "album-song", use_paging: true, show_search: true} %>
 
   </div>
 
@@ -113,8 +129,7 @@
   <div class="col-sm-12">
 
     <a class="anchor" name="gigs"></a>
-    <h3 class="section-header">Gigs</h4>
-    <%= render partial: '/gigs/gig_list', locals: {gigs: @song.gigs.distinct, table_id: "gig-song", use_paging: true, show_search: false} %>
+    <%= render partial: '/gigs/gig_list', locals: {gigs: @song.gigs.distinct, table_id: "gig-song", show_search: true, use_paging: true} %>
 
   </div>
 

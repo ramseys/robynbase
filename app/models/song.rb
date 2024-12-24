@@ -88,6 +88,41 @@ class Song < ApplicationRecord
     end
   end
 
+  def performance_info
+    
+    sorted_gigs = self.gigs.distinct.order(:GigDate => "asc")
+
+    duration_text = nil
+
+    # figure out the amount of time between the first and latest performances of 
+    # this song
+    if sorted_gigs.length > 1 
+
+      duration = sorted_gigs.last.GigDate.to_date - sorted_gigs.first.GigDate.to_date
+      duration_text = ""
+      
+      ActiveSupport::Duration.build(duration.to_i * 86400).parts.each_pair do |key, value|
+        if key == :years
+          duration_text += "#{value} #{"year".pluralize(value)}"
+        elsif key == :months
+          if not duration_text.empty? then
+            duration_text += " and "
+          end
+          duration_text += "#{value} #{"month".pluralize(value)}"
+        end
+      end
+
+    end
+
+    {
+      "total" => sorted_gigs.count,
+      "first" => sorted_gigs.first,
+      "last" => sorted_gigs.last,
+      "duration" => duration_text
+    }
+
+  end
+
   def self.parse_song_name(name)
     
     words = name.split(/\s+/)
