@@ -110,7 +110,10 @@ class Song < ApplicationRecord
           end
           duration_text += "#{value} #{"month".pluralize(value)}"
         end
+
       end
+
+      duration_text += " earlier" unless duration_text.empty?
 
     end
 
