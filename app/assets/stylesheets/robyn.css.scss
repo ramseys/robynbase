@@ -132,6 +132,12 @@ table.main-search-list {
 .section-header {
     padding-bottom: 3px;
     font-size: 18px;
+
+    &.data-table {
+        padding-top: 4px;
+        padding-bottom: initial;
+    }
+
 }
 
 .main-search {

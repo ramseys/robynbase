@@ -81,11 +81,12 @@
       <% if performance_info["total"] > 1 %>
 
         <div>
-          According to our records, Robyn has played this song <%= @song.gigs.distinct.length %> times, most recently at <a href="<%= gig_path(performance_info["last"])%>%"><%= performance_info["last"].Venue %></a>
+          According to our records, Robyn has played this song <%= @song.gigs.distinct.length %> times, most recently at <a href="<%= gig_path(performance_info["last"])%>"><%= performance_info["last"].Venue %></a>
           on <%= performance_info["last"].GigDate.to_date.to_formatted_s(:long) %>. 
 
           He first performed it at <a href="<%= gig_path(performance_info["first"])%>"><%= performance_info["first"].Venue %></a>
-          on <%= performance_info["first"].GigDate.to_date.to_formatted_s(:long) %>, <%= performance_info["duration"] %> earlier.
+          on <%= performance_info["first"].GigDate.to_date.to_formatted_s(:long) %><%= performance_info["duration"].present? ? ", #{performance_info["duration"]}" : ""%>.
+
         </div>
 
       <% elsif performance_info["total"] == 1 %>

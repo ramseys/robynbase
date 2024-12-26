@@ -9,8 +9,8 @@
   <% if not suppress_header %>
     <thead>
     <tr>
-      <th>Billed As</th>
       <th>Venue</th>
+      <th>Billed As</th>
       <th>City</th>
       <th>State</th>
       <th>Country</th>
@@ -24,8 +24,8 @@
 
   <% for gig in gigs %>
     <tr data-path="<%= gig_path(gig) %>">
-      <td class="main-column"> <%= gig.BilledAs.present? ? gig.BilledAs : 'Robyn Hitchcock' %> </td>
-      <td> <%= gig.Venue %> </td>
+      <td class="main-column"> <%= gig.Venue %> </td>
+      <td> <%= gig.BilledAs.present? ? gig.BilledAs : 'Robyn Hitchcock' %> </td>
       <td> <%= gig.venue.nil? ? nil : gig.venue.City %> </td>
       <td> <%= gig.venue.nil? || gig.venue.State.nil? ? nil : gig.venue.State %> </td>
       <td> <%= gig.venue.nil? ? nil : gig.venue.Country %> </td>

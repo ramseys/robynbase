@@ -51,7 +51,12 @@ $(document).ready(function(e) {
             html: `<h3 class='section-header'>${tableName}</h3>`,
           }
         },
-        topEnd: "search",
+        topEnd: {
+          search: {
+            text: "",
+            placeholder: "Search"
+          }
+        }
       },
 
     }).on("order.dt", function(e, settings) {
