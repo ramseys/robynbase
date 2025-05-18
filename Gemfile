@@ -5,6 +5,11 @@ gem 'rails', '~> 7.1.0'
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
+# pin stringio to v 0.1.0 — this gets us around an issue where two stringio instances
+# exist at the same time ("Error: The application encountered the following error: You have
+# already activated stringio 0.1.0, but your Gemfile requires stringio 3.1.7.")
+gem "stringio", "0.1.0"
+
 # gem 'sqlite3'
 gem 'mysql2', '0.5.6'
 
