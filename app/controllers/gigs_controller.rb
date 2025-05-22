@@ -1,5 +1,5 @@
 class GigsController < ApplicationController
-  
+
   include ImageUtils
 
   authorize_resource :only => [:new, :edit, :update, :create, :destroy]
@@ -56,7 +56,7 @@ class GigsController < ApplicationController
     elsif params[:venue_id].present?
 
       @gigs = Gig.get_gigs_by_venueid(params[:venue_id])
-      
+
     else
       params[:search_type] = "venue"
     end
@@ -83,7 +83,7 @@ class GigsController < ApplicationController
    # prepare gig update page
   def edit
 
-    @gig = Gig.find(params[:id]) 
+    @gig = Gig.find(params[:id])
 
     # get a list of all songs (for the songs selection dropddown)
     @song_list = Song.order(:Song).collect{|s| [s.full_name, s.SONGID]}
@@ -92,16 +92,16 @@ class GigsController < ApplicationController
 
   end
 
-  
+
   # create a new gig
   def create
-    
+
     params, setlist_songs, media = prepare_params()
-  
+
     optimize_images(params)
-      
+
     @gig = Gig.new(params)
-    
+
     if @gig.save
 
       if setlist_songs.present?
@@ -111,9 +111,9 @@ class GigsController < ApplicationController
       if media.present?
         @gig.gigmedia.create(media)
       end
-      
+
       redirect_to(@gig)
-      
+
     else
       # This line overrides the default rendering behavior, which
       # would have been to render the "create" view.
@@ -123,11 +123,11 @@ class GigsController < ApplicationController
   end
 
   # update existing gig
-  def update 
-    
+  def update
+
     gig = Gig.find(params[:id])
 
-    filtered_params, setlist_songs, media = prepare_params()
+    filtered_params, setlist_songs, media, images = prepare_params(true)
 
     # purge images marked for removal
     purge_marked_images(params)
@@ -148,10 +148,18 @@ class GigsController < ApplicationController
       gig.gigmedia.build(media)
     end
 
-    gig.update(filtered_params)
-    
+    if gig.update(filtered_params) then
+
+      # if there are any image updates, attach them to the gig
+      # note: we can't rely on the model to do this for us, because rails
+      # will always replace existing images with the new ones; we need to
+      # append these to exiting images
+      gig.images.attach(images) if images.present?
+
+    end
+
     redirect_to(gig)
-    
+
   end
 
   def destroy
@@ -173,7 +181,7 @@ class GigsController < ApplicationController
   end
 
   private
-  
+
   def return_to_previous_page(gig)
     previous_page = session.delete(:return_to_gig)
     if previous_page.present?
@@ -192,7 +200,7 @@ class GigsController < ApplicationController
   # 1. Order songs by giving each the appropriate "Chrono" index
   # 2. Save denormalized song in GigSet table
   def prepare_setlist(setlist_songs, starting_index, encore)
-    
+
     last_index = starting_index
 
     # loop through every song in the setlist in order (non-encore or encore), normalizing their sequence numbers
@@ -204,7 +212,7 @@ class GigsController < ApplicationController
       b["Chrono"] = (last_index * 10).to_s
 
       # if there's no override song name, add in the real song name
-      if b["SONGID"].present? 
+      if b["SONGID"].present?
         b["Song"] = Song.find(b["SONGID"].to_i).full_name if b["Song"].empty?
       end
 
@@ -219,7 +227,7 @@ class GigsController < ApplicationController
   end
 
   def prepare_media(media_links)
-    
+
     # loop through every media item in order, normalizing their sequence numbers
     media_links.values.sort_by{|a| a["Chrono"].to_i }.each_with_index do |b, i|
 
@@ -236,14 +244,14 @@ class GigsController < ApplicationController
         elsif b[:mediaid][/youtu\.be/].present?
           b[:mediaid] = b[:mediaid][/youtu\.be\/([^&?]*)/, 1]
         end
-        
+
       # if a full archive.org "details" link was provided, extract the id
-      elsif b[:mediatype].to_i === GigMedium::MEDIA_TYPE["ArchiveOrgVideo"] or 
-         b[:mediatype].to_i === GigMedium::MEDIA_TYPE["ArchiveOrgPlaylist"] and 
+      elsif b[:mediatype].to_i === GigMedium::MEDIA_TYPE["ArchiveOrgVideo"] or
+         b[:mediatype].to_i === GigMedium::MEDIA_TYPE["ArchiveOrgPlaylist"] and
          b[:mediaid][/\/details\/.*/].present?
 
         b[:mediaid] = b[:mediaid][/\/details\/(.*)$/, 1]
-  
+
       # if a vimeo link was provided, extract the id
       elsif b[:mediatype].to_i === GigMedium::MEDIA_TYPE["Vimeo"] and
             b[:mediaid][/vimeo\.com\//].present?
@@ -262,20 +270,21 @@ class GigsController < ApplicationController
 
   end
 
-  # Massage incoming params for saving. 
+  # Massage incoming params for saving.
   #
   # 1. Orders the songs in the setlists and encores
   # 2. Save denormalized vendor name in Gig table
   # 3. Save denormalized gig year in Gig table
-  def prepare_params
+  # 4. Optionally extracts attaches images into a separate return value
+  def prepare_params(extract_images = false)
 
     new_params = gig_params()
-            
+
     # loop through all the non-encore songs
     setlist_songs = new_params["gigsets_attributes"]
 
     # renumber the setlists chronologically (both non-encore and encore)
-    if setlist_songs.present?      
+    if setlist_songs.present?
       start_encore_index = prepare_setlist(setlist_songs, 1, false)
       prepare_setlist(setlist_songs, start_encore_index, true)
     end
@@ -296,9 +305,18 @@ class GigsController < ApplicationController
     # extract the year from the date
     new_params["GigYear"] = Time.new(params["gig"]["GigDate"]).year
 
-    return [new_params, 
-            setlist_songs.present? ? setlist_songs.values : nil, 
-            media.present? ? media.values : nil]
+    # if requested, extract images into a separate variable
+    if extract_images then
+      images = new_params["images"]
+      if (images.present?) then
+        new_params.delete("images")
+      end
+    end
+
+    return [new_params,
+            setlist_songs.present? ? setlist_songs.values : nil,
+            media.present? ? media.values : nil,
+            images]
 
   end
 
@@ -312,19 +330,19 @@ class GigsController < ApplicationController
              deleted_img_ids: [],
              gigsets_attributes: [ :Chrono, :SONGID, :Song, :VersionNotes, :Encore, :MediaLink],
              gigmedia_attributes: [ :Chrono, :title, :mediaid, :mediatype ]).tap do |params|
-          
+
           # every gig needs at least a venue id and a date
           params.require([:VENUEID, :GigDate])
 
           # every item in a setlist requires a sequence number
-          if params["gigsets_attributes"].present? 
+          if params["gigsets_attributes"].present?
             params["gigsets_attributes"].each do |key, params|
               params.require([:Chrono])
             end
           end
 
           # every item in a media list requires a sequence number and a media identifier
-          if params["gigmedia_attributes"].present? 
+          if params["gigmedia_attributes"].present?
             params["gigmedia_attributes"].each do |key, params|
               params.require([:Chrono])
               params.require([:mediaid])
@@ -332,8 +350,7 @@ class GigsController < ApplicationController
           end
 
       end
-              
-          
+
   end
 
 end
