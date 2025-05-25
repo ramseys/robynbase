@@ -1,5 +1,5 @@
 # config valid only for current version of Capistrano
-lock '3.3.5'
+lock '3.19.2'
 
 set :application, 'robynbase'
 
@@ -9,11 +9,8 @@ set :repo_url, 'https://github.com/ramseys/robynbase.git'
 # Default branch is :master
 # ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call
 
-#where on the server we're deploying to
+# where on the server we're deploying to
 set :deploy_to, '/var/www/robynbase'
-
-# Default value for :scm is :git
-set :scm, :git
 
 # Pull app out of the master branch on github
 set :branch, "master"
