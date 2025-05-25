@@ -61,9 +61,9 @@ gem "cssbundling-rails", "~> 1.1"
 # gem 'capistrano'
 
 group :development do
-  gem 'capistrano', '3.3.5'
+  gem 'capistrano', '3.19.2', require: false
   gem "puma"
-  gem 'capistrano-rails', '1.1.3'
+  gem 'capistrano-rails', '1.7.0', require: false
   gem 'rvm1-capistrano3', require: false
   gem 'web-console'
   gem 'byebug'

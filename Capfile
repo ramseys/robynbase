@@ -13,6 +13,9 @@ require 'capistrano/bundler'
 # integrates rvm with capistrano
 require 'rvm1/capistrano3'
 
+require "capistrano/scm/git"
+install_plugin Capistrano::SCM::Git
+
 # require 'capistrano/rails/assets'
 # require 'capistrano/rails/migrations'
 
