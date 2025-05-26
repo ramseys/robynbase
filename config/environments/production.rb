@@ -30,6 +30,10 @@ Rails.application.configure do
   # Do not fallback to assets pipeline if a precompiled asset is missed.
   config.assets.compile = false
 
+  # Ensure Rails uses fingerprinted asset names, matching what assets:precompile
+  # generates.
+  config.assets.digest = true
+
   # prevents sprockets from using sass mode and SassC gem (which is based on deprecated LibSass library)
   # in assets:precompile step
   config.assets.css_compressor = nil
