@@ -303,7 +303,7 @@ class GigsController < ApplicationController
     new_params["Venue"] = Venue.find(new_params["VENUEID"].to_i).Name if new_params["Venue"].strip.empty?
 
     # extract the year from the date
-    new_params["GigYear"] = Time.new(params["gig"]["GigDate"]).year
+    new_params["GigYear"] = Date.strptime(params["gig"]["GigDate"], '%Y-%m-%d').year
 
     # if requested, extract images into a separate variable
     if extract_images then

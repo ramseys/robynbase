@@ -30,7 +30,7 @@ set :deploy_via, :copy
 set :ssh_options, { :forward_agent => true }
 
 # keep some releases around on the server
-set :keep_releases, 5
+set :keep_releases, 10
 
 # make sure password prompts and such show up in the terminal
 set :pty, true
@@ -75,7 +75,7 @@ namespace :deploy do
     end
   end
 
-  after :deploy, 'deploy:restart_passenger'
+  after 'deploy:finished', 'deploy:restart_passenger'
 
   after :restart, :clear_cache do
     on roles(:web), in: :groups, limit: 3, wait: 10 do
