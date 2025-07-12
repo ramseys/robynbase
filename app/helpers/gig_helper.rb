@@ -9,7 +9,7 @@ module GigHelper
     case gig_medium.mediatype
       
       when GigMedium::MEDIA_TYPE["ArchiveOrgPlaylist"]
-        230
+        380
         
       when GigMedium::MEDIA_TYPE["ArchiveOrgVideo"]
         480
