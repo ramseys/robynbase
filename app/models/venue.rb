@@ -92,8 +92,8 @@ class Venue < ApplicationRecord
   def self.quick_query_venues_with_notes(secondary_attribute)
 
     venues = secondary_attribute.nil? ?
-      where.not(Notes: nil) :
-      where(Notes: nil)
+      where.not(Notes: [nil, '']) :
+      where(Notes: [nil, ''])
 
     self.prepare_query(venues)
 

@@ -1,5 +1,5 @@
 
-<div class="album-list">
+<div class="album-list" data-controller="composition">
 
   <div class="container search-criteria">
 
@@ -7,9 +7,9 @@
 
       <div class="<%= (can? :manage, Composition) ? 'col-sm-10' : 'col-sm-12' %>">
 
-        <%= form_tag('/compositions/index', :method => 'GET') do %>
+        <%= form_tag('/compositions/index', :method => 'GET', data: { turbo_frame: "table_frame" }) do %>
 
-          <%= text_field_tag :album_search_value, params['album_search_value'], :class=> 'search-field', :placeholder => 'Search albums' %>
+          <%= text_field_tag :search_value, params['search_value'], :class=> 'search-field', :placeholder => 'Search albums' %>
 
           <%= submit_tag "Search", :name => nil %>
 
@@ -24,7 +24,7 @@
 
             <% expand_advanced = ( params["media_type"].present? or params["release_type"].present? ) %>
 
-            <div class="advanced-options-header">
+            <div class="advanced-options-header" data-action="click->composition#toggleAdvancedOptions">
               <span class="advanced-options-disclosure <%= expand_advanced ? "bi-caret-down-fill" : "bi-caret-right-fill" %>" aria-hidden="true"></span>
               <span class="header-name">Advanced Options</span>
             </div>
@@ -76,23 +76,23 @@
 
   <div class="search-results">
 
-    <% if not @compositions.nil? %>
-      <% if @compositions.empty? %> 
-        <%= render partial: '/robyn/nothing_found' %>
+    <%= turbo_frame_tag "table_frame" do %>
+      <% if not @compositions.nil? %>
+        <% if @compositions.empty? %> 
+          <%= render partial: '/robyn/nothing_found' %>
+        <% else %>
+          <%= render partial: '/compositions/release_list', locals: {albums: @compositions, table_id: "album-main"} %>
+        <% end %>
+
       <% else %>
-        <%= render partial: '/compositions/release_list', locals: {albums: @compositions, table_id: "album-main"} %>
+      
+        <% quick_queries = get_all_quick_queries(Composition) %>
+
+        <%= render partial: '/robyn/quick_queries', locals: {quick_queries: quick_queries} %>
+      
       <% end %>
-
-    <% else %>
-    
-      <% quick_queries = get_all_quick_queries(Composition) %>
-
-      <%= render partial: '/robyn/quick_queries', locals: {quick_queries: quick_queries} %>
-    
     <% end %>
 
   </div>
 
 </div>
-
-<%= javascript_include_tag "compositions", "data-turbo-track": "reload", defer: true %>

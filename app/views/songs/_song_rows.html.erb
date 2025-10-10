@@ -1,0 +1,40 @@
+<% show_lyrics_snippet = nil unless local_assigns.has_key? :show_lyrics_snippet %>
+
+<% for song in songs %>
+  <tr data-path="<%=song_path(song)%>"
+      data-action="click->row-navigation#rowClicked"
+      style="cursor: pointer;">
+    <td class="main-column">
+      <%= song.full_name %>
+     <% if show_lyrics(song) %>
+        <a href="<%= song_path(song) %>#lyrics">
+          <span title="Lyrics provided" class="bi-file-text" aria-hidden="true"></span>
+        </a>
+      <% end %>
+      <% if song.Tab.present? %>
+      <a href="<%= song_path(song) %>#tabs">
+        <span title="Tablature provided" class="bi-music-note-beamed" aria-hidden="true"></span>
+      </a>
+      <% end %>
+
+      <% if show_lyrics_snippet.present? and song.Lyrics.present? %>
+        <div class="lyrics-snippet"> <%= highlight_search_lyrics(show_lyrics_snippet, song.Lyrics) %></div>
+      <% end %>
+
+    </td>
+
+    <td> <%= song.OrigBand %> </td>
+
+    <td> <%= song.Author.nil? ? "Robyn Hitchcock" : song.Author %> </td>
+
+    <td> <%= song.gig_count %> </td>
+
+    <% if can? :manage, Song %>
+      <td class="actions">
+        <a href="<%=song_path(song)%>/edit" data-turbo-frame="_top">Edit</a> &nbsp; &nbsp;
+        <%= link_to("Delete", song_path(song), method: :delete, data: { confirm: "Are you sure you want to delete #{song.Song}" }) %>
+      </td>
+    <% end %>
+
+  </tr>
+<% end %>

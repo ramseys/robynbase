@@ -1,0 +1,3 @@
+<%= turbo_frame_tag "releases_frame" do %>
+  <%= render partial: '/compositions/release_list', locals: { albums: @compositions, table_id: @table_id } %>
+<% end %>

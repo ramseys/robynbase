@@ -1,17 +1,14 @@
-<%= javascript_include_tag "gig", "data-turbo-track": "reload", defer: false %>
-
-<div class="gig-list">
-
+<div class="gig-list" data-controller="gig">
 
   <div class="container search-criteria">
 
-    <div class="row">     
+    <div class="row">
 
       <div class="<%= (can? :manage, Gig) ? 'col-sm-10' : 'col-sm-12' %>">
 
-          <%= form_tag('/gigs/index', :method => 'GET') do %>
-          
-          <%= text_field_tag :gig_search_value, params['gig_search_value'], :class=> 'search-field', :placeholder => 'Search gigs' %>
+          <%= form_tag('/gigs/index', :method => 'GET', data: { turbo_frame: "table_frame" }) do %>
+
+          <%= text_field_tag :search_value, params['search_value'], :class=> 'search-field', :placeholder => 'Search gigs' %>
 
           <%= submit_tag "Search", :name => nil %>
 
@@ -27,7 +24,7 @@
 
             <% expand_advanced = ( params["gig_date"].present? ) %>
 
-            <div class="advanced-options-header">
+            <div class="advanced-options-header" data-action="click->gig#toggleAdvancedOptions">
               <span class="advanced-options-disclosure <%= expand_advanced ? "bi-caret-down-fill" : "bi-caret-right-fill" %>" aria-hidden="true"></span>
               <span class="header-name">Advanced Options</span>
             </div>
@@ -51,8 +48,8 @@
                     <span>
                       <%= select_tag :gig_range_type, options_for_select({
                               "Days" => GigsController::RANGE_TYPE[:days],
-                              "Months" => GigsController::RANGE_TYPE[:months], 
-                              "Years"=> GigsController::RANGE_TYPE[:years]                      
+                              "Months" => GigsController::RANGE_TYPE[:months],
+                              "Years"=> GigsController::RANGE_TYPE[:years]
                             }, params['gig_range_type'].to_i)
                     %>
                     </span>
@@ -64,7 +61,7 @@
                     <br/> <br/>
 
                     <div>
-                      <span class="header-name">Gig Type: </span> 
+                      <span class="header-name">Gig Type: </span>
                       <%= select_tag :gig_type, options_for_select(Gig::GIG_TYPES, params['gig_type']), { include_blank: "All" } %>
                     </div>
 
@@ -89,31 +86,32 @@
             <%= submit_tag "New Gig", :name => nil %>
           <% end %>
         </div>
-        
+
       <% end %>
 
-    </div> 
+    </div>
 
   </div>
 
 
   <div class="search-results">
 
-    <% if not @gigs.nil? %>
-      <% if @gigs.empty? %> 
-        <%= render partial: '/robyn/nothing_found' %>
+    <%= turbo_frame_tag "table_frame" do %>
+      <% if not @gigs.nil? %>
+        <% if @gigs.empty? %>
+          <%= render partial: '/robyn/nothing_found' %>
+        <% else %>
+          <%= render partial: '/gigs/gig_list', locals: {gigs: @gigs, table_id: "gig-main"} %>
+        <% end %>
+
       <% else %>
-        <%= render partial: '/gigs/gig_list', locals: {gigs: @gigs, table_id: "gig-main"} %>
+
+        <% quick_queries = get_all_quick_queries(Gig) %>
+
+        <%= render partial: '/robyn/quick_queries', locals: {quick_queries: quick_queries} %>
+
       <% end %>
-
-    <% else %>
-    
-      <% quick_queries = get_all_quick_queries(Gig) %>
-
-      <%= render partial: '/robyn/quick_queries', locals: {quick_queries: quick_queries} %>
-
     <% end %>
-
   </div>
 
 </div>

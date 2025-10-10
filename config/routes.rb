@@ -22,10 +22,28 @@ Rails.application.routes.draw do
   get 'login', to: 'sessions#new', as: 'login'
   get 'logout', to: 'sessions#destroy', as: 'logout'
   
-  resources :songs
-  resources :gigs
-  resources :venues
-  resources :compositions
+  resources :songs do
+    collection do
+      get :infinite_scroll
+    end
+  end
+  resources :gigs do
+    collection do
+      get :for_resource
+      get :infinite_scroll
+    end
+  end
+  resources :venues do
+    collection do
+      get :infinite_scroll
+    end
+  end
+  resources :compositions do
+    collection do
+      get :for_resource
+      get :infinite_scroll
+    end
+  end
   resources :about
   resources :map
 

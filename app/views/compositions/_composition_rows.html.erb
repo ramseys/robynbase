@@ -1,0 +1,19 @@
+<% for comp in albums %>
+  <tr data-path="<%= composition_path(comp) %>"
+      data-action="click->row-navigation#rowClicked"
+      style="cursor: pointer;">
+    <td class="main-column"> <%= comp.Title %> </td>
+    <td class="main-column"> <%= comp.Artist %> </td>
+    <td class="main-column"> <%= comp.Label %> </td>
+    <td> <%= comp.Type %> </td>
+    <td> <%= comp.Year.to_i %> </td>
+
+    <% if can? :manage, Composition %>
+      <td class="actions">
+        <a href="<%=composition_path(comp)%>/edit" data-turbo-frame="_top">Edit</a> &nbsp;
+        <%= link_to("Delete", composition_path(comp), method: :delete, data: { confirm: "Are you sure you want to delete the album #{comp.Title}?" }) %>
+      </td>
+    <% end %>
+
+  </tr>
+<% end %>

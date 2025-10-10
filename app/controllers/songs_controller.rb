@@ -1,13 +1,18 @@
 class SongsController < ApplicationController
+  include Paginated
+  include InfiniteScrollConcern
 
   authorize_resource :only => [:new, :edit, :update, :create, :destroy]
 
   def index
 
     if params[:search_type].present?
-      @songs = Song.search_by(params[:search_type] ? params[:search_type].to_sym : nil, params[:song_search_value])
+      songs_collection = Song.search_by(params[:search_type] ? params[:search_type].to_sym : nil, params[:search_value])
+      @pagy, @songs = apply_sorting_and_pagination(songs_collection, default_sort: "SONG.Song asc", default_sort_params: { sort: 'name', direction: 'asc' })
     else 
       params[:search_type] = "title"
+      @songs = nil
+      @pagy = nil
     end
 
     @show_lyrics = (params[:search_type] == "lyrics")
@@ -15,7 +20,8 @@ class SongsController < ApplicationController
   end
 
   def quick_query
-    @songs = Song.quick_query(params[:query_id], params[:query_attribute])
+    songs_collection = Song.quick_query(params[:query_id], params[:query_attribute])
+    @pagy, @songs = apply_sorting_and_pagination(songs_collection, default_sort: "SONG.Song asc", default_sort_params: { sort: 'song', direction: 'asc' })
     render "index"
   end
 
@@ -94,9 +100,41 @@ class SongsController < ApplicationController
     @albums_present = @song.compositions.present? 
     
   end
-  
+
   
   private
+  
+    def infinite_scroll_config
+      {
+        model: Song,
+        records_name: :songs,
+        partial: 'song_rows',
+        default_sort: "SONG.Song asc",
+        default_sort_params: { sort: 'name', direction: 'asc' },
+        additional_locals: { show_lyrics: (params[:search_type] == "lyrics") }
+      }
+    end
+    
+    def apply_sorting(collection)
+      return collection unless params[:sort].present?
+      
+      sort_column = params[:sort]
+      direction = params[:direction] == 'desc' ? 'desc' : 'asc'
+      
+      case sort_column
+      when 'name'
+        collection.order("SONG.Song #{direction}")
+      when 'original_band'
+        collection.order("SONG.OrigBand #{direction}")
+      when 'author'
+        collection.order("SONG.Author #{direction}")
+      when 'performances'
+        # This would require a count of related gigs - complex query
+        collection.left_joins(:gigs).group("SONG.SONGID").order("COUNT(GIG.GIGID) #{direction}")
+      else
+        collection.order("SONG.Song asc") # default sort
+      end
+    end
     
     def return_to_previous_page(song)
       previous_page = session.delete(:return_to_song)

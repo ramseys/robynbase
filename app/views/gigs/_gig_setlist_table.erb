@@ -17,7 +17,7 @@
     <% sequenceIndex = 1 %>
 
     <div style="display: none">
-        <select id="template-song-selector" class="form-control song-selector">
+        <select id="template-song-selector" class="form-control song-selector" data-gig-target="templateSongSelector">
             <option value=""></option>
             <% @song_list.map do |s| %>
                 <option value="<%= s[1] %>"><%= s[0] %></option>
@@ -36,7 +36,10 @@
             </td>            
             <td> <%= gigset_fields.text_field :MediaLink, :class => "form-control" %></td>
             <td> 
-                <Button type="button" class="btn btn-link" onClick="removeTableRow('<%=id%>', <%=sequenceIndex%>)">
+                <Button type="button" class="btn btn-link" 
+                        data-action="click->gig#removeRow"
+                        data-gig-table-id-param="<%=id%>"
+                        data-gig-row-id-param="<%=sequenceIndex%>">
                     Remove
                 </Button>
             </td>
@@ -53,4 +56,7 @@
 
 <br/>
 
-<button type="button" class="btn btn-primary" onClick="addTableRow('<%=id%>', <%=encore%>)">Add Song</button>
+<button type="button" class="btn btn-primary" 
+        data-action="click->gig#addSong"
+        data-gig-table-id-param="<%=id%>"
+        data-gig-encore-param="<%=encore%>">Add Song</button>

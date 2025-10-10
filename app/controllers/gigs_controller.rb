@@ -1,6 +1,8 @@
 class GigsController < ApplicationController
 
   include ImageUtils
+  include Paginated
+  include InfiniteScrollConcern
 
   authorize_resource :only => [:new, :edit, :update, :create, :destroy]
 
@@ -13,52 +15,25 @@ class GigsController < ApplicationController
   def index
 
     if params[:search_type].present?
-
+            
       search_type = params[:search_type].to_sym
 
-      date_criteria = nil
+      date_criteria = build_date_criteria_from_params(params)
 
-      # if the user specified a gig date as one of the criteria, prepare all the other data
-      # that goes along with doing a date query
-      if params[:gig_date].present? and params[:gig_range].present?
-
-        gig_date = DateTime.strptime(params[:gig_date], "%Y-%m-%d")
-        range_type = :months
-        range = 30
-
-
-        # look for the kind of range (day, year, etc) we'll be using for this date
-        if params[:gig_range_type].present?
-          range_type = RANGE_TYPE.key(params[:gig_range_type].to_i)
-        else
-          params[:gig_range_type] = RANGE_TYPE[range_type]
-        end
-
-        # look for the amount of time on either side of the given date should be included in the search
-        if params[:gig_range].present?
-          range = params[:gig_range].to_i
-        else
-          params[:gig_range] = range
-        end
-
-        date_criteria = {
-          :date       => gig_date,
-          :range_type => range_type,
-          :range      => range
-        }
-
-      end
-
-      # grab gigs that meet *all* the secified criteria
-      @gigs = Gig.search_by(search_type, params[:gig_search_value], date_criteria, params[:gig_type])
+      # grab gigs that meet *all* the specified criteria
+      gigs_collection = Gig.search_by(search_type, params[:search_value], date_criteria, params[:gig_type])
+      @pagy, @gigs = apply_sorting_and_pagination(gigs_collection, default_sort: "GigDate desc", default_sort_params: { sort: 'date', direction: 'desc' })
 
     # if we're looking for gigs for a given venue
     elsif params[:venue_id].present?
 
-      @gigs = Gig.get_gigs_by_venueid(params[:venue_id])
+      gigs_collection = Gig.get_gigs_by_venueid(params[:venue_id])
+      @pagy, @gigs = apply_sorting_and_pagination(gigs_collection, default_sort: "GigDate desc", default_sort_params: { sort: 'date', direction: 'desc' })
 
     else
       params[:search_type] = "venue"
+      @gigs = nil
+      @pagy = nil
     end
 
   end
@@ -170,17 +145,83 @@ class GigsController < ApplicationController
 
   end
 
+  # Renders embedded table of gigs related to another resource (e.g., all gigs for a venue or song).
+  # Provides paginated, sortable lists via Turbo Frames for display within other pages without navigation.
+  def for_resource
+    resource_type = params[:resource_type]
+    resource_id = params[:resource_id]
+
+    case resource_type
+    when 'song'
+      @resource = Song.find(resource_id)
+      # Use joins to get gigs, but select distinct on the gig ID to avoid duplicates
+      gigs_collection = Gig.joins(:gigsets).where(gigsets: { SONGID: @resource.SONGID }).distinct.includes(:venue)
+    when 'venue'
+      @resource = Venue.find(resource_id)
+      gigs_collection = @resource.gigs.includes(:venue)
+    when 'composition'
+      @resource = Composition.find(resource_id)
+      gigs_collection = @resource.gigs.includes(:venue)
+    else
+      head :not_found
+      return
+    end
+
+    # Apply sorting first
+    sorted_collection = apply_sorting(gigs_collection)
+    if params[:sort].blank?
+      sorted_collection = sorted_collection.order("GigDate desc")
+    end
+
+    # Apply pagination with 10 items for embedded tables (need both items and limit)
+    @pagy, @gigs = pagy(sorted_collection, items: 10, limit: 10, link_extra: 'data-turbo-frame="table_frame"')
+    @table_id = "gig-#{resource_type}"
+
+    render partial: 'shared/turbo_gig_table'
+  end
+
   def quick_query
-    @gigs = Gig.quick_query(params[:query_id], params[:query_attribute])
+    gigs_collection = Gig.quick_query(params[:query_id], params[:query_attribute])
+    @pagy, @gigs = apply_sorting_and_pagination(gigs_collection, default_sort: "GigDate desc", default_sort_params: { sort: 'date', direction: 'desc' })
     render "index"
   end
 
   def on_this_day
-    @gigs = Gig.quick_query_gigs_on_this_day(params['date']['month'], params['date']['day'])
+    gigs_collection = Gig.quick_query_gigs_on_this_day(params['date']['month'], params['date']['day'])
+    @pagy, @gigs = apply_sorting_and_pagination(gigs_collection, default_sort: "GigDate desc", default_sort_params: { sort: 'date', direction: 'desc' })
     render "index"
   end
 
   private
+
+
+  def apply_sorting(collection)
+    # Clear any existing ordering before applying new sort
+    collection = collection.reorder('')
+    
+    return collection unless params[:sort].present?
+
+    sort_column = params[:sort]
+    direction = params[:direction] == 'desc' ? 'desc' : 'asc'
+
+    case sort_column
+    when 'venue'
+      # Use denormalized venue name from GIG table to avoid join
+      collection.order("Venue #{direction}")
+    when 'billed_as'
+      collection.order("BilledAs #{direction}")
+    when 'city'
+      collection.joins(:venue).order("VENUE.City #{direction}")
+    when 'state'
+      collection.joins(:venue).order("VENUE.State #{direction}")
+    when 'country'
+      collection.joins(:venue).order("VENUE.Country #{direction}")
+    when 'date'
+      collection.order("GigDate #{direction}")
+    else
+      collection.order("GigDate desc") # default sort
+    end
+  end
 
   def return_to_previous_page(gig)
     previous_page = session.delete(:return_to_gig)
@@ -193,6 +234,41 @@ class GigsController < ApplicationController
 
   def save_referrer
     session[:return_to_gig] = request.referer
+  end
+
+  def infinite_scroll_config
+    {
+      model: Gig,
+      records_name: :gigs,
+      partial: 'gig_rows',
+      default_sort: "GigDate desc",
+      default_sort_params: { sort: 'date', direction: 'desc' },
+      additional_search_params: ->(params) { [build_date_criteria_from_params(params), params[:gig_type]] }
+    }
+  end
+
+  def build_date_criteria_from_params(params)
+    return nil unless params[:gig_date].present? && params[:gig_range].present?
+
+    gig_date = DateTime.strptime(params[:gig_date], "%Y-%m-%d")
+    range_type = :months
+    range = 30
+
+    # Look for the kind of range (day, year, etc) we'll be using for this date
+    if params[:gig_range_type].present?
+      range_type = RANGE_TYPE.key(params[:gig_range_type].to_i)
+    end
+
+    # Look for the amount of time on either side of the given date should be included in the search
+    if params[:gig_range].present?
+      range = params[:gig_range].to_i
+    end
+
+    {
+      date: gig_date,
+      range_type: range_type,
+      range: range
+    }
   end
 
   # Prepare the setlist for save

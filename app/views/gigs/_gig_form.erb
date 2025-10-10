@@ -1,6 +1,6 @@
 <%= form_for(@gig) do |f| %>
 
-<div class="item-form">
+<div class="item-form" data-controller="gig">
         
     <div class="row">
 
@@ -127,4 +127,3 @@
 
 <% end %>
 
-<%= javascript_include_tag "gig", "data-turbo-track": "reload", defer: true %>

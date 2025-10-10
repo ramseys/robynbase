@@ -101,8 +101,8 @@ class Gig < ApplicationRecord
       gigs = gigs.where(:gigType => type)
     end
 
-    # sort final results by date
-    gigs.order(GigDate: :asc)
+    # Return without additional sorting - let the controller handle sort order
+    gigs
 
   end
 

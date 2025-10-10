@@ -1,18 +1,35 @@
 
 
-/* ====== dataTable style overrides */
-
-
-/* make the table filter appear as a 'text' rather than a 'search' field in chrome */
-input[type=search] {
-  -webkit-appearance: textfield;
-} 
-
-/* adjust padding for the "results per page" control */
-.dataTables_length {
-  padding-top: 10px;
-}
+/* ====== Table styling */
 
 .required {
   color: red;
+}
+
+/* ====== Sortable Headers */
+.sortable-header {
+  color: inherit;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.sortable-header:hover {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+.sortable-header i {
+  font-size: 0.8em;
+  opacity: 0.6;
+}
+
+.sortable-header.sorted-asc i,
+.sortable-header.sorted-desc i {
+  opacity: 1;
+}
+
+.sortable-header:hover i {
+  opacity: 1;
 }
