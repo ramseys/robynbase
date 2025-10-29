@@ -3,9 +3,12 @@
 <% show_search = false unless local_assigns.has_key? :show_search %>
 <% page_length = 10 unless local_assigns.has_key? :page_length %>
 <% table_id = "" unless local_assigns.has_key? :table_id %>
+<% frame_name = "table_frame" unless local_assigns.has_key? :frame_name %>
 
-
-<h3 class="section-header">Gigs</h3>
+<%# only show header when the table appears in non-index pages %>
+<% if local_assigns.has_key? :frame_name  %>
+  <h3 class="section-header">Gigs</h3>
+<% end %>  
 
 <table class="table table-striped table-hover main-search-list"
        data-id="<%= table_id %>"
@@ -32,12 +35,12 @@
   <% if not suppress_header %>
     <thead>
     <tr>
-      <th style="width: 25%;"><%= sortable_column_header('venue', 'Venue', params[:sort], params[:direction]) %></th>
-      <th style="width: 15%;"><%= sortable_column_header('billed_as', 'Billed As', params[:sort], params[:direction]) %></th>
-      <th style="width: 15%;"><%= sortable_column_header('city', 'City', params[:sort], params[:direction]) %></th>
-      <th style="width: 10%;"><%= sortable_column_header('state', 'State', params[:sort], params[:direction]) %></th>
-      <th style="width: 10%;"><%= sortable_column_header('country', 'Country', params[:sort], params[:direction]) %></th>
-      <th style="width: 15%;"><%= sortable_column_header('date', 'Date', params[:sort], params[:direction]) %></th>
+      <th style="width: 25%;"><%= sortable_column_header('venue', 'Venue', params[:sort], params[:direction], frame_name) %></th>
+      <th style="width: 15%;"><%= sortable_column_header('billed_as', 'Billed As', params[:sort], params[:direction], frame_name) %></th>
+      <th style="width: 15%;"><%= sortable_column_header('city', 'City', params[:sort], params[:direction], frame_name) %></th>
+      <th style="width: 10%;"><%= sortable_column_header('state', 'State', params[:sort], params[:direction], frame_name) %></th>
+      <th style="width: 10%;"><%= sortable_column_header('country', 'Country', params[:sort], params[:direction], frame_name) %></th>
+      <th style="width: 15%;"><%= sortable_column_header('date', 'Date', params[:sort], params[:direction], frame_name) %></th>
       <% if can? :manage, Gig %>
         <th style="width: 10%;">Actions</th>
       <% end %>
@@ -45,7 +48,7 @@
     </thead>
   <% end %>
   <tbody data-infinite-scroll-target="tbody">
-  <%= render 'gig_rows', gigs: gigs %>
+  <%= render '/gigs/gig_rows', gigs: gigs %>
   </tbody>
 </table>
 

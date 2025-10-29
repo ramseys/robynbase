@@ -111,29 +111,19 @@ class SongsController < ApplicationController
         partial: 'song_rows',
         default_sort: "SONG.Song asc",
         default_sort_params: { sort: 'name', direction: 'asc' },
-        additional_locals: { show_lyrics: (params[:search_type] == "lyrics") }
+        additional_locals: { 
+          show_lyrics: (params[:search_type] == "lyrics"), 
+          show_lyrics_snippet: params[:search_type] == "lyrics" ? params[:search_value] : nil }
       }
     end
     
     def apply_sorting(collection)
-      return collection unless params[:sort].present?
-      
-      sort_column = params[:sort]
-      direction = params[:direction] == 'desc' ? 'desc' : 'asc'
-      
-      case sort_column
-      when 'name'
-        collection.order("SONG.Song #{direction}")
-      when 'original_band'
-        collection.order("SONG.OrigBand #{direction}")
-      when 'author'
-        collection.order("SONG.Author #{direction}")
-      when 'performances'
-        # This would require a count of related gigs - complex query
-        collection.left_joins(:gigs).group("SONG.SONGID").order("COUNT(GIG.GIGID) #{direction}")
-      else
-        collection.order("SONG.Song asc") # default sort
-      end
+      ResourceSorter.sort(
+        collection,
+        resource_type: :song,
+        sort_column: params[:sort],
+        direction: params[:direction]
+      )
     end
     
     def return_to_previous_page(song)

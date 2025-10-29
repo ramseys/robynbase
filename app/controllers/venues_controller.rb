@@ -91,28 +91,12 @@ class VenuesController < ApplicationController
     end
   
     def apply_sorting(collection)
-      return collection unless params[:sort].present?
-      
-      sort_column = params[:sort]
-      direction = params[:direction] == 'desc' ? 'desc' : 'asc'
-      
-      case sort_column
-      when 'venue'
-        collection.order("VENUE.Name #{direction}")
-      when 'city'
-        collection.order("VENUE.City #{direction}")
-      when 'subcity'
-        collection.order("VENUE.SubCity #{direction}")
-      when 'state'
-        collection.order("VENUE.State #{direction}")
-      when 'country'
-        collection.order("VENUE.Country #{direction}")
-      when 'performances'
-        # Count of related gigs
-        collection.left_joins(:gigs).group("VENUE.VENUEID").order("COUNT(GIG.GIGID) #{direction}")
-      else
-        collection.order("VENUE.Name asc") # default sort
-      end
+      ResourceSorter.sort(
+        collection,
+        resource_type: :venue,
+        sort_column: params[:sort],
+        direction: params[:direction]
+      )
     end
     
     def save_referrer

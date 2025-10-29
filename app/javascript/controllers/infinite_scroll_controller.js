@@ -108,7 +108,14 @@ export default class extends Controller {
       if (this.advancedQueryParamsValue) {
         Object.entries(this.advancedQueryParamsValue).forEach(([key, value]) => {
           if (value !== null && value !== undefined && value !== '') {
-            url.searchParams.set(key, value)
+            // Handle arrays - Rails expects array params as key[]
+            if (Array.isArray(value)) {
+              value.forEach(item => {
+                url.searchParams.append(`${key}[]`, item)
+              })
+            } else {
+              url.searchParams.set(key, value)
+            }
           }
         })
       }

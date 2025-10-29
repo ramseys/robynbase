@@ -167,14 +167,23 @@ class GigsController < ApplicationController
       return
     end
 
+    @pagy, @gigs = apply_sorting_and_pagination(
+      gigs_collection, 
+      default_sort: "GigDate desc", 
+      default_sort_params: { sort: 'date', direction: 'desc' },
+      items_per_page: 10,
+      turbo_frame: "table_frame"
+    )
+    
     # Apply sorting first
-    sorted_collection = apply_sorting(gigs_collection)
-    if params[:sort].blank?
-      sorted_collection = sorted_collection.order("GigDate desc")
-    end
-
-    # Apply pagination with 10 items for embedded tables (need both items and limit)
-    @pagy, @gigs = pagy(sorted_collection, items: 10, limit: 10, link_extra: 'data-turbo-frame="table_frame"')
+    # sorted_collection = apply_sorting(gigs_collection)
+    # if params[:sort].blank?
+    #   sorted_collection = sorted_collection.order("GigDate desc")
+    # end
+# 
+    # # Apply pagination with 10 items for embedded tables (need both items and limit)
+    # @pagy, @gigs = pagy(sorted_collection, items: 10, limit: 10, link_extra: 'data-turbo-frame="table_frame"')
+    
     @table_id = "gig-#{resource_type}"
 
     render partial: 'shared/turbo_gig_table'
@@ -198,29 +207,11 @@ class GigsController < ApplicationController
   def apply_sorting(collection)
     # Clear any existing ordering before applying new sort
     collection = collection.reorder('')
-    
-    return collection unless params[:sort].present?
 
-    sort_column = params[:sort]
-    direction = params[:direction] == 'desc' ? 'desc' : 'asc'
-
-    case sort_column
-    when 'venue'
-      # Use denormalized venue name from GIG table to avoid join
-      collection.order("Venue #{direction}")
-    when 'billed_as'
-      collection.order("BilledAs #{direction}")
-    when 'city'
-      collection.joins(:venue).order("VENUE.City #{direction}")
-    when 'state'
-      collection.joins(:venue).order("VENUE.State #{direction}")
-    when 'country'
-      collection.joins(:venue).order("VENUE.Country #{direction}")
-    when 'date'
-      collection.order("GigDate #{direction}")
-    else
-      collection.order("GigDate desc") # default sort
-    end
+    ResourceSorter.sort(collection,
+                       resource_type: :gig,
+                       sort_column: params[:sort],
+                       direction: params[:direction])
   end
 
   def return_to_previous_page(gig)

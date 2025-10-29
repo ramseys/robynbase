@@ -4,6 +4,11 @@
 <% page_length = 10 unless local_assigns.has_key? :page_length %>
 <% table_id = "" unless local_assigns.has_key? :table_id %>
 <% show_lyrics_snippet = nil unless local_assigns.has_key? :show_lyrics_snippet %>
+<% frame_name = "table_frame" unless local_assigns.has_key? :frame_name %>
+
+<% if local_assigns.has_key? :frame_name  %>
+  <h3 class="section-header">Songs</h3>
+<% end %>
 
 <table class="table table-striped table-hover main-search-list"
        data-id="<%= table_id %>"
@@ -22,20 +27,22 @@
        style="table-layout: fixed;">
   <thead>
   <tr>
-  <th style="width: 40%;"><%= sortable_column_header('name', 'Name', params[:sort], params[:direction]) %></th>
-  <th style="width: 20%;"><%= sortable_column_header('original_band', 'Original Band', params[:sort], params[:direction]) %></th>
-  <th style="width: 15%;"><%= sortable_column_header('author', 'Author', params[:sort], params[:direction]) %></th>
-  <th style="width: 15%;"><%= sortable_column_header('performances', 'Performances', params[:sort], params[:direction]) %></th>
+  <th style="width: 40%;"><%= sortable_column_header('name', 'Name', params[:sort], params[:direction], frame_name) %></th>
+  <th style="width: 20%;"><%= sortable_column_header('original_band', 'Original Band', params[:sort], params[:direction], frame_name) %></th>
+  <th style="width: 15%;"><%= sortable_column_header('author', 'Author', params[:sort], params[:direction], frame_name) %></th>
+  <th style="width: 15%;"><%= sortable_column_header('performances', 'Performances', params[:sort], params[:direction], frame_name) %></th>
   <% if can? :manage, Song %>
     <th style="width: 10%;">Actions</th>
   <% end %>
   </tr>
   </thead>
   <tbody data-infinite-scroll-target="tbody">
-  <%= render 'song_rows', songs: songs, show_lyrics_snippet: show_lyrics_snippet %>
+  <%= render '/songs/song_rows', songs: songs, show_lyrics_snippet: show_lyrics_snippet %>
   </tbody>
 </table>
 
-<% if false and defined?(@pagy) && @pagy && @pagy.pages > 1 %>
+<% if use_paging and defined?(@pagy) && @pagy && @pagy.pages > 1 %>
   <%= render 'shared/pagination', pagy: @pagy %>
 <% end %>
+
+

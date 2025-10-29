@@ -27,7 +27,11 @@ class CompositionsController < ApplicationController
 
       # grab the albums, based on the given search criteria
       compositions_collection = Composition.search_by(search_type, params[:search_value], release_types)
-      @pagy, @compositions = apply_sorting_and_pagination(compositions_collection, default_sort: "Title asc", default_sort_params: { sort: 'title', direction: 'asc' })
+      @pagy, @compositions = apply_sorting_and_pagination(
+        compositions_collection, 
+        default_sort: "Year asc", 
+        default_sort_params: { sort: 'year', direction: 'asc' }
+      )
 
     else
       @compositions = nil
@@ -241,14 +245,14 @@ class CompositionsController < ApplicationController
       return
     end
 
-    # Apply sorting first
-    sorted_collection = apply_sorting(compositions_collection)
-    if params[:sort].blank?
-      sorted_collection = sorted_collection.order("Title asc")
-    end
-
-    # Apply pagination with 10 items for embedded tables (need both items and limit)
-    @pagy, @compositions = pagy(sorted_collection, items: 10, limit: 10, link_extra: 'data-turbo-frame="releases_frame"')
+    @pagy, @compositions = apply_sorting_and_pagination(
+      compositions_collection, 
+      default_sort: "Year asc", 
+      default_sort_params: { sort: 'year', direction: 'asc' },
+      items_per_page: 10,
+      turbo_frame: "releases_frame"
+    )
+    
     @table_id = "releases-#{resource_type}"
 
     render partial: 'shared/turbo_releases_table'
@@ -271,26 +275,11 @@ class CompositionsController < ApplicationController
   def apply_sorting(collection)
     # Clear any existing ordering before applying new sort
     collection = collection.reorder('')
-    
-    return collection unless params[:sort].present?
 
-    sort_column = params[:sort]
-    direction = params[:direction] == 'desc' ? 'desc' : 'asc'
-
-    case sort_column
-    when 'title'
-      collection.order("COMP.Title #{direction}")
-    when 'artist'
-      collection.order("COMP.Artist #{direction}")
-    when 'year'
-      collection.order("COMP.Year #{direction}")
-    when 'label'
-      collection.order("COMP.Label #{direction}")
-    when 'type'
-      collection.order("COMP.Type #{direction}")
-    else
-      collection.order("COMP.Title asc") # default sort
-    end
+    ResourceSorter.sort(collection,
+                       resource_type: :composition,
+                       sort_column: params[:sort],
+                       direction: params[:direction])
   end
 
   def build_release_types_from_params(params)

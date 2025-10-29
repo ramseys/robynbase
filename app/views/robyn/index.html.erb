@@ -16,46 +16,54 @@
   <% end %>
 
   <!-- omnisearch results -->
-  <% if [@songs, @compositions, @gigs, @venues].any? { |a| not a.nil? } %>
+  <% if [@has_songs, @has_compositions, @has_gigs, @has_venues].any? %>
 
-    <% if [@songs, @compositions, @gigs, @venues].all? { |a| a.empty? } %>
+    <% if [@has_songs, @has_compositions, @has_gigs, @has_venues].none? %>
 
       <%= render partial: '/robyn/nothing_found' %>
 
     <% else %>
 
       <!-- gigs -->
-      <% if @gigs.present? %>
+      <% if @has_gigs %>
         <div class="row">
           <div class="col-sm-12">
-            <%= render partial: '/gigs/gig_list', locals: { gigs: @gigs, table_id: "gig-omni", suppress_header: false, use_paging: true, page_length: 20 } %>
-          <% end %>
+            <%= turbo_frame_tag "gigs_frame", src: robyn_omnisearch_gigs_path(search_value: params[:search_value]) do %>
+              Loading gigs...
+            <% end %>
+          </div>
         </div>
-      </div>
+      <% end %>
 
       <!-- songs -->
-      <% if @songs.present? %>
+      <% if @has_songs %>
         <div class="row">
           <div class="col-sm-12">
-            <%= render partial: '/songs/song_list', locals: { songs: @songs, table_id: "song-omni", use_paging: true, page_length: 20 } %>
+            <%= turbo_frame_tag "songs_frame", src: robyn_omnisearch_songs_path(search_value: params[:search_value]) do %>
+              Loading songs...
+            <% end %>
           </div>
         </div>
       <% end %>
 
       <!-- albums -->
-      <% if @compositions.present? %>
+      <% if @has_compositions %>
         <div class="row">
           <div class="col-sm-12">
-            <%= render partial: '/compositions/release_list', locals: { albums: @compositions, table_id: "album-omni", suppress_header: false, use_paging: true, page_length: 20 } %>
+            <%= turbo_frame_tag "compositions_frame", src: robyn_omnisearch_compositions_path(search_value: params[:search_value]) do %>
+              Loading releases...
+            <% end %>
           </div>
         </div>
       <% end %>
 
       <!-- venues -->
-      <% if @venues.present? %>
+      <% if @has_venues %>
         <div class="row">
           <div class="col-sm-12">
-            <%= render partial: '/venues/venue_list', locals: { venues: @venues, table_id: "venue-omni",  suppress_header: false, use_paging: true, page_length: 20 } %>
+            <%= turbo_frame_tag "venues_frame", src: robyn_omnisearch_venues_path(search_value: params[:search_value]) do %>
+              Loading venues...
+            <% end %>
           </div>
         </div>
       <% end %>

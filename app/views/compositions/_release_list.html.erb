@@ -3,9 +3,11 @@
 <% show_search = false unless local_assigns.has_key? :show_search %>
 <% page_length = 10 unless local_assigns.has_key? :page_length %>
 <% table_id = "" unless local_assigns.has_key? :table_id %>
+<% frame_name = "table_frame" unless local_assigns.has_key? :frame_name %>
 
-
-<h3 class="section-header">Releases</h3>
+<% if local_assigns.has_key? :frame_name  %>
+  <h3 class="section-header">Releases</h3>
+<% end %>
 
 <table class="table table-striped table-hover main-search-list"
        data-id="<%= table_id %>"
@@ -21,16 +23,19 @@
        data-infinite-scroll-query-type-value="<%= params[:query_id].present? ? 'quick_query' : 'search' %>"
        data-infinite-scroll-query-id-value="<%= params[:query_id] %>"
        data-infinite-scroll-query-attribute-value="<%= params[:query_attribute] %>"
+       data-infinite-scroll-advanced-query-params-value="<%= {
+          release_type: params[:release_type]
+       }.compact.to_json %>"       
        style="table-layout: fixed;">
 
   <% if not suppress_header %>
     <thead>
     <tr>
-      <th style="width: 30%;"><%= sortable_column_header('title', 'Title', params[:sort], params[:direction]) %></th>
-      <th style="width: 20%;"><%= sortable_column_header('artist', 'Artist', params[:sort], params[:direction]) %></th>
-      <th style="width: 20%;"><%= sortable_column_header('label', 'Label', params[:sort], params[:direction]) %></th>
-      <th style="width: 10%;"><%= sortable_column_header('type', 'Type', params[:sort], params[:direction]) %></th>
-      <th style="width: 10%;"><%= sortable_column_header('year', 'Year', params[:sort], params[:direction]) %></th>
+      <th style="width: 30%;"><%= sortable_column_header('title', 'Title', params[:sort], params[:direction], frame_name) %></th>
+      <th style="width: 20%;"><%= sortable_column_header('artist', 'Artist', params[:sort], params[:direction], frame_name) %></th>
+      <th style="width: 20%;"><%= sortable_column_header('label', 'Label', params[:sort], params[:direction], frame_name) %></th>
+      <th style="width: 10%;"><%= sortable_column_header('type', 'Type', params[:sort], params[:direction], frame_name) %></th>
+      <th style="width: 10%;"><%= sortable_column_header('year', 'Year', params[:sort], params[:direction], frame_name) %></th>
       <% if can? :manage, Composition %>
         <th style="width: 10%;">Actions</th>
       <% end %>
@@ -38,7 +43,7 @@
     </thead>
   <% end %>
   <tbody data-infinite-scroll-target="tbody">
-  <%= render 'composition_rows', albums: albums %>
+  <%= render '/compositions/composition_rows', albums: albums %>
   </tbody>
 </table>
 

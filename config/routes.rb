@@ -4,6 +4,10 @@ Rails.application.routes.draw do
   resources :sessions, only: [:new, :create, :destroy]
   get 'map/index'
   get "robyn/index"
+  get "robyn/omnisearch_gigs"
+  get "robyn/omnisearch_songs"
+  get "robyn/omnisearch_compositions"
+  get "robyn/omnisearch_venues"
   get "songs/index"
   get "songs/quick_query"
   get "gigs/index"
