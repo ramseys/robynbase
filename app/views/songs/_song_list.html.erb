@@ -6,6 +6,7 @@
 <% show_lyrics_snippet = nil unless local_assigns.has_key? :show_lyrics_snippet %>
 <% frame_name = "table_frame" unless local_assigns.has_key? :frame_name %>
 
+<%# only show header when the table appears in non-index pages %>
 <% if local_assigns.has_key? :frame_name  %>
   <h3 class="section-header">Songs</h3>
 <% end %>
