@@ -175,15 +175,6 @@ class GigsController < ApplicationController
       turbo_frame: "table_frame"
     )
     
-    # Apply sorting first
-    # sorted_collection = apply_sorting(gigs_collection)
-    # if params[:sort].blank?
-    #   sorted_collection = sorted_collection.order("GigDate desc")
-    # end
-# 
-    # # Apply pagination with 10 items for embedded tables (need both items and limit)
-    # @pagy, @gigs = pagy(sorted_collection, items: 10, limit: 10, link_extra: 'data-turbo-frame="table_frame"')
-    
     @table_id = "gig-#{resource_type}"
 
     render partial: 'shared/turbo_gig_table'

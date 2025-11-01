@@ -239,7 +239,10 @@ class CompositionsController < ApplicationController
     case resource_type
     when 'song'
       @resource = Song.find(resource_id)
-      compositions_collection = @resource.compositions
+      releases = @resource.compositions
+      # Use a subquery to keep only the record with smallest COMPID for each title
+      min_compids = releases.select("Title, MIN(COMP.COMPID) as min_compid").group("Title")
+      compositions_collection = releases.joins("INNER JOIN (#{min_compids.to_sql}) earliest ON COMP.Title = earliest.Title AND COMP.COMPID = earliest.min_compid")
     else
       head :not_found
       return

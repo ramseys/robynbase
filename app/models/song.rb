@@ -68,12 +68,7 @@ class Song < ApplicationRecord
       .group('SONG.SONGID')
       .order(:Song => :asc)
   end
-
-  def get_albums
-    compositions = self.compositions.order(:Year => :asc, :COMPID => :asc)
-    compositions.to_a.uniq { |f| [f.Title ] }    
-  end
-
+  
   def get_comments
     if self.Comments.present?
       self.Comments.gsub(/\r\n/, '<br>')
