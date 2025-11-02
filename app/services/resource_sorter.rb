@@ -21,72 +21,80 @@ class ResourceSorter
   private
 
   def self.sort_gigs(collection, sort_column, direction)
+    direction_sym = direction.to_sym
+
     case sort_column
     when 'venue'
-      collection.order("Venue #{direction}")
+      collection.order(Venue: direction_sym)
     when 'billed_as'
-      collection.order("BilledAs #{direction}")
+      collection.order(BilledAs: direction_sym)
     when 'city'
-      collection.joins(:venue).order("VENUE.City #{direction}")
+      collection.joins(:venue).order('VENUE.City' => direction_sym)
     when 'state'
-      collection.joins(:venue).order("VENUE.State #{direction}")
+      collection.joins(:venue).order('VENUE.State' => direction_sym)
     when 'country'
-      collection.joins(:venue).order("VENUE.Country #{direction}")
+      collection.joins(:venue).order('VENUE.Country' => direction_sym)
     when 'date'
-      collection.order("GigDate #{direction}")
+      collection.order(GigDate: direction_sym)
     else
-      collection.order("GigDate desc")
+      collection.order(GigDate: :desc)
     end
   end
 
   def self.sort_songs(collection, sort_column, direction)
+    direction_sym = direction.to_sym
+
     case sort_column
     when 'name'
-      collection.order("SONG.Song #{direction}")
+      collection.order('SONG.Song' => direction_sym)
     when 'original_band'
-      collection.order("SONG.OrigBand #{direction}")
+      collection.order('SONG.OrigBand' => direction_sym)
     when 'author'
-      collection.order("SONG.Author #{direction}")
+      collection.order('SONG.Author' => direction_sym)
     when 'performances'
-      collection.left_joins(:gigs).group("SONG.SONGID").order("COUNT(GIG.GIGID) #{direction}")
+      collection.left_joins(:gigs).group("SONG.SONGID").order(Arel.sql("COUNT(GIG.GIGID)").send(direction == 'desc' ? :desc : :asc))
     else
-      collection.order("SONG.Song asc")
+      collection.order('SONG.Song' => :asc)
     end
   end
 
   def self.sort_compositions(collection, sort_column, direction)
+    direction_sym = direction.to_sym
+
     case sort_column
     when 'title'
-      collection.order("COMP.Title #{direction}")
+      collection.order('COMP.Title' => direction_sym)
     when 'artist'
-      collection.order("COMP.Artist #{direction}")
+      collection.order('COMP.Artist' => direction_sym)
     when 'year'
-      collection.order("COMP.Year #{direction}")
+      collection.order('COMP.Year' => direction_sym)
     when 'label'
-      collection.order("COMP.Label #{direction}")
+      collection.order('COMP.Label' => direction_sym)
     when 'type'
-      collection.order("COMP.Type #{direction}")
+      collection.order('COMP.Type' => direction_sym)
     else
-      collection.order("COMP.Title asc")
+      collection.order('COMP.Title' => :asc)
     end
   end
 
   def self.sort_venues(collection, sort_column, direction)
+    direction_sym = direction.to_sym
+
     case sort_column
     when 'venue'
-      collection.order("VENUE.Name #{direction}")
+      collection.order('VENUE.Name' => direction_sym)
     when 'city'
-      collection.order("VENUE.City #{direction}")
+      collection.order('VENUE.City' => direction_sym)
     when 'subcity'
-      collection.order("VENUE.SubCity #{direction}")
+      collection.order('VENUE.SubCity' => direction_sym)
     when 'state'
-      collection.order("VENUE.State #{direction}")
+      collection.order('VENUE.State' => direction_sym)
     when 'country'
-      collection.order("VENUE.Country #{direction}")
+      collection.order('VENUE.Country' => direction_sym)
     when 'performances'
-      collection.left_joins(:gigs).group("VENUE.VENUEID").order("COUNT(GIG.GIGID) #{direction}")
+      collection.left_joins(:gigs).group("VENUE.VENUEID").order(Arel.sql("COUNT(GIG.GIGID)").send(direction == 'desc' ? :desc : :asc))
     else
-      collection.order("VENUE.Name asc")
+      collection.order('VENUE.Name' => :asc)
     end
   end
 end
