@@ -24,7 +24,14 @@
 
 // });
 
-$(window).on("DOMContentLoaded", function() { 
+// Clean up typeahead instances before page transitions
+$(document).on("turbo:before-cache", function() {
+  if ($(".typeahead").length > 0) {
+    $(".typeahead").typeahead('destroy');
+  }
+});
+
+$(window).on("turbo:load", function() { 
 
   const currentPage = window.location.pathname.substring(1);
 
@@ -58,18 +65,6 @@ $(window).on("DOMContentLoaded", function() {
   $(".image-box")
     .on("mouseenter", (e) => { $(e.currentTarget).addClass("overlay")})
     .on("mouseleave", (e) => { $(e.currentTarget).removeClass("overlay")});
-
-  // note that this event is delegated to the body of main search tables, and selects for tr's; 
-  // we need to do this (instead of attaching the events to the rows directly) because the rows might
-  // not be there when this event handler is declared (eg, because of grid paging)
-  $(".main-search-list tbody").on("click", "tr", function(e) {
-
-    // don't navigate if click is on one of the actions
-    if (e.target && (e.target.nodeName !== "A")) {
-      window.location = $(e.currentTarget).data("path");
-    }
-
-  });
    
   // add lightbox for any image galleries
   $().fancybox({
@@ -165,6 +160,11 @@ $(window).on("DOMContentLoaded", function() {
   initComplete = composition_engine.initialize();
 
   const init = function() { 
+
+    // Ensure any existing typeahead instances are destroyed first
+    if ($(".typeahead").length > 0 && $(".typeahead").data('ttTypeahead')) {
+      $(".typeahead").typeahead('destroy');
+    }
 
     // $(".typeahead").typeahead({
     $(".typeahead").typeahead({

@@ -4,6 +4,10 @@ Rails.application.routes.draw do
   resources :sessions, only: [:new, :create, :destroy]
   get 'map/index'
   get "robyn/index"
+  get "robyn/omnisearch_gigs"
+  get "robyn/omnisearch_songs"
+  get "robyn/omnisearch_compositions"
+  get "robyn/omnisearch_venues"
   get "songs/index"
   get "songs/quick_query"
   get "gigs/index"
@@ -22,10 +26,28 @@ Rails.application.routes.draw do
   get 'login', to: 'sessions#new', as: 'login'
   get 'logout', to: 'sessions#destroy', as: 'logout'
   
-  resources :songs
-  resources :gigs
-  resources :venues
-  resources :compositions
+  resources :songs do
+    collection do
+      get :infinite_scroll
+    end
+  end
+  resources :gigs do
+    collection do
+      get :for_resource
+      get :infinite_scroll
+    end
+  end
+  resources :venues do
+    collection do
+      get :infinite_scroll
+    end
+  end
+  resources :compositions do
+    collection do
+      get :for_resource
+      get :infinite_scroll
+    end
+  end
   resources :about
   resources :map
 

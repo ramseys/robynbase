@@ -1,0 +1,4 @@
+<% frame_name = "table_frame" unless local_assigns.has_key? :frame_name %>
+<%= turbo_frame_tag frame_name do %>
+  <%= render partial: '/gigs/gig_list', locals: { gigs: @gigs, table_id: @table_id, use_pagination: true, frame_name: frame_name } %>
+<% end %>

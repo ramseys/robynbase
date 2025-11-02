@@ -6,9 +6,9 @@
 
     <div class="<%= (can? :manage, Song) ? 'col-sm-10' : 'col-sm-12' %>">
 
-      <%= form_tag('/songs/index', :method => 'GET') do %>
+      <%= form_tag('/songs/index', :method => 'GET', data: { turbo_frame: "table_frame" }) do %>
 
-        <%= text_field_tag :song_search_value, params['song_search_value'], :class=> 'search-field', :placeholder => 'Search songs' %>
+        <%= text_field_tag :search_value, params['search_value'], :class=> 'search-field', :placeholder => 'Search songs' %>
 
         <%= submit_tag "Search", :name => nil %>
 
@@ -38,19 +38,21 @@
 
   <div class="search-results">
 
-    <% if not @songs.nil? %>
-      <% if @songs.empty? %> 
-        <%= render partial: '/robyn/nothing_found' %>
+    <%= turbo_frame_tag "table_frame" do %>
+      <% if not @songs.nil? %>
+        <% if @songs.empty? %> 
+          <%= render partial: '/robyn/nothing_found' %>
+        <% else %>
+          <%= render partial: '/songs/song_list', locals: {songs: @songs, table_id: "song-main", show_lyrics_snippet: @show_lyrics ? params[:search_value] : nil} %>
+        <% end %>
+
       <% else %>
-        <%= render partial: '/songs/song_list', locals: {songs: @songs, table_id: "song-main", show_lyrics_snippet: @show_lyrics ? params[:song_search_value] : nil} %>
+      
+        <% quick_queries = get_all_quick_queries(Song) %>
+
+        <%= render partial: '/robyn/quick_queries', locals: {quick_queries: quick_queries} %>
+
       <% end %>
-
-    <% else %>
-    
-      <% quick_queries = get_all_quick_queries(Song) %>
-
-      <%= render partial: '/robyn/quick_queries', locals: {quick_queries: quick_queries} %>
-
     <% end %>
 
   </div>

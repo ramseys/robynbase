@@ -17,6 +17,13 @@ gem 'bcrypt', '~> 3.1.7'
 # Authorization
 gem 'cancancan', '~> 3.5.0'
 
+# Pagination
+gem 'pagy', '~> 9.0'
+
+# Turbo and Stimulus for modern Rails
+gem 'turbo-rails', '~> 2.0'
+gem 'stimulus-rails', '~> 1.3'
+
 gem 'listen'
 gem 'bootsnap'
 gem 'sass-rails'
@@ -66,5 +73,6 @@ group :development do
   gem 'capistrano-rails', '1.7.0', require: false
   gem 'rvm1-capistrano3', require: false
   gem 'web-console'
-  gem 'byebug'
+  gem 'pry-rails'
+  gem 'pry-byebug'
 end

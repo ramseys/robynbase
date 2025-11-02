@@ -1,6 +1,6 @@
 <%= form_for(@comp) do |f| %>
 
-<div class="item-form">
+<div class="item-form" data-controller="composition">
         
     <div class="row">
 
@@ -99,4 +99,3 @@
 
 <% end %>
 
-<%= javascript_include_tag "compositions", "data-turbo-track": "reload", defer: true %>

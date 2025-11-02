@@ -1,13 +1,18 @@
 class SongsController < ApplicationController
+  include Paginated
+  include InfiniteScrollConcern
 
   authorize_resource :only => [:new, :edit, :update, :create, :destroy]
 
   def index
 
     if params[:search_type].present?
-      @songs = Song.search_by(params[:search_type] ? params[:search_type].to_sym : nil, params[:song_search_value])
+      songs_collection = Song.search_by(params[:search_type] ? params[:search_type].to_sym : nil, params[:search_value])
+      @pagy, @songs = apply_sorting_and_pagination(songs_collection, default_sort: "SONG.Song asc", default_sort_params: { sort: 'name', direction: 'asc' })
     else 
       params[:search_type] = "title"
+      @songs = nil
+      @pagy = nil
     end
 
     @show_lyrics = (params[:search_type] == "lyrics")
@@ -15,7 +20,8 @@ class SongsController < ApplicationController
   end
 
   def quick_query
-    @songs = Song.quick_query(params[:query_id], params[:query_attribute])
+    songs_collection = Song.quick_query(params[:query_id], params[:query_attribute])
+    @pagy, @songs = apply_sorting_and_pagination(songs_collection, default_sort: "SONG.Song asc", default_sort_params: { sort: 'song', direction: 'asc' })
     render "index"
   end
 
@@ -94,9 +100,31 @@ class SongsController < ApplicationController
     @albums_present = @song.compositions.present? 
     
   end
-  
+
   
   private
+  
+    def infinite_scroll_config
+      {
+        model: Song,
+        records_name: :songs,
+        partial: 'song_rows',
+        default_sort: "SONG.Song asc",
+        default_sort_params: { sort: 'name', direction: 'asc' },
+        additional_locals: { 
+          show_lyrics: (params[:search_type] == "lyrics"), 
+          show_lyrics_snippet: params[:search_type] == "lyrics" ? params[:search_value] : nil }
+      }
+    end
+    
+    def apply_sorting(collection)
+      ResourceSorter.sort(
+        collection,
+        resource_type: :song,
+        sort_column: params[:sort],
+        direction: params[:direction]
+      )
+    end
     
     def return_to_previous_page(song)
       previous_page = session.delete(:return_to_song)

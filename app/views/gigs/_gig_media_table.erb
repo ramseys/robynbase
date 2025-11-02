@@ -33,7 +33,10 @@
                 { class: "form-control song-selector" })%> 
             </td>
             <td> 
-                <Button type="button" class="btn btn-link" onClick="removeTableRow('<%=id%>', <%=sequenceIndex%>)">
+                <Button type="button" class="btn btn-link" 
+                        data-action="click->gig#removeRow"
+                        data-gig-table-id-param="<%=id%>"
+                        data-gig-row-id-param="<%=sequenceIndex%>">
                     Remove
                 </Button>
             </td>
@@ -50,4 +53,6 @@
 
 <br/>
 
-<button type="button" class="btn btn-primary" onClick="addMediaTableRow('<%=id%>')">Add Media</button>
+<button type="button" class="btn btn-primary" 
+        data-action="click->gig#addMedia"
+        data-gig-table-id-param="<%=id%>">Add Media</button>

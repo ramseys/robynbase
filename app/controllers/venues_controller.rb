@@ -1,12 +1,17 @@
 class VenuesController < ApplicationController
+  include Paginated
+  include InfiniteScrollConcern
 
   authorize_resource :only => [:new, :edit, :update, :create, :destroy]
   
   def index
     if params[:search_type].present?
-      @venues = Venue.search_by(params[:search_type].to_sym, params[:venue_search_value])
+      venues_collection = Venue.search_by(params[:search_type].to_sym, params[:search_value])
+      @pagy, @venues = apply_sorting_and_pagination(venues_collection, default_sort: "VENUE.Name asc", default_sort_params: { sort: 'venue', direction: 'asc' })
     else 
       params[:search_type] = "name"
+      @venues = nil
+      @pagy = nil
     end
 
   end
@@ -67,11 +72,32 @@ class VenuesController < ApplicationController
   end
 
   def quick_query
-    @venues = Venue.quick_query(params[:query_id], params[:query_attribute])
+    venues_collection = Venue.quick_query(params[:query_id], params[:query_attribute])
+    @pagy, @venues = apply_sorting_and_pagination(venues_collection, default_sort: "VENUE.Name asc", default_sort_params: { sort: 'venue', direction: 'asc' })
     render "index"
   end
 
+
   private
+
+    def infinite_scroll_config
+      {
+        model: Venue,
+        records_name: :venues,
+        partial: 'venue_rows',
+        default_sort: "VENUE.Name asc",
+        default_sort_params: { sort: 'venue', direction: 'asc' }
+      }
+    end
+  
+    def apply_sorting(collection)
+      ResourceSorter.sort(
+        collection,
+        resource_type: :venue,
+        sort_column: params[:sort],
+        direction: params[:direction]
+      )
+    end
     
     def save_referrer
       session[:return_to_venue] = request.referer

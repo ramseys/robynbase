@@ -1,0 +1,4 @@
+<% frame_name = "releases_frame" unless local_assigns.has_key? :frame_name %>
+<%= turbo_frame_tag frame_name do %>
+  <%= render partial: '/compositions/release_list', locals: { albums: @compositions, table_id: @table_id, use_paging: true, frame_name: frame_name } %>
+<% end %>

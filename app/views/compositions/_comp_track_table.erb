@@ -16,7 +16,7 @@
     <% sequenceIndex = 1 %>
 
     <div style="display: none">
-        <select id="template-song-selector" class="form-control song-selector">
+        <select id="template-song-selector" class="form-control song-selector" data-composition-target="templateSongSelector">
             <option value=""></option>
             <% @song_list.map do |s| %>
                 <option value="<%= s[1] %>"><%= s[0] %></option>
@@ -34,7 +34,10 @@
                 <%= track_fields.hidden_field :bonus %> 
             </td>
             <td> 
-                <Button type="button" class="btn btn-link" onClick="removeCompositionTableRow('<%=id%>', <%=sequenceIndex%>)">
+                <Button type="button" class="btn btn-link" 
+                        data-action="click->composition#removeTrack"
+                        data-composition-table-id-param="<%=id%>"
+                        data-composition-row-id-param="<%=sequenceIndex%>">
                     Remove
                 </Button>
             </td>
@@ -51,4 +54,7 @@
 
 <br/>
 
-<button type="button" class="btn btn-primary" onClick="addCompositionTableRow('<%=id%>', <%=bonus%>)">Add Song</button>
+<button type="button" class="btn btn-primary" 
+        data-action="click->composition#addTrack"
+        data-composition-table-id-param="<%=id%>"
+        data-composition-bonus-param="<%=bonus%>">Add Song</button>

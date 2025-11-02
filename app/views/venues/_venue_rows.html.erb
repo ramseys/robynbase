@@ -1,0 +1,32 @@
+<% for venue in venues %>
+  <tr data-path="<%=venue_path(venue)%>" 
+      data-action="click->row-navigation#rowClicked"
+      style="cursor: pointer;">
+    <td class="main-column"> 
+      <%= venue.Name %> 
+    </td>
+    <td>
+      <%= venue.City%>
+    </td>
+    <td>
+      <%= venue.SubCity%>
+    </td>
+    <td>
+      <%= venue.State%>
+    </td>
+    <td>
+      <%= venue.Country%>
+    </td>
+    <td>
+      <%= venue.gig_count%>
+    </td>
+
+    <% if can? :manage, Venue %>
+      <td> 
+        <a href="<%=venue_path(venue)%>/edit" data-turbo-frame="_top">Edit</a> &nbsp; &nbsp;
+        <%= link_to("Delete", venue_path(venue), method: :delete, data: { confirm: "Are you sure you want to delete #{venue.Name}" }) %>
+      </td>
+    <% end %>
+    
+  </tr>
+<% end %>

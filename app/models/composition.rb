@@ -45,13 +45,13 @@ class Composition < ApplicationRecord
 
       case term 
         when :title
-          column = "Title"
+          column = "COMP.Title"
         when :year
-          column = "Year"
+          column = "COMP.Year"
         when :label
-          column = "Label"
+          column = "COMP.Label"
         when :artist
-          column = "Artist"
+          column = "COMP.Artist"
       end
 
       "#{column} LIKE ?"
@@ -73,12 +73,10 @@ class Composition < ApplicationRecord
 
     end
 
-    # order by year
-    releases = releases.order(:Year => :asc, :COMPID => :asc)
-
-    # remove duplicated releases (ie, releases with multiple editions)
-    # TODO: why aren't i just doing this in the query? group by title?
-    releases = releases.to_a.uniq { |f| [f.Title ] }
+    # remove duplicated releases (ie, releases with multiple editions) and order by year
+    # Use a subquery to keep only the record with smallest COMPID for each title
+    min_compids = releases.select("Title, MIN(COMPID) as min_compid").group("Title")
+    releases = releases.joins("INNER JOIN (#{min_compids.to_sql}) earliest ON COMP.Title = earliest.Title AND COMP.COMPID = earliest.min_compid").order("COMP.Year ASC, COMP.COMPID ASC")
 
   end 
 

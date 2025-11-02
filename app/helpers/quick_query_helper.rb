@@ -31,7 +31,7 @@ module QuickQueryHelper
   end
 
   def render_link(qq, secondary = nil)
-    "<a href='#{qq.route(secondary)}'>#{qq.label(secondary)}</a>"
+    "<a href='#{qq.route(secondary)}' data-turbo-frame='table_frame'>#{qq.label(secondary)}</a>"
   end
 
 end

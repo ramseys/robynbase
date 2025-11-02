@@ -13,3 +13,5 @@ import * as bootstrap from "bootstrap"
 // it used to be included by default, prior to Rails 7, and is now deprecated
 import Rails from '@rails/ujs';
 Rails.start();
+import "@hotwired/turbo-rails"
+import "./controllers"

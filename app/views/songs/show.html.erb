@@ -113,7 +113,9 @@
   <div class="col-sm-12">
 
     <a class="anchor" name="albums"></a>
-    <%= render partial: '/compositions/release_list', locals: {albums: @song.get_albums, table_id: "album-song", use_paging: true, show_search: true} %>
+    <%= turbo_frame_tag "releases_frame", src: for_resource_compositions_path(resource_type: 'song', resource_id: @song.id) do %>
+      Loading releases...
+    <% end %>
 
   </div>
 
@@ -130,7 +132,9 @@
   <div class="col-sm-12">
 
     <a class="anchor" name="gigs"></a>
-    <%= render partial: '/gigs/gig_list', locals: {gigs: @song.gigs.distinct, table_id: "gig-song", show_search: true, use_paging: true} %>
+    <%= turbo_frame_tag "table_frame", src: for_resource_gigs_path(resource_type: 'song', resource_id: @song.id) do %>
+      Loading gigs...
+    <% end %>
 
   </div>
 

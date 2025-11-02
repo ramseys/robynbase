@@ -1,47 +1,57 @@
 <% suppress_header = nil unless local_assigns.has_key? :suppress_header %>
-<% use_paging = false unless local_assigns.has_key? :use_paging %>
+<% use_pagination = false unless local_assigns.has_key? :use_pagination %>
 <% show_search = false unless local_assigns.has_key? :show_search %>
 <% page_length = 10 unless local_assigns.has_key? :page_length %>
 <% table_id = "" unless local_assigns.has_key? :table_id %>
+<% frame_name = "table_frame" unless local_assigns.has_key? :frame_name %>
 
-<table class="row-border stripe order-column table-hover main-search-list" data-id="<%= table_id %>" data-table-name="Gigs" data-paging="<%= use_paging %>" data-searching="<%= show_search %>" data-page-length="<%= page_length %>" data-length-change="false" >
+<%# only show header when the table appears in non-index pages %>
+<% if local_assigns.has_key? :frame_name  %>
+  <h3 class="section-header">Gigs</h3>
+<% end %>  
+
+<table class="table table-striped table-hover main-search-list"
+       data-id="<%= table_id %>"
+       data-table-name="Gigs"
+       data-controller="row-navigation <%= 'infinite-scroll' unless use_pagination %>"
+       data-infinite-scroll-url-value="/gigs/infinite_scroll"
+       data-infinite-scroll-current-page-value="<%= defined?(@pagy) && @pagy ? @pagy.page : 1 %>"
+       data-infinite-scroll-has-next-page-value="<%= defined?(@pagy) && @pagy ? @pagy.next.present? : false %>"
+       data-infinite-scroll-current-sort-value="<%= params[:sort] %>"
+       data-infinite-scroll-current-direction-value="<%= params[:direction] %>"
+       data-infinite-scroll-search-type-value="<%= params[:search_type] %>"
+       data-infinite-scroll-search-value-value="<%= params[:search_value] %>"
+       data-infinite-scroll-query-type-value="<%= params[:query_id].present? ? 'quick_query' : 'search' %>"
+       data-infinite-scroll-query-id-value="<%= params[:query_id] %>"
+       data-infinite-scroll-query-attribute-value="<%= params[:query_attribute] %>"
+       data-infinite-scroll-advanced-query-params-value="<%= {
+         gig_date: params[:gig_date],
+         gig_range: params[:gig_range], 
+         gig_range_type: params[:gig_range_type],
+         gig_type: params[:gig_type]
+       }.compact.to_json %>"
+       style="table-layout: fixed;">
 
   <% if not suppress_header %>
     <thead>
     <tr>
-      <th>Venue</th>
-      <th>Billed As</th>
-      <th>City</th>
-      <th>State</th>
-      <th>Country</th>
-      <th>Date</th>
+      <th style="width: 25%;"><%= sortable_column_header('venue', 'Venue', params[:sort], params[:direction], frame_name) %></th>
+      <th style="width: 15%;"><%= sortable_column_header('billed_as', 'Billed As', params[:sort], params[:direction], frame_name) %></th>
+      <th style="width: 15%;"><%= sortable_column_header('city', 'City', params[:sort], params[:direction], frame_name) %></th>
+      <th style="width: 10%;"><%= sortable_column_header('state', 'State', params[:sort], params[:direction], frame_name) %></th>
+      <th style="width: 10%;"><%= sortable_column_header('country', 'Country', params[:sort], params[:direction], frame_name) %></th>
+      <th style="width: 15%;"><%= sortable_column_header('date', 'Date', params[:sort], params[:direction], frame_name) %></th>
       <% if can? :manage, Gig %>
-        <th>Actions</th>
+        <th style="width: 10%;">Actions</th>
       <% end %>
     </tr>
     </thead>
   <% end %>
-
-  <% for gig in gigs %>
-    <tr data-path="<%= gig_path(gig) %>">
-      <td class="main-column"> <%= gig.Venue %> </td>
-      <td> <%= gig.BilledAs.present? ? gig.BilledAs : 'Robyn Hitchcock' %> </td>
-      <td> <%= gig.venue.nil? ? nil : gig.venue.City %> </td>
-      <td> <%= gig.venue.nil? || gig.venue.State.nil? ? nil : gig.venue.State %> </td>
-      <td> <%= gig.venue.nil? ? nil : gig.venue.Country %> </td>
-      <td data-sort="<%= gig.GigDate.to_date.to_formatted_s(:number)%>">
-        <%= gig.GigDate.to_date.strftime('%m/%d/%Y') %>
-      </td>      
-      
-
-      <% if can? :manage, Gig %>
-        <td class="actions"> 
-          <a href="<%=gig_path(gig)%>/edit">Edit</a> &nbsp;
-          <%= link_to("Delete", gig_path(gig), method: :delete, data: { confirm: "Are you sure you want to delete the gig for #{gig.Venue}?" }) %>
-        </td>
-      <% end %>
-      
-    </tr>
-  <% end %>
-
+  <tbody data-infinite-scroll-target="tbody">
+  <%= render '/gigs/gig_rows', gigs: gigs %>
+  </tbody>
 </table>
+
+<% if use_pagination and defined?(@pagy) and @pagy and @pagy.pages > 1 %>
+  <%= render 'shared/pagination', pagy: @pagy %>
+<% end %>
