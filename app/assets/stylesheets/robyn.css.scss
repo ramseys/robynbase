@@ -79,7 +79,17 @@ a {
     text-align: center;
 }
 
+// Wrapper for horizontal scrolling on mobile
+.table-responsive-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; // smooth scrolling on iOS
+}
+
 table.main-search-list {
+
+    // Use auto layout so columns expand based on content
+    table-layout: auto;
+    width: 100%;
 
     tbody {
         tr:hover {
@@ -97,6 +107,10 @@ table.main-search-list {
         // width: 70%;
     }
 
+    // Prevent column content from wrapping
+    th, td {
+        white-space: nowrap;
+    }
 
     .glyphicon {
         top: 2px;

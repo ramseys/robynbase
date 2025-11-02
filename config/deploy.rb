@@ -47,6 +47,7 @@ set :linked_files, %w{config/database.yml config/master.key}
 
 # this is used by the built-in 'deploy:symlink:linked_dirs'. links up the
 # shared two directories to the latest release: active storage files, and album art
+# Note: public/assets is NOT linked - Capistrano compiles fresh assets on each deploy
 set :linked_dirs, %w{public/images/album-art active-storage-files}
 
 # Default value for :format is :pretty
@@ -64,6 +65,15 @@ set :linked_dirs, %w{public/images/album-art active-storage-files}
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
 
+# Prevent capistrano-rails from automatically linking public/assets to shared
+# The gem's default behavior (in assets.rake) adds public/assets to linked_dirs,
+# which prevents fresh asset compilation on each deploy. We override that task here.
+namespace :deploy do
+  task :set_linked_dirs do
+    # Override the capistrano-rails gem task to prevent automatic asset linking
+    # This ensures assets are compiled fresh on each deployment
+  end
+end
 
 namespace :deploy do
 
@@ -75,7 +85,7 @@ namespace :deploy do
     end
   end
 
-  after 'deploy:finished', 'deploy:restart_passenger'
+  after 'deploy:publishing', 'deploy:restart_passenger'
 
   after :restart, :clear_cache do
     on roles(:web), in: :groups, limit: 3, wait: 10 do
