@@ -48,7 +48,6 @@ export default class extends Controller {
 
   handleScroll() {
     if (this.loading || !this.hasNextPageValue) {
-      console.log('Scroll ignored - loading:', this.loading, 'hasNextPage:', this.hasNextPageValue)
       return
     }
 
@@ -56,12 +55,9 @@ export default class extends Controller {
     const windowHeight = window.innerHeight
     const documentHeight = document.documentElement.scrollHeight
     const distanceFromBottom = documentHeight - (scrollTop + windowHeight)
-    
-    // console.log('Scroll position - distance from bottom:', distanceFromBottom)
-    
+
     // Trigger when user is within 200px of bottom
     if (scrollTop + windowHeight >= documentHeight - 200) {
-      console.log('Loading next page...')
       this.loadNextPage()
     }
   }
@@ -120,8 +116,6 @@ export default class extends Controller {
         })
       }
 
-      console.log('Fetching URL:', url.toString())
-
       const response = await fetch(url, {
         headers: {
           'Accept': 'application/json',
@@ -129,13 +123,9 @@ export default class extends Controller {
         }
       })
 
-      console.log('Response status:', response.status)
-      console.log('Response headers:', response.headers.get('content-type'))
-
       if (!response.ok) throw new Error(`Network response was not ok: ${response.status}`)
 
       const data = await response.json()
-      console.log('Response data:', data)
       
       // Append new rows to table
       this.tbodyTarget.insertAdjacentHTML('beforeend', data.html)
@@ -150,8 +140,6 @@ export default class extends Controller {
       if (data.query_type !== undefined) this.queryTypeValue = data.query_type
       if (data.query_id !== undefined) this.queryIdValue = data.query_id
       if (data.query_attribute !== undefined) this.queryAttributeValue = data.query_attribute
-
-      console.log('Updated state - Page:', this.currentPageValue, 'HasNext:', this.hasNextPageValue, 'Sort:', this.currentSortValue, 'Direction:', this.currentDirectionValue, 'QueryType:', this.queryTypeValue)
 
       // Check if we need to load more data to fill the screen
       this.ensureScreenFilled()
@@ -191,10 +179,7 @@ export default class extends Controller {
     const neededRows = Math.ceil(availableHeight / estimatedRowHeight) + 3 // +3 buffer
     const currentRows = this.tbodyTarget.children.length
 
-    console.log(`Screen filling check: need ${neededRows} rows, have ${currentRows}`)
-
     if (currentRows < neededRows) {
-      console.log('Loading more data to fill screen...')
       this.loadNextPage()
     }
   }

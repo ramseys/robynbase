@@ -65,21 +65,6 @@ $(window).on("turbo:load", function() {
   $(".image-box")
     .on("mouseenter", (e) => { $(e.currentTarget).addClass("overlay")})
     .on("mouseleave", (e) => { $(e.currentTarget).removeClass("overlay")});
-
-  // Row click navigation is now handled by row-navigation Stimulus controller
-  // Fallback for row navigation in case Stimulus doesn't load
-  // $(document).on("click", "tr[data-path]", function(e) {
-  //   // Don't navigate if click is on a link or button
-  //   if (e.target && (e.target.nodeName === "A" || e.target.nodeName === "BUTTON")) {
-  //     return;
-  //   }
-  //   
-  //   const path = $(this).data("path");
-  //   if (path) {
-  //     console.log("Fallback row navigation to:", path);
-  //     window.location = path;
-  //   }
-  // });
    
   // add lightbox for any image galleries
   $().fancybox({
