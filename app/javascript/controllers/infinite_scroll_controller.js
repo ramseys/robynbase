@@ -148,14 +148,11 @@ export default class extends Controller {
       console.error('Error loading next page:', error)
     } finally {
       this.loading = false
-      console.log('call hideLoadingIndicator')
       this.hideLoadingIndicator()
     }
   }
 
-  showLoadingIndicator() {
-    console.log('showing load indicator ...');
-    
+  showLoadingIndicator() {    
     // Add loading indicator if it doesn't exist
     if (!this.element.querySelector('.infinite-scroll-loading')) {
       const indicator = document.createElement('div')
