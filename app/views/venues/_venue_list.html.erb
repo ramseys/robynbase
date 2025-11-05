@@ -24,7 +24,7 @@
        data-infinite-scroll-query-type-value="<%= params[:query_id].present? ? 'quick_query' : 'search' %>"
        data-infinite-scroll-query-id-value="<%= params[:query_id] %>"
        data-infinite-scroll-query-attribute-value="<%= params[:query_attribute] %>"
-       style="table-layout: fixed;">
+       >
   <thead>
   <tr>
   <th style="width: 25%;"><%= sortable_column_header('venue', 'Venue', params[:sort], params[:direction], frame_name) %></th>

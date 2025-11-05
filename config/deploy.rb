@@ -64,8 +64,17 @@ set :linked_dirs, %w{public/images/album-art active-storage-files}
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
 
-
+# EXPERIMENT: Temporarily allowing capistrano-rails to link public/assets to shared
+# to observe what happens during asset precompilation
+# Prevent capistrano-rails from automatically linking public/assets to shared
+# The gem's default behavior (in assets.rake) adds public/assets to linked_dirs,
+# which prevents fresh asset compilation on each deploy. We override that task here.
 namespace :deploy do
+  # COMMENTED OUT FOR EXPERIMENT: Allowing default asset linking behavior
+  # task :set_linked_dirs do
+  #   # Override the capistrano-rails gem task to prevent automatic asset linking
+  #   # This ensures assets are compiled fresh on each deployment
+  # end
 
   # after the deploy, we need to get passenger to restart itself
   desc "Restart passenger"
@@ -75,7 +84,7 @@ namespace :deploy do
     end
   end
 
-  after 'deploy:finished', 'deploy:restart_passenger'
+  after 'deploy:publishing', 'deploy:restart_passenger'
 
   after :restart, :clear_cache do
     on roles(:web), in: :groups, limit: 3, wait: 10 do
@@ -85,5 +94,4 @@ namespace :deploy do
       # end
     end
   end
-
 end
