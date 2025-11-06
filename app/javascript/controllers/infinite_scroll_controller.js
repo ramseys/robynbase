@@ -152,18 +152,18 @@ export default class extends Controller {
     }
   }
 
-  showLoadingIndicator() {
+  showLoadingIndicator() {    
     // Add loading indicator if it doesn't exist
     if (!this.element.querySelector('.infinite-scroll-loading')) {
       const indicator = document.createElement('div')
       indicator.className = 'infinite-scroll-loading text-center p-3'
-      indicator.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading more songs...'
-      this.element.appendChild(indicator)
+      indicator.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading more ...'
+      this.element.closest('table').after(indicator)
     }
   }
 
   hideLoadingIndicator() {
-    const indicator = this.element.querySelector('.infinite-scroll-loading')
+    const indicator = document.querySelector('.infinite-scroll-loading')
     if (indicator) {
       indicator.remove()
     }
