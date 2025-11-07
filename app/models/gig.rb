@@ -46,7 +46,8 @@ class Gig < ApplicationRecord
   # returns the reviews for this gig (if any), formatted to display correctly in html
   def get_reviews
     if self.Reviews.present?
-      self.Reviews.gsub(/\r\n/, '<br>')
+      # Handle both Unix (\n) and Windows (\r\n) line endings
+      self.Reviews.gsub(/\r\n|\n/, '<br>')
     end
   end
 
