@@ -71,7 +71,8 @@ class Song < ApplicationRecord
   
   def get_comments
     if self.Comments.present?
-      self.Comments.gsub(/\r\n/, '<br>')
+      # Handle both Unix (\n) and Windows (\r\n) line endings
+      self.Comments.gsub(/\r\n|\n/, '<br>')
     end
   end
 

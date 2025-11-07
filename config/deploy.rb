@@ -23,8 +23,9 @@ set :use_sudo, false
 
 set :rails_env, "production"
 
-# download the repository to the local machine, then upload to server
-set :deploy_via, :copy
+# NOTE: deploy_via was removed in Capistrano 3.x - this setting is ignored
+# The standard Git SCM strategy is used (server clones from repository directly)
+# set :deploy_via, :copy
 
 # use agent forwarding
 set :ssh_options, { :forward_agent => true }
@@ -76,6 +77,36 @@ namespace :deploy do
   #   # This ensures assets are compiled fresh on each deployment
   # end
 
+  # Handle modern Rails 7+ asset bundling (jsbundling-rails + cssbundling-rails)
+  namespace :assets do
+    desc 'Run yarn install'
+    task :yarn_install do
+      on roles(:web) do
+        within release_path do
+          execute :yarn, 'install', '--frozen-lockfile'
+        end
+      end
+    end
+
+    desc 'Build JavaScript assets with esbuild'
+    task :build_js do
+      on roles(:web) do
+        within release_path do
+          execute :yarn, 'build'
+        end
+      end
+    end
+
+    desc 'Build CSS assets with sass'
+    task :build_css do
+      on roles(:web) do
+        within release_path do
+          execute :yarn, 'build:css'
+        end
+      end
+    end
+  end
+
   # after the deploy, we need to get passenger to restart itself
   desc "Restart passenger"
   task :restart_passenger do
@@ -84,7 +115,9 @@ namespace :deploy do
     end
   end
 
-  after 'deploy:publishing', 'deploy:restart_passenger'
+  # Hook to concrete task instead of phase for reliability
+  # deploy:symlink:release runs at the moment "current" symlink is updated to new release
+  after 'deploy:symlink:release', 'deploy:restart_passenger'
 
   after :restart, :clear_cache do
     on roles(:web), in: :groups, limit: 3, wait: 10 do
@@ -95,3 +128,8 @@ namespace :deploy do
     end
   end
 end
+
+# Hook the modern asset building tasks to run before assets:precompile
+before 'deploy:assets:precompile', 'deploy:assets:yarn_install'
+before 'deploy:assets:precompile', 'deploy:assets:build_js'
+before 'deploy:assets:precompile', 'deploy:assets:build_css'
