@@ -20,19 +20,20 @@ This document outlines a deployment plan using **Kamal** (formerly MRSK), the of
 1. [What is Kamal?](#what-is-kamal)
 2. [Architecture Overview](#architecture-overview)
 3. [Installation](#installation)
-4. [Configuration Files](#configuration-files)
-5. [Dockerfile for Kamal](#dockerfile-for-kamal)
-6. [Deployment Workflow](#deployment-workflow)
-7. [Accessories (MySQL, Redis)](#accessories-mysql-redis)
-8. [Storage and Volumes](#storage-and-volumes)
-9. [SSL/TLS with Let's Encrypt](#ssltls-with-lets-encrypt)
-10. [CI/CD Integration](#cicd-integration)
-11. [Migration from Capistrano](#migration-from-capistrano)
-12. [Common Commands](#common-commands)
-13. [Rollback Strategy](#rollback-strategy)
-14. [Monitoring and Logging](#monitoring-and-logging)
-15. [Timeline and Phases](#timeline-and-phases)
-16. [Appendix: Complete Configurations](#appendix-complete-configurations)
+4. [Local Development Setup](#local-development-setup) ⭐ **Start here if you're new to Docker**
+5. [Configuration Files](#configuration-files)
+6. [Dockerfile for Kamal](#dockerfile-for-kamal)
+7. [Deployment Workflow](#deployment-workflow)
+8. [Accessories (MySQL, Redis)](#accessories-mysql-redis)
+9. [Storage and Volumes](#storage-and-volumes)
+10. [SSL/TLS with Let's Encrypt](#ssltls-with-lets-encrypt)
+11. [CI/CD Integration](#cicd-integration)
+12. [Migration from Capistrano](#migration-from-capistrano)
+13. [Common Commands](#common-commands)
+14. [Rollback Strategy](#rollback-strategy)
+15. [Monitoring and Logging](#monitoring-and-logging)
+16. [Timeline and Phases](#timeline-and-phases)
+17. [Appendix: Complete Configurations](#appendix-complete-configurations)
 
 ---
 
@@ -156,6 +157,500 @@ kamal init
 # - config/deploy.yml
 # - .env.sample (for secrets)
 ```
+
+---
+
+## Local Development Setup
+
+> **🎯 New to Docker?** This section is for you! Follow these steps to set up your local development environment.
+
+### Why Develop with Docker?
+
+**The Problem:** Without Docker, you currently run:
+```bash
+bundle install          # Install Ruby gems
+yarn install           # Install Node packages
+rails db:setup         # Setup database
+rails server           # Start server
+```
+
+**With Docker:** Everything runs in isolated containers with consistent environments:
+- ✅ Same Ruby, Node, MySQL versions as production
+- ✅ No "works on my machine" issues
+- ✅ New developers onboard in minutes
+- ✅ Database/Redis included automatically
+- ✅ No need to install MySQL, Redis, or specific Ruby/Node versions locally
+
+### Step 1: Install Docker Desktop
+
+**What is Docker Desktop?**
+Docker Desktop is an application for Mac/Windows that lets you run Docker containers on your computer. Think of it as a lightweight virtual machine manager.
+
+#### Installation by Operating System
+
+**macOS:**
+1. Download Docker Desktop from: https://www.docker.com/products/docker-desktop
+2. Open the downloaded `.dmg` file
+3. Drag Docker to your Applications folder
+4. Launch Docker from Applications
+5. Follow the tutorial (optional but recommended)
+6. Verify installation:
+   ```bash
+   docker --version
+   # Should show: Docker version 24.x.x or higher
+
+   docker compose version
+   # Should show: Docker Compose version v2.x.x or higher
+   ```
+
+**Windows:**
+1. Download Docker Desktop from: https://www.docker.com/products/docker-desktop
+2. Run the installer
+3. During installation, ensure "Use WSL 2 instead of Hyper-V" is selected
+4. Restart your computer when prompted
+5. Launch Docker Desktop
+6. Verify installation in PowerShell or Git Bash:
+   ```bash
+   docker --version
+   docker compose version
+   ```
+
+**Linux:**
+```bash
+# Ubuntu/Debian
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo usermod -aG docker $USER
+
+# Log out and back in for group changes
+# Then verify:
+docker --version
+docker compose version
+```
+
+### Step 2: Create docker-compose.dev.yml
+
+Create a simplified Docker Compose file for local development:
+
+```yaml
+# docker-compose.dev.yml
+
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: robynbase_development
+      MYSQL_USER: robynbase
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-dev-data:/var/lib/mysql
+      - ./config/mysql/my.cnf:/etc/mysql/conf.d/custom.cnf
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-ppassword"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-dev-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build  # Use build stage for faster rebuilds
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0"
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_HOST: db
+      DATABASE_USERNAME: robynbase
+      DATABASE_PASSWORD: password
+      DATABASE_NAME: robynbase_development
+      REDIS_URL: redis://redis:6379/1
+      RAILS_ENV: development
+      RAILS_MAX_THREADS: 5
+    volumes:
+      # Mount source code for live editing
+      - .:/rails
+      # Preserve installed gems
+      - bundle-cache:/usr/local/bundle
+      # Preserve node modules
+      - node-modules:/rails/node_modules
+      # Album art and storage
+      - ./public/images/album-art:/rails/public/images/album-art
+      - ./tmp/storage:/rails/active-storage-files
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    stdin_open: true  # Enables interactive debugging
+    tty: true         # Enables interactive debugging
+
+volumes:
+  mysql-dev-data:
+  redis-dev-data:
+  bundle-cache:
+  node-modules:
+```
+
+### Step 3: Update database.yml for Docker
+
+Your `config/database.yml` should support both local and Docker development:
+
+```yaml
+# config/database.yml
+
+default: &default
+  adapter: mysql2
+  encoding: utf8mb3
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  username: <%= ENV.fetch('DATABASE_USERNAME', 'root') %>
+  password: <%= ENV.fetch('DATABASE_PASSWORD', 'password') %>
+  host: <%= ENV.fetch('DATABASE_HOST', 'localhost') %>
+  port: 3306
+
+development:
+  <<: *default
+  database: robynbase_development
+
+test:
+  <<: *default
+  database: robynbase_test
+
+production:
+  <<: *default
+  database: robynbase_production
+  username: <%= ENV['DATABASE_USERNAME'] %>
+  password: <%= ENV['DATABASE_PASSWORD'] %>
+```
+
+### Step 4: First-Time Setup
+
+```bash
+# 1. Clone the repository (if you haven't)
+git clone https://github.com/ramseys/robynbase.git
+cd robynbase
+
+# 2. Create the docker-compose.dev.yml file (from Step 2 above)
+
+# 3. Build the containers (first time only - takes 5-10 minutes)
+docker compose -f docker-compose.dev.yml build
+
+# 4. Start all services (MySQL, Redis, Rails)
+docker compose -f docker-compose.dev.yml up
+
+# You'll see logs from all services streaming...
+# Wait for: "* Listening on http://0.0.0.0:3000"
+```
+
+### Step 5: Database Setup (First Time)
+
+In a **new terminal** (keep the first one running):
+
+```bash
+# Create database
+docker compose -f docker-compose.dev.yml exec web rails db:create
+
+# Run migrations
+docker compose -f docker-compose.dev.yml exec web rails db:migrate
+
+# Load seed data (if you have seeds)
+docker compose -f docker-compose.dev.yml exec web rails db:seed
+```
+
+### Step 6: Access Your Application
+
+Open your browser to: **http://localhost:3000**
+
+🎉 Your Rails app is now running in Docker!
+
+### Daily Development Workflow
+
+#### Starting Your Development Environment
+
+**Option 1: Foreground (see logs)**
+```bash
+docker compose -f docker-compose.dev.yml up
+```
+- Press `Ctrl+C` to stop
+
+**Option 2: Background (silent)**
+```bash
+docker compose -f docker-compose.dev.yml up -d
+
+# View logs when needed
+docker compose -f docker-compose.dev.yml logs -f web
+```
+
+**Option 3: Just Database/Redis (run Rails locally)**
+```bash
+# Start only MySQL and Redis
+docker compose -f docker-compose.dev.yml up db redis
+
+# In another terminal, run Rails traditionally:
+bundle exec rails server
+```
+
+#### Stopping Your Development Environment
+
+```bash
+# Stop all containers
+docker compose -f docker-compose.dev.yml down
+
+# Stop and remove volumes (fresh database)
+docker compose -f docker-compose.dev.yml down -v
+```
+
+### Common Development Tasks
+
+#### Running Rails Commands
+
+```bash
+# Rails console
+docker compose -f docker-compose.dev.yml exec web rails console
+
+# Run migrations
+docker compose -f docker-compose.dev.yml exec web rails db:migrate
+
+# Run tests
+docker compose -f docker-compose.dev.yml exec web rspec
+
+# Generate a migration
+docker compose -f docker-compose.dev.yml exec web rails g migration AddFieldToModel
+
+# Bundle install (after updating Gemfile)
+docker compose -f docker-compose.dev.yml exec web bundle install
+
+# Yarn install (after updating package.json)
+docker compose -f docker-compose.dev.yml exec web yarn install
+
+# Precompile assets
+docker compose -f docker-compose.dev.yml exec web rails assets:precompile
+```
+
+#### Debugging with Pry/Byebug
+
+1. Add `binding.pry` or `debugger` in your code
+2. Start containers in foreground:
+   ```bash
+   docker compose -f docker-compose.dev.yml up
+   ```
+3. When code hits breakpoint, you'll see the debugger in your terminal
+4. Type commands as normal (`continue`, `next`, `step`, etc.)
+
+#### Accessing the Database Directly
+
+```bash
+# MySQL shell
+docker compose -f docker-compose.dev.yml exec db mysql -u robynbase -ppassword robynbase_development
+
+# Or using Rails dbconsole
+docker compose -f docker-compose.dev.yml exec web rails dbconsole
+```
+
+#### Viewing Logs
+
+```bash
+# All services
+docker compose -f docker-compose.dev.yml logs -f
+
+# Just Rails app
+docker compose -f docker-compose.dev.yml logs -f web
+
+# Just MySQL
+docker compose -f docker-compose.dev.yml logs -f db
+
+# Last 100 lines
+docker compose -f docker-compose.dev.yml logs --tail=100 web
+```
+
+### Code Editing
+
+**You edit code normally on your local machine!**
+
+The `volumes` section in docker-compose.dev.yml mounts your current directory into the container, so:
+
+1. Edit files in VS Code, RubyMine, Sublime, etc. (on your Mac/PC)
+2. Changes are **instantly reflected** in the container
+3. Rails auto-reloads in development mode
+4. Refresh your browser to see changes
+
+**No special IDE setup needed!**
+
+### Troubleshooting
+
+#### Port Already in Use
+
+**Error:** `Bind for 0.0.0.0:3000 failed: port is already allocated`
+
+**Solution:** Another process is using port 3000
+```bash
+# Find what's using port 3000
+lsof -i :3000
+
+# Kill it
+kill -9 <PID>
+
+# Or change port in docker-compose.dev.yml
+ports:
+  - "3001:3000"  # Access at localhost:3001
+```
+
+#### Database Connection Refused
+
+**Error:** `Can't connect to MySQL server on 'db'`
+
+**Solution:** Database isn't ready yet
+```bash
+# Wait for health check to pass
+docker compose -f docker-compose.dev.yml logs db
+
+# Look for: "ready for connections"
+```
+
+#### Gem Not Found After Adding to Gemfile
+
+**Error:** `LoadError: cannot load such file`
+
+**Solution:** Rebuild the container or run bundle install
+```bash
+# Option 1: Bundle install in running container (faster)
+docker compose -f docker-compose.dev.yml exec web bundle install
+docker compose -f docker-compose.dev.yml restart web
+
+# Option 2: Rebuild (slower but cleaner)
+docker compose -f docker-compose.dev.yml build web
+docker compose -f docker-compose.dev.yml up
+```
+
+#### Slow Performance (Mac/Windows)
+
+**Issue:** File watching can be slow with large codebases
+
+**Solutions:**
+1. Exclude unnecessary directories in `.dockerignore`
+2. Use Docker Desktop's Virtualization.framework (Mac)
+3. Consider running Rails locally, Docker only for MySQL/Redis:
+   ```bash
+   docker compose -f docker-compose.dev.yml up db redis -d
+   bundle exec rails server  # Run locally
+   ```
+
+#### Reset Everything (Fresh Start)
+
+```bash
+# Stop and remove all containers, networks, volumes
+docker compose -f docker-compose.dev.yml down -v
+
+# Remove cached images
+docker system prune -a
+
+# Rebuild from scratch
+docker compose -f docker-compose.dev.yml build --no-cache
+docker compose -f docker-compose.dev.yml up
+```
+
+### Docker Desktop Cheat Sheet
+
+**Docker Dashboard** (GUI):
+- Click Docker icon in menu bar (Mac) or system tray (Windows)
+- View all running containers
+- See resource usage (CPU, memory)
+- Quickly start/stop containers
+- View logs with click
+
+**Useful Commands:**
+```bash
+# List running containers
+docker ps
+
+# List all containers (including stopped)
+docker ps -a
+
+# Stop all containers
+docker stop $(docker ps -q)
+
+# Remove all stopped containers
+docker container prune
+
+# See disk usage
+docker system df
+
+# Clean up unused images/containers
+docker system prune
+
+# View resource usage (live)
+docker stats
+```
+
+### Comparison: Traditional vs Docker Development
+
+| Task | Traditional | Docker |
+|------|-------------|--------|
+| **Install Ruby** | `rvm install 3.4.4` | Included in image |
+| **Install MySQL** | `brew install mysql` | `docker compose up db` |
+| **Install Redis** | `brew install redis` | `docker compose up redis` |
+| **Setup database** | `rails db:setup` | `docker compose exec web rails db:setup` |
+| **Start server** | `rails server` | `docker compose up` |
+| **Run console** | `rails console` | `docker compose exec web rails console` |
+| **Edit code** | VS Code/Sublime | Same (no change!) |
+| **Run tests** | `rspec` | `docker compose exec web rspec` |
+| **Onboard new dev** | 2-4 hours | 15 minutes |
+
+### Should You Use Docker for Development?
+
+**Pros:**
+- ✅ Identical to production environment
+- ✅ Easy to switch Ruby/MySQL versions
+- ✅ No local MySQL/Redis installation needed
+- ✅ Database in container (can't mess up your system)
+- ✅ Fresh environment anytime (`docker compose down -v`)
+
+**Cons:**
+- ❌ Slight learning curve (commands longer)
+- ❌ Can be slower on Mac/Windows (file watching)
+- ❌ Uses more disk space
+
+**Recommendation:** Start with Docker for MySQL/Redis only:
+```bash
+# Start just databases
+docker compose -f docker-compose.dev.yml up db redis -d
+
+# Run Rails locally (faster, familiar)
+bundle exec rails server
+```
+
+Then migrate to full Docker development when comfortable.
+
+### Getting Help
+
+**Resources:**
+- Docker Desktop docs: https://docs.docker.com/desktop/
+- Docker Compose docs: https://docs.docker.com/compose/
+- Kamal docs: https://kamal-deploy.org
+- Rails Docker guide: https://guides.rubyonrails.org/docker.html
+
+**Common Questions:**
+- "Do I need to install Ruby?" - No, if running in Docker
+- "Can I still use my IDE?" - Yes! Edit files normally
+- "Is this slower?" - Slightly on Mac/Windows, minimal on Linux
+- "Can I debug with binding.pry?" - Yes! Works normally
 
 ---
 
