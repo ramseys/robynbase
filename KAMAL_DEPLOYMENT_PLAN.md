@@ -21,19 +21,20 @@ This document outlines a deployment plan using **Kamal** (formerly MRSK), the of
 2. [Architecture Overview](#architecture-overview)
 3. [Installation](#installation)
 4. [Local Development Setup](#local-development-setup) ⭐ **Start here if you're new to Docker**
-5. [Configuration Files](#configuration-files)
-6. [Dockerfile for Kamal](#dockerfile-for-kamal)
-7. [Deployment Workflow](#deployment-workflow)
-8. [Accessories (MySQL, Redis)](#accessories-mysql-redis)
-9. [Storage and Volumes](#storage-and-volumes)
-10. [SSL/TLS with Let's Encrypt](#ssltls-with-lets-encrypt)
-11. [CI/CD Integration](#cicd-integration)
-12. [Migration from Capistrano](#migration-from-capistrano)
-13. [Common Commands](#common-commands)
-14. [Rollback Strategy](#rollback-strategy)
-15. [Monitoring and Logging](#monitoring-and-logging)
-16. [Timeline and Phases](#timeline-and-phases)
-17. [Appendix: Complete Configurations](#appendix-complete-configurations)
+5. [Staging Environment Setup](#staging-environment-setup) 🎯 **Read this before production**
+6. [Configuration Files](#configuration-files)
+7. [Dockerfile for Kamal](#dockerfile-for-kamal)
+8. [Deployment Workflow](#deployment-workflow)
+9. [Accessories (MySQL, Redis)](#accessories-mysql-redis)
+10. [Storage and Volumes](#storage-and-volumes)
+11. [SSL/TLS with Let's Encrypt](#ssltls-with-lets-encrypt)
+12. [CI/CD Integration](#cicd-integration)
+13. [Migration from Capistrano](#migration-from-capistrano)
+14. [Common Commands](#common-commands)
+15. [Rollback Strategy](#rollback-strategy)
+16. [Monitoring and Logging](#monitoring-and-logging)
+17. [Timeline and Phases](#timeline-and-phases)
+18. [Appendix: Complete Configurations](#appendix-complete-configurations)
 
 ---
 
@@ -651,6 +652,531 @@ Then migrate to full Docker development when comfortable.
 - "Can I still use my IDE?" - Yes! Edit files normally
 - "Is this slower?" - Slightly on Mac/Windows, minimal on Linux
 - "Can I debug with binding.pry?" - Yes! Works normally
+
+---
+
+## Staging Environment Setup
+
+> **🎯 Critical:** Always test Kamal/Docker deployments in staging before touching production!
+
+### Why You Need Staging
+
+**Testing the migration from Capistrano to Kamal requires:**
+- ✅ Verify Docker deployment works
+- ✅ Test database migrations
+- ✅ Validate SSL/Let's Encrypt setup
+- ✅ Check volume mounts and persistence
+- ✅ Test rollback procedures
+- ✅ Validate performance under load
+- ✅ No risk to production data
+
+**Without staging, you're deploying blind to production!**
+
+### Staging Options for Single Linode Server
+
+Since you're running on a single Linode machine, here are your options ranked by cost:
+
+#### Option 1: Same Server, Different Containers (FREE - Recommended)
+
+Run staging and production on the **same Linode** using different ports and subdomains.
+
+**Pros:**
+- ✅ Zero additional cost
+- ✅ Same hardware as production (realistic testing)
+- ✅ Easy to set up
+- ✅ Can test on same server where prod will run
+
+**Cons:**
+- ❌ Shares resources with production (if already deployed)
+- ❌ Can't test full server setup (Docker installation, etc.)
+- ❌ Less isolated
+
+**Setup:**
+
+1. **Configure separate Kamal destination:**
+
+```yaml
+# config/deploy.yml
+
+service: robynbase
+
+servers:
+  web:
+    hosts:
+      - 66.228.36.37
+    labels:
+      traefik.http.routers.robynbase.rule: Host(`robynbase.com`) || Host(`www.robynbase.com`)
+      traefik.http.routers.robynbase.entrypoints: websecure
+      traefik.http.routers.robynbase.tls.certresolver: letsencrypt
+
+  staging:
+    hosts:
+      - 66.228.36.37
+    labels:
+      traefik.http.routers.robynbase-staging.rule: Host(`staging.robynbase.com`)
+      traefik.http.routers.robynbase-staging.entrypoints: websecure
+      traefik.http.routers.robynbase-staging.tls.certresolver: letsencrypt
+    options:
+      volume:
+        - "/var/lib/robynbase-staging/album-art:/rails/public/images/album-art"
+        - "/var/lib/robynbase-staging/storage:/rails/active-storage-files"
+
+accessories:
+  mysql:
+    image: mysql:8.0
+    host: 66.228.36.37
+    port: 3306
+    env:
+      clear:
+        MYSQL_DATABASE: robynbase_production
+
+  mysql-staging:
+    image: mysql:8.0
+    host: 66.228.36.37
+    port: 3307  # Different port!
+    env:
+      clear:
+        MYSQL_DATABASE: robynbase_staging
+      secret:
+        - MYSQL_ROOT_PASSWORD
+    directories:
+      - data:/var/lib/mysql
+
+  redis:
+    image: redis:7-alpine
+    host: 66.228.36.37
+    port: 6379
+
+  redis-staging:
+    image: redis:7-alpine
+    host: 66.228.36.37
+    port: 6380  # Different port!
+    directories:
+      - data:/data
+```
+
+2. **Deploy to staging:**
+
+```bash
+# Deploy to staging role only
+kamal deploy --roles=staging
+
+# Or use a separate config file
+kamal deploy -d staging -c config/deploy.staging.yml
+```
+
+3. **Set up DNS:**
+
+Add A record: `staging.robynbase.com` → `66.228.36.37`
+
+4. **Separate staging volumes:**
+
+```bash
+# On server
+ssh ramseys@66.228.36.37
+mkdir -p /var/lib/robynbase-staging/{album-art,storage}
+```
+
+**Cost: $0** (uses existing server)
+
+---
+
+#### Option 2: Separate Linode Server ($5-12/month)
+
+Create a dedicated staging Linode server.
+
+**Pros:**
+- ✅ Complete isolation from production
+- ✅ Can test full server provisioning
+- ✅ Can test infrastructure changes safely
+- ✅ Realistic production simulation
+- ✅ Can be smaller/cheaper than production
+
+**Cons:**
+- ❌ Additional monthly cost
+- ❌ Manage two servers
+- ❌ Need to sync data for realistic testing
+
+**Setup:**
+
+1. **Create new Linode:**
+   - Go to Linode dashboard
+   - Create "Nanode 1GB" ($5/month) or "Linode 2GB" ($12/month)
+   - Choose same datacenter as production
+   - Deploy Ubuntu 22.04 LTS
+   - Note the IP address (e.g., `45.79.123.45`)
+
+2. **Update DNS:**
+   - Add A record: `staging.robynbase.com` → `45.79.123.45`
+
+3. **Create config/deploy.staging.yml:**
+
+```yaml
+# config/deploy.staging.yml
+
+service: robynbase-staging
+image: ramseys/robynbase
+
+registry:
+  server: ghcr.io
+  username: ramseys
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+servers:
+  web:
+    hosts:
+      - 45.79.123.45  # Staging server IP
+    labels:
+      traefik.http.routers.robynbase-staging.rule: Host(`staging.robynbase.com`)
+      traefik.http.routers.robynbase-staging.entrypoints: websecure
+      traefik.http.routers.robynbase-staging.tls.certresolver: letsencrypt
+    options:
+      volume:
+        - "/var/lib/robynbase/album-art:/rails/public/images/album-art"
+        - "/var/lib/robynbase/storage:/rails/active-storage-files"
+
+ssh:
+  user: root  # Or create 'ramseys' user on staging
+
+traefik:
+  options:
+    publish:
+      - "443:443"
+      - "80:80"
+    volume:
+      - "/letsencrypt:/letsencrypt"
+  args:
+    entryPoints.web.address: ":80"
+    entryPoints.websecure.address: ":443"
+    certificatesResolvers.letsencrypt.acme.email: "admin@robynbase.com"
+    certificatesResolvers.letsencrypt.acme.storage: "/letsencrypt/acme.json"
+    certificatesResolvers.letsencrypt.acme.httpchallenge: true
+    certificatesResolvers.letsencrypt.acme.httpchallenge.entrypoint: web
+
+accessories:
+  mysql:
+    image: mysql:8.0
+    host: 45.79.123.45
+    port: 3306
+    env:
+      clear:
+        MYSQL_DATABASE: robynbase_staging
+      secret:
+        - MYSQL_ROOT_PASSWORD
+    directories:
+      - data:/var/lib/mysql
+
+  redis:
+    image: redis:7-alpine
+    host: 45.79.123.45
+    port: 6379
+    directories:
+      - data:/data
+
+env:
+  clear:
+    RAILS_ENV: staging
+    RAILS_LOG_TO_STDOUT: "1"
+    DATABASE_HOST: "45.79.123.45"
+    DATABASE_NAME: "robynbase_staging"
+    REDIS_URL: "redis://45.79.123.45:6379/1"
+  secret:
+    - RAILS_MASTER_KEY
+    - SECRET_KEY_BASE
+    - DATABASE_PASSWORD
+```
+
+4. **Deploy to staging:**
+
+```bash
+# Bootstrap staging server
+kamal server bootstrap -d staging -c config/deploy.staging.yml
+
+# Setup accessories
+kamal accessory boot mysql -d staging -c config/deploy.staging.yml
+kamal accessory boot redis -d staging -c config/deploy.staging.yml
+
+# Deploy
+kamal setup -d staging -c config/deploy.staging.yml
+```
+
+**Cost: $5-12/month**
+
+---
+
+#### Option 3: Local Docker as "Staging" (FREE)
+
+Use your local Docker environment as staging.
+
+**Pros:**
+- ✅ Zero cost
+- ✅ Fast iteration
+- ✅ Complete control
+- ✅ No internet required
+
+**Cons:**
+- ❌ Different environment than production (Mac/Windows vs Linux)
+- ❌ Can't test SSL/Let's Encrypt
+- ❌ Can't test public DNS
+- ❌ Not a true production simulation
+
+**Setup:**
+
+Use the `docker-compose.dev.yml` from the Local Development Setup section, but run it with production-like settings:
+
+```yaml
+# docker-compose.staging.yml
+
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: final  # Use production image
+    environment:
+      RAILS_ENV: production
+      DATABASE_HOST: db
+      REDIS_URL: redis://redis:6379/1
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: robynbase_production
+    volumes:
+      - mysql-staging-data:/var/lib/mysql
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis-staging-data:/data
+
+volumes:
+  mysql-staging-data:
+  redis-staging-data:
+```
+
+**Test deployment:**
+```bash
+docker compose -f docker-compose.staging.yml build
+docker compose -f docker-compose.staging.yml up
+```
+
+**Cost: $0**
+
+---
+
+### Recommended Approach for Your Situation
+
+Given you're on a **single Linode server**, I recommend:
+
+**Phase 1: Pre-Migration Testing (Local)**
+- Use **Option 3** (Local Docker staging)
+- Test Docker build process
+- Validate Dockerfile works
+- Test migrations locally
+- **Cost: $0**
+
+**Phase 2: Production-Like Testing (Same Server)**
+- Use **Option 1** (Same server, different containers)
+- Deploy staging to `staging.robynbase.com` on your existing Linode
+- Test with real SSL, real DNS, real server environment
+- Validate everything before production
+- **Cost: $0**
+
+**Phase 3: Production Migration**
+- Once staging works, migrate production
+- Keep staging running for future testing
+- **Total Cost: $0**
+
+**Optional: If budget allows**
+- After successful migration, consider **Option 2** (separate server)
+- Gives you a permanent, isolated staging environment
+- **Cost: $5/month** for smallest Linode
+
+---
+
+### Syncing Production Data to Staging
+
+To test with realistic data:
+
+#### Copy Production Database to Staging
+
+```bash
+# On production server
+ssh ramseys@66.228.36.37
+
+# Dump production database
+docker exec robynbase-mysql-1 mysqldump \
+  -u root -p robynbase_production | gzip > ~/prod-backup.sql.gz
+
+# Download to local machine
+scp ramseys@66.228.36.37:~/prod-backup.sql.gz ~/
+
+# Upload to staging (if separate server)
+scp ~/prod-backup.sql.gz ramseys@staging-server:~/
+
+# Or if same server, import directly:
+gunzip -c prod-backup.sql.gz | \
+  docker exec -i robynbase-staging-mysql-1 mysql \
+    -u root -p robynbase_staging
+```
+
+#### Copy Album Art and Storage
+
+```bash
+# On production server
+rsync -avz /var/lib/robynbase/album-art/ \
+  /var/lib/robynbase-staging/album-art/
+
+rsync -avz /var/lib/robynbase/storage/ \
+  /var/lib/robynbase-staging/storage/
+```
+
+#### Sanitize Staging Data (Recommended!)
+
+After copying production data, sanitize sensitive information:
+
+```ruby
+# rails console on staging
+User.find_each do |user|
+  user.update(
+    email: "user-#{user.id}@staging.test",
+    password: "staging-password"
+  )
+end
+
+# Clear any API keys, tokens, etc.
+```
+
+---
+
+### Staging Workflow
+
+**Typical staging workflow:**
+
+```bash
+# 1. Deploy to staging
+kamal deploy -d staging
+
+# 2. Run migrations on staging
+kamal app exec -d staging 'rails db:migrate'
+
+# 3. Test manually
+open https://staging.robynbase.com
+
+# 4. Run tests on staging
+kamal app exec -d staging 'rspec'
+
+# 5. If all good, deploy to production
+kamal deploy -d production
+```
+
+---
+
+### Environment-Specific Configuration
+
+**config/deploy.yml** (production):
+```yaml
+service: robynbase
+servers:
+  web:
+    hosts:
+      - 66.228.36.37
+    labels:
+      traefik.http.routers.robynbase.rule: Host(`robynbase.com`)
+```
+
+**config/deploy.staging.yml** (staging):
+```yaml
+service: robynbase-staging
+servers:
+  web:
+    hosts:
+      - 66.228.36.37  # Same server
+    labels:
+      traefik.http.routers.robynbase-staging.rule: Host(`staging.robynbase.com`)
+```
+
+**Deploy to each:**
+```bash
+# Staging
+kamal deploy -c config/deploy.staging.yml
+
+# Production
+kamal deploy  # Uses config/deploy.yml by default
+```
+
+---
+
+### Staging Environment Checklist
+
+Before deploying to production, verify on staging:
+
+- [ ] Docker image builds successfully
+- [ ] Kamal deployment completes without errors
+- [ ] Database migrations run successfully
+- [ ] Application loads in browser
+- [ ] SSL certificate obtained (if testing on server)
+- [ ] Album art displays correctly
+- [ ] Active Storage uploads work
+- [ ] Action Cable (WebSockets) works
+- [ ] Background jobs run (if applicable)
+- [ ] Performance is acceptable
+- [ ] Rollback works (`kamal rollback`)
+- [ ] Logs are accessible (`kamal app logs`)
+- [ ] Database backup/restore works
+
+---
+
+### Cost Comparison
+
+| Option | Setup | Monthly Cost | Realism | Effort |
+|--------|-------|--------------|---------|--------|
+| **Local Docker** | Easy | $0 | Low | Low |
+| **Same Server** | Medium | $0 | High | Medium |
+| **Separate Server** | Medium | $5-12 | Highest | Medium |
+
+**My recommendation:** Start with **Same Server**, then add **Separate Server** if you deploy frequently.
+
+---
+
+### Linode-Specific Tips
+
+**Resize your existing Linode temporarily:**
+- If testing resource requirements, resize Linode up for testing
+- Test staging and production together
+- Resize back down if not needed
+- Pay only for hours at larger size
+
+**Linode Backups:**
+- Enable Linode Backups ($2/month) before migration
+- Snapshot before any major changes
+- Quick restore if something goes wrong
+
+**Linode Firewall:**
+- Create firewall rules:
+  - Allow 80/443 (HTTP/HTTPS)
+  - Allow 22 (SSH - restrict to your IP)
+  - Block all other ports
+- Protect MySQL/Redis from external access
+
+**Linode Monitoring:**
+- Enable Linode Cloud Manager monitoring
+- Set up alerts for high CPU/memory
+- Monitor disk usage (Docker images can fill disk)
 
 ---
 
