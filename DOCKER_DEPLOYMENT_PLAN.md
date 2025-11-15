@@ -1,5 +1,16 @@
 # Docker-Based Deployment Plan for RobynBase
 
+> **⚠️ RECOMMENDATION**: Consider using **Kamal** instead (see [KAMAL_DEPLOYMENT_PLAN.md](./KAMAL_DEPLOYMENT_PLAN.md))
+>
+> Kamal is the **official Rails-recommended deployment tool** (Rails 7.1+) created by 37signals. It provides:
+> - Zero-downtime deployments with built-in health checks
+> - Automatic SSL via Let's Encrypt
+> - Simpler configuration (similar to Capistrano)
+> - Rails-native integration
+> - Used in production by Hey.com and Basecamp
+>
+> This document covers a **manual Docker Compose approach**, which is more complex but gives you full control.
+
 ## Executive Summary
 
 This document outlines a comprehensive plan to migrate RobynBase from Capistrano-based deployment to a Docker-based containerized deployment strategy. This migration will provide improved consistency, portability, simplified dependency management, and easier scaling options.
