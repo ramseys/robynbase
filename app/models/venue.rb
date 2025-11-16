@@ -56,6 +56,7 @@ class Venue < ApplicationRecord
     songs.left_outer_joins(:gigs)
       .select('VENUE.*, COUNT(GIG.VENUEID) AS gig_count')
       .group('VENUE.VENUEID')
+      .order('VENUE.Name ASC')
   end
 
   # returns the notes for this venue (if any), formatted to display correctly in html
