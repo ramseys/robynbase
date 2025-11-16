@@ -42,7 +42,8 @@ class GigManagementTest < ActionDispatch::IntegrationTest
     post gigs_path, params: {
       gig: {
         VENUEID: venue.VENUEID,
-        GigDate: Date.today,
+        Venue: venue.Name,
+        GigDate: Date.today.strftime('%Y-%m-%d'),
         BilledAs: "Robyn Hitchcock"
       }
     }
