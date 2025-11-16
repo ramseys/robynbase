@@ -71,9 +71,9 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "should allow special characters in password" do
-    user = build(:user, password: "p@ssw0rd!#$", password_confirmation: "p@ssw0rd!#$")
+    user = build(:user, password: 'p@ssw0rd!#$', password_confirmation: 'p@ssw0rd!#$')
     assert user.valid?
     assert user.save
-    assert user.authenticate("p@ssw0rd!#$")
+    assert user.authenticate('p@ssw0rd!#$')
   end
 end
