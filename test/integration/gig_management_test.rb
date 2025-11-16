@@ -27,7 +27,7 @@ class GigManagementTest < ActionDispatch::IntegrationTest
     gig_today = create(:gig, GigDate: Date.new(today.year - 1, today.month, today.day))
     gig_other = create(:gig, GigDate: Date.new(today.year - 1, (today.month % 12) + 1, 1))
 
-    get gigs_on_this_day_path
+    get gigs_on_this_day_path, params: { date: { month: today.month, day: today.day } }
     assert_response :success
   end
 
@@ -53,7 +53,12 @@ class GigManagementTest < ActionDispatch::IntegrationTest
 
     # Update gig
     patch gig_path(gig.GIGID), params: {
-      gig: { BilledAs: "Robyn Hitchcock & The Egyptians" }
+      gig: {
+        VENUEID: gig.VENUEID,
+        Venue: gig.Venue,
+        GigDate: gig.GigDate.strftime('%Y-%m-%d'),
+        BilledAs: "Robyn Hitchcock & The Egyptians"
+      }
     }
 
     gig.reload

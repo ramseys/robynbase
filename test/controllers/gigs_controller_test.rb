@@ -72,7 +72,8 @@ class GigsControllerTest < ActionDispatch::IntegrationTest
       post gigs_path, params: {
         gig: {
           VENUEID: venue.VENUEID,
-          GigDate: Date.today,
+          Venue: venue.Name,
+          GigDate: Date.today.strftime('%Y-%m-%d'),
           BilledAs: "Robyn Hitchcock"
         }
       }
@@ -118,6 +119,9 @@ class GigsControllerTest < ActionDispatch::IntegrationTest
 
     patch gig_path(gig.GIGID), params: {
       gig: {
+        VENUEID: gig.VENUEID,
+        Venue: gig.Venue,
+        GigDate: gig.GigDate.strftime('%Y-%m-%d'),
         BilledAs: "Updated Name"
       }
     }
@@ -200,7 +204,7 @@ class GigsControllerTest < ActionDispatch::IntegrationTest
     gig_this_day = create(:gig, GigDate: Date.new(today.year - 1, today.month, today.day))
     gig_other_day = create(:gig, GigDate: Date.new(today.year - 1, (today.month % 12) + 1, 1))
 
-    get gigs_on_this_day_path
+    get gigs_on_this_day_path, params: { date: { month: today.month, day: today.day } }
     assert_response :success
   end
 

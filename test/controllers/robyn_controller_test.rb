@@ -40,17 +40,17 @@ class RobynControllerTest < ActionDispatch::IntegrationTest
     gig2 = create(:gig, venue: venue2, GigDate: Date.parse("2021-06-15"))
     gig3 = create(:gig, venue: venue3, GigDate: Date.parse("2019-03-20"))
 
-    get robyn_omnirobyn_search_gigs_url, params: { search_value: "Fill" }
+    get robyn_omnisearch_gigs_url, params: { search_value: "Fill" }
     assert_response :success
   end
 
   test "omnisearch_gigs should require search_value parameter" do
-    get robyn_omnirobyn_search_gigs_url
+    get robyn_omnisearch_gigs_url
     assert_response :bad_request
   end
 
   test "omnisearch_gigs should handle empty results" do
-    get robyn_omnirobyn_search_gigs_url, params: { search_value: "NonexistentVenue12345" }
+    get robyn_omnisearch_gigs_url, params: { search_value: "NonexistentVenue12345" }
     assert_response :success
   end
 
@@ -58,7 +58,7 @@ class RobynControllerTest < ActionDispatch::IntegrationTest
     venue = create(:venue, Name: "Fillmore")
     15.times { |i| create(:gig, venue: venue, GigDate: Date.today - i.days) }
 
-    get robyn_omnirobyn_search_gigs_url, params: { search_value: "Fill", page: 1 }
+    get robyn_omnisearch_gigs_url, params: { search_value: "Fill", page: 1 }
     assert_response :success
   end
 
@@ -67,7 +67,7 @@ class RobynControllerTest < ActionDispatch::IntegrationTest
     gig1 = create(:gig, venue: venue, GigDate: Date.parse("2020-01-01"))
     gig2 = create(:gig, venue: venue, GigDate: Date.parse("2021-06-15"))
 
-    get robyn_omnirobyn_search_gigs_url, params: { search_value: "Fill", sort: "date", direction: "asc" }
+    get robyn_omnisearch_gigs_url, params: { search_value: "Fill", sort: "date", direction: "asc" }
     assert_response :success
   end
 
@@ -114,19 +114,19 @@ class RobynControllerTest < ActionDispatch::IntegrationTest
     comp2 = create(:composition, Title: "Element 5")
     comp3 = create(:composition, Title: "Different Album")
 
-    get robyn_omnirobyn_search_compositions_url, params: { search_value: "Element" }
+    get robyn_omnisearch_compositions_url, params: { search_value: "Element" }
     assert_response :success
   end
 
   test "omnisearch_compositions should require search_value parameter" do
-    get robyn_omnirobyn_search_compositions_url
+    get robyn_omnisearch_compositions_url
     assert_response :bad_request
   end
 
   test "omnisearch_compositions should support pagination" do
     15.times { |i| create(:composition, Title: "Album #{i}") }
 
-    get robyn_omnirobyn_search_compositions_url, params: { search_value: "Album", page: 1 }
+    get robyn_omnisearch_compositions_url, params: { search_value: "Album", page: 1 }
     assert_response :success
   end
 
@@ -134,7 +134,7 @@ class RobynControllerTest < ActionDispatch::IntegrationTest
     comp1 = create(:composition, Title: "Zebra Album")
     comp2 = create(:composition, Title: "Alpha Album")
 
-    get robyn_omnirobyn_search_compositions_url, params: { search_value: "Album", sort: "title", direction: "desc" }
+    get robyn_omnisearch_compositions_url, params: { search_value: "Album", sort: "title", direction: "desc" }
     assert_response :success
   end
 
@@ -144,19 +144,19 @@ class RobynControllerTest < ActionDispatch::IntegrationTest
     venue2 = create(:venue, Name: "Fill Station")
     venue3 = create(:venue, Name: "Other Venue")
 
-    get robyn_omnirobyn_search_venues_url, params: { search_value: "Fill" }
+    get robyn_omnisearch_venues_url, params: { search_value: "Fill" }
     assert_response :success
   end
 
   test "omnisearch_venues should require search_value parameter" do
-    get robyn_omnirobyn_search_venues_url
+    get robyn_omnisearch_venues_url
     assert_response :bad_request
   end
 
   test "omnisearch_venues should support pagination" do
     20.times { |i| create(:venue, Name: "Venue #{i}") }
 
-    get robyn_omnirobyn_search_venues_url, params: { search_value: "Venue", page: 1 }
+    get robyn_omnisearch_venues_url, params: { search_value: "Venue", page: 1 }
     assert_response :success
   end
 
@@ -164,7 +164,7 @@ class RobynControllerTest < ActionDispatch::IntegrationTest
     venue1 = create(:venue, Name: "Zebra Club")
     venue2 = create(:venue, Name: "Alpha Hall")
 
-    get robyn_omnirobyn_search_venues_url, params: { search_value: "Club", sort: "venue", direction: "asc" }
+    get robyn_omnisearch_venues_url, params: { search_value: "Club", sort: "venue", direction: "asc" }
     assert_response :success
   end
 
@@ -241,7 +241,7 @@ class RobynControllerTest < ActionDispatch::IntegrationTest
   test "should handle unicode characters in search" do
     venue = create(:venue, Name: "Café Müller")
 
-    get robyn_omnirobyn_search_venues_url, params: { search_value: "Café" }
+    get robyn_omnisearch_venues_url, params: { search_value: "Café" }
     assert_response :success
   end
 
@@ -256,13 +256,13 @@ class RobynControllerTest < ActionDispatch::IntegrationTest
     get robyn_omnisearch_songs_url, params: { search_value: "Element" }
     assert_response :success
 
-    get robyn_omnirobyn_search_compositions_url, params: { search_value: "Element" }
+    get robyn_omnisearch_compositions_url, params: { search_value: "Element" }
     assert_response :success
 
-    get robyn_omnirobyn_search_venues_url, params: { search_value: "Element" }
+    get robyn_omnisearch_venues_url, params: { search_value: "Element" }
     assert_response :success
 
-    get robyn_omnirobyn_search_gigs_url, params: { search_value: "Element" }
+    get robyn_omnisearch_gigs_url, params: { search_value: "Element" }
     assert_response :success
   end
 end
