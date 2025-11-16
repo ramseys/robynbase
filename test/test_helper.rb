@@ -21,13 +21,16 @@ require File.expand_path('../../config/environment', __FILE__)
 require 'rails/test_help'
 require 'database_cleaner/active_record'
 
+# Configure DatabaseCleaner
+DatabaseCleaner.strategy = :transaction
+DatabaseCleaner.clean_with(:truncation)
+
 class ActiveSupport::TestCase
   # Disable fixtures (we'll use FactoryBot instead)
   self.use_transactional_tests = false
 
   # DatabaseCleaner setup
   setup do
-    DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.start
   end
 
