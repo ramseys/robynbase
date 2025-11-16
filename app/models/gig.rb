@@ -6,6 +6,7 @@
 
 
 class Gig < ApplicationRecord
+  include SanitizableText
 
   self.table_name = "GIG"
 
@@ -20,8 +21,8 @@ class Gig < ApplicationRecord
 
   accepts_nested_attributes_for :gigsets, :gigmedia
 
-  # Sanitize user input before saving to prevent XSS attacks
-  before_save :sanitize_text_fields
+  # Configure which fields to sanitize on save
+  sanitize_fields :Reviews, :ShortNote
 
   @@quick_queries = [ 
     QuickQuery.new('gigs', :with_setlists, [:without]),
@@ -48,26 +49,12 @@ class Gig < ApplicationRecord
 
   # returns the reviews for this gig (if any)
   def get_reviews
-    if self.Reviews.present?
-      # Sanitize HTML to prevent XSS while allowing safe formatting tags
-      ActionController::Base.helpers.sanitize(
-        self.Reviews.gsub(/\r\n|\n/, '<br>'),
-        tags: %w[br p strong em b i u ul ol li a blockquote],
-        attributes: %w[href]
-      )
-    end
+    sanitize_html(self.Reviews)
   end
 
   # returns the short note for this gig (if any)
   def get_short_note
-    if self.ShortNote.present?
-      # Sanitize HTML to prevent XSS while allowing safe formatting tags
-      ActionController::Base.helpers.sanitize(
-        self.ShortNote.gsub(/\r\n|\n/, '<br>'),
-        tags: %w[br p strong em b i u ul ol li a blockquote],
-        attributes: %w[href]
-      )
-    end
+    sanitize_html(self.ShortNote)
   end
 
   def self.search_by(kind, search, date_criteria = nil, type = nil)
@@ -260,27 +247,6 @@ class Gig < ApplicationRecord
     # sort final results by date
     gigs.order(GigDate: :asc)
 
-  end
-
-  private
-
-  # Sanitize text fields on save to prevent XSS attacks (defense in depth)
-  def sanitize_text_fields
-    if self.Reviews.present?
-      self.Reviews = ActionController::Base.helpers.sanitize(
-        self.Reviews,
-        tags: %w[br p strong em b i u ul ol li a blockquote],
-        attributes: %w[href]
-      )
-    end
-
-    if self.ShortNote.present?
-      self.ShortNote = ActionController::Base.helpers.sanitize(
-        self.ShortNote,
-        tags: %w[br p strong em b i u ul ol li a blockquote],
-        attributes: %w[href]
-      )
-    end
   end
 
 end

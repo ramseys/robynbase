@@ -2,6 +2,7 @@
 #   GIGID
 
 class Song < ApplicationRecord
+  include SanitizableText
 
   self.table_name = "SONG"
 
@@ -11,8 +12,8 @@ class Song < ApplicationRecord
   has_many :tracks, foreign_key: "SONGID"
   has_many :compositions, through: :tracks, foreign_key: "SONGID"
 
-  # Sanitize user input before saving to prevent XSS attacks
-  before_save :sanitize_text_fields
+  # Configure which fields to sanitize on save
+  sanitize_fields :Comments, :Lyrics
 
   @@quick_queries = [ 
     QuickQuery.new('songs', :not_written_by_robyn),
@@ -73,14 +74,7 @@ class Song < ApplicationRecord
   end
   
   def get_comments
-    if self.Comments.present?
-      # Sanitize HTML to prevent XSS while allowing safe formatting tags
-      ActionController::Base.helpers.sanitize(
-        self.Comments.gsub(/\r\n|\n/, '<br>'),
-        tags: %w[br p strong em b i u ul ol li a blockquote],
-        attributes: %w[href]
-      )
-    end
+    sanitize_html(self.Comments)
   end
 
   def full_name
@@ -255,27 +249,6 @@ class Song < ApplicationRecord
   def self.quick_query_improvised
     songs = where(:Improvised => true);
     self.prepare_query(songs)
-  end
-
-  private
-
-  # Sanitize text fields on save to prevent XSS attacks (defense in depth)
-  def sanitize_text_fields
-    if self.Comments.present?
-      self.Comments = ActionController::Base.helpers.sanitize(
-        self.Comments,
-        tags: %w[br p strong em b i u ul ol li a blockquote],
-        attributes: %w[href]
-      )
-    end
-
-    if self.Lyrics.present?
-      self.Lyrics = ActionController::Base.helpers.sanitize(
-        self.Lyrics,
-        tags: %w[br p strong em b i u ul ol li a blockquote],
-        attributes: %w[href]
-      )
-    end
   end
 
 end   

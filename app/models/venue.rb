@@ -2,12 +2,14 @@
 # Not used:
 #   TaperFriendly
 class Venue < ApplicationRecord
+  include SanitizableText
+
   self.table_name = "VENUE"
 
   has_many :gigs, -> { order('GIG.GigDate ASC') }, foreign_key: "VENUEID"
 
-  # Sanitize user input before saving to prevent XSS attacks
-  before_save :sanitize_text_fields
+  # Configure which fields to sanitize on save
+  sanitize_fields :Notes
 
   def self.get_venues_with_location
     where.not(:latitude => nil)
@@ -63,14 +65,7 @@ class Venue < ApplicationRecord
 
   # returns the notes for this venue (if any)
   def get_notes
-    if self.Notes.present?
-      # Sanitize HTML to prevent XSS while allowing safe formatting tags
-      ActionController::Base.helpers.sanitize(
-        self.Notes.gsub(/\r\n|\n/, '<br>'),
-        tags: %w[br p strong em b i u ul ol li a blockquote],
-        attributes: %w[href]
-      )
-    end
+    sanitize_html(self.Notes)
   end
 
 
@@ -115,19 +110,6 @@ class Venue < ApplicationRecord
 
     self.prepare_query(venues)
 
-  end
-
-  private
-
-  # Sanitize text fields on save to prevent XSS attacks (defense in depth)
-  def sanitize_text_fields
-    if self.Notes.present?
-      self.Notes = ActionController::Base.helpers.sanitize(
-        self.Notes,
-        tags: %w[br p strong em b i u ul ol li a blockquote],
-        attributes: %w[href]
-      )
-    end
   end
 
 end
