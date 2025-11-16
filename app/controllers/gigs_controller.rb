@@ -358,7 +358,7 @@ class GigsController < ApplicationController
     new_params.delete("gigmedia_attributes")
 
     # save the name of the venue
-    new_params["Venue"] = Venue.find(new_params["VENUEID"].to_i).Name if new_params["Venue"].strip.empty?
+    new_params["Venue"] = Venue.find(new_params["VENUEID"].to_i).Name if new_params["Venue"].blank? || new_params["Venue"].strip.empty?
 
     # extract the year from the date
     new_params["GigYear"] = Date.strptime(params["gig"]["GigDate"], '%Y-%m-%d').year

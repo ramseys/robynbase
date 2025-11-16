@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :venue do
-    Name { Faker::Music::RockBand.name + " " + ["Hall", "Theater", "Club", "Arena", "Tavern"].sample }
+    Name { (Faker::Music::RockBand.name[0...40] + " " + ["Hall", "Theater", "Club"].sample)[0...48] }
     City { Faker::Address.city }
     State { Faker::Address.state_abbr }
     Country { ["USA", "UK", "Canada", "Germany", "France"].sample }
