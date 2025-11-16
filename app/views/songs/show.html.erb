@@ -152,7 +152,7 @@
     <h3 class="section-header">Comments</h4>
 
     <div class="notes-section">
-      <%= simple_format(@song.get_comments) %>
+      <%= @song.get_comments.html_safe %>
     </div>
 
   </div>
