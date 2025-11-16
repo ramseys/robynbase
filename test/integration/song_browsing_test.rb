@@ -55,7 +55,14 @@ class SongBrowsingTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     post songs_path, params: {
-      song: { full_name: "The Man Who Invented Himself" }
+      song: {
+        full_name: "The Man Who Invented Himself",
+        Author: "",
+        OrigBand: "",
+        Lyrics: "",
+        lyrics_ref: "",
+        Comments: ""
+      }
     }
 
     song = Song.last
@@ -67,7 +74,14 @@ class SongBrowsingTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     patch song_path(song.SONGID), params: {
-      song: { full_name: "Updated Song Title" }
+      song: {
+        full_name: "Updated Song Title",
+        Author: "",
+        OrigBand: "",
+        Lyrics: "",
+        lyrics_ref: "",
+        Comments: ""
+      }
     }
 
     song.reload

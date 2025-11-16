@@ -51,7 +51,8 @@ class CompositionsControllerTest < ActionDispatch::IntegrationTest
           Title: "New Album",
           Artist: "Robyn Hitchcock",
           Year: 2023,
-          Type: "Album"
+          Type: "Album",
+          Comments: ""
         }
       }
     end
@@ -62,7 +63,13 @@ class CompositionsControllerTest < ActionDispatch::IntegrationTest
     comp = create(:composition, Title: "Old Title")
     post sessions_path, params: { email: user.email, password: "password123" }
 
-    patch composition_path(comp.COMPID), params: { composition: { Title: "New Title" } }
+    patch composition_path(comp.COMPID), params: {
+      composition: {
+        Title: "New Title",
+        Artist: comp.Artist,
+        Comments: ""
+      }
+    }
     comp.reload
     assert_equal "New Title", comp.Title
   end
