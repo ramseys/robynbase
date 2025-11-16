@@ -378,7 +378,8 @@ class SongTest < ActiveSupport::TestCase
   end
 
   test "should handle songs with very long titles" do
-    long_title = "A" * 500
+    # Song column is VARCHAR(255), test with 200 chars
+    long_title = "A" * 200
     song = create(:song, Song: long_title)
     assert_equal long_title, song.Song
   end

@@ -125,7 +125,8 @@ class GigMediumTest < ActiveSupport::TestCase
   end
 
   test "should handle very long titles" do
-    long_title = "A Very Long Title " * 20
+    # title column is VARCHAR(255), test with 200 chars
+    long_title = "A Very Long Title " * 11  # 18 * 11 = 198 chars
     media = create(:gig_medium, title: long_title)
     assert_equal long_title, media.title
   end

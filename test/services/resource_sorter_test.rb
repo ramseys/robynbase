@@ -6,7 +6,7 @@ class ResourceSorterTest < ActiveSupport::TestCase
     song_a = create(:song, Song: "Alpha")
     song_m = create(:song, Song: "Madonna")
 
-    sorted = ResourceSorter.sort(Song.all, 'name', 'asc')
+    sorted = ResourceSorter.sort(Song.all, resource_type: :song, sort_column: 'name', direction: 'asc')
 
     # Verify ordering (actual implementation may vary)
     assert_includes [song_a, song_m, song_z], sorted.first
@@ -17,7 +17,7 @@ class ResourceSorterTest < ActiveSupport::TestCase
     gig2 = create(:gig, GigDate: Date.parse("2021-06-15"))
     gig3 = create(:gig, GigDate: Date.parse("2019-03-20"))
 
-    sorted = ResourceSorter.sort(Gig.all, 'date', 'desc')
+    sorted = ResourceSorter.sort(Gig.all, resource_type: :gig, sort_column: 'date', direction: 'desc')
 
     # Most recent first
     assert_includes [gig2, gig1, gig3], sorted.first
@@ -27,7 +27,7 @@ class ResourceSorterTest < ActiveSupport::TestCase
     gig_with_date = create(:gig, GigDate: Date.today)
     gig_no_date = create(:gig, :no_date)
 
-    sorted = ResourceSorter.sort(Gig.all, 'date', 'asc')
+    sorted = ResourceSorter.sort(Gig.all, resource_type: :gig, sort_column: 'date', direction: 'asc')
 
     # Should not raise error
     assert sorted.count >= 2
@@ -38,7 +38,7 @@ class ResourceSorterTest < ActiveSupport::TestCase
     venue_a = create(:venue, Name: "Alpha Club")
     venue_b = create(:venue, Name: "Beta Hall")
 
-    sorted = ResourceSorter.sort(Venue.all, 'name', 'asc')
+    sorted = ResourceSorter.sort(Venue.all, resource_type: :venue, sort_column: 'name', direction: 'asc')
 
     assert_includes [venue_a, venue_b, venue_c], sorted.first
   end
@@ -48,7 +48,7 @@ class ResourceSorterTest < ActiveSupport::TestCase
     comp1981 = create(:composition, Year: 1981)
     comp1985 = create(:composition, Year: 1985)
 
-    sorted = ResourceSorter.sort(Composition.all, 'year', 'asc')
+    sorted = ResourceSorter.sort(Composition.all, resource_type: :composition, sort_column: 'year', direction: 'asc')
 
     # Oldest first
     assert_includes [comp1981, comp1984, comp1985], sorted.first

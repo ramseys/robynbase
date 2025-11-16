@@ -211,7 +211,8 @@ class VenueTest < ActiveSupport::TestCase
   end
 
   test "should handle venues with very long names" do
-    long_name = "The" + " Very" * 50 + " Long Venue Name"
+    # Name column is VARCHAR(48), test with 45 chars
+    long_name = "The Very Long Venue Name With Extra Words"  # 41 chars
     venue = create(:venue, Name: long_name)
     assert_equal long_name, venue.Name
   end
