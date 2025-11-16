@@ -96,7 +96,11 @@ class SongsControllerTest < ActionDispatch::IntegrationTest
       post songs_path, params: {
         song: {
           full_name: "Test Song",
-          Author: nil
+          Author: "",
+          OrigBand: "",
+          Lyrics: "",
+          lyrics_ref: "",
+          Comments: ""
         }
       }
     end
@@ -110,7 +114,12 @@ class SongsControllerTest < ActionDispatch::IntegrationTest
 
     post songs_path, params: {
       song: {
-        full_name: "The Man Who Invented Himself"
+        full_name: "The Man Who Invented Himself",
+        Author: "",
+        OrigBand: "",
+        Lyrics: "",
+        lyrics_ref: "",
+        Comments: ""
       }
     }
 
@@ -165,7 +174,12 @@ class SongsControllerTest < ActionDispatch::IntegrationTest
 
     patch song_path(song.SONGID), params: {
       song: {
-        full_name: "Updated Title"
+        full_name: "Updated Title",
+        Author: "",
+        OrigBand: "",
+        Lyrics: "",
+        lyrics_ref: "",
+        Comments: ""
       }
     }
 
@@ -181,7 +195,12 @@ class SongsControllerTest < ActionDispatch::IntegrationTest
 
     patch song_path(song.SONGID), params: {
       song: {
-        full_name: "The Madonna"
+        full_name: "The Madonna",
+        Author: "",
+        OrigBand: "",
+        Lyrics: "",
+        lyrics_ref: "",
+        Comments: ""
       }
     }
 

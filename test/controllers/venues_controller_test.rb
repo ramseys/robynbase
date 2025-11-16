@@ -39,7 +39,15 @@ class VenuesControllerTest < ActionDispatch::IntegrationTest
     post sessions_path, params: { email: user.email, password: "password123" }
 
     assert_difference('Venue.count', 1) do
-      post venues_path, params: { venue: { Name: "New Venue", City: "City" } }
+      post venues_path, params: {
+        venue: {
+          Name: "New Venue",
+          City: "City",
+          Country: "USA",
+          SubCity: "",
+          State: ""
+        }
+      }
     end
   end
 
@@ -48,7 +56,15 @@ class VenuesControllerTest < ActionDispatch::IntegrationTest
     venue = create(:venue, Name: "Old Name")
     post sessions_path, params: { email: user.email, password: "password123" }
 
-    patch venue_path(venue.VENUEID), params: { venue: { Name: "New Name" } }
+    patch venue_path(venue.VENUEID), params: {
+      venue: {
+        Name: "New Name",
+        City: venue.City,
+        Country: venue.Country,
+        SubCity: "",
+        State: ""
+      }
+    }
     venue.reload
     assert_equal "New Name", venue.Name
   end
