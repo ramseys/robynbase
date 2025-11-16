@@ -166,7 +166,7 @@ class GigsControllerTest < ActionDispatch::IntegrationTest
     with_setlist = create(:gig, :with_setlist)
     without_setlist = create(:gig)
 
-    get quick_query_gigs_path, params: { query_id: "with_setlists" }
+    get gigs_quick_query_path, params: { query_id: "with_setlists" }
     assert_response :success
   end
 
@@ -174,7 +174,7 @@ class GigsControllerTest < ActionDispatch::IntegrationTest
     circa_gig = create(:gig, :circa)
     definite_gig = create(:gig)
 
-    get quick_query_gigs_path, params: { query_id: "without_definite_dates" }
+    get gigs_quick_query_path, params: { query_id: "without_definite_dates" }
     assert_response :success
   end
 
@@ -182,7 +182,7 @@ class GigsControllerTest < ActionDispatch::IntegrationTest
     with_reviews = create(:gig, :with_reviews)
     without_reviews = create(:gig)
 
-    get quick_query_gigs_path, params: { query_id: "with_reviews" }
+    get gigs_quick_query_path, params: { query_id: "with_reviews" }
     assert_response :success
   end
 
@@ -190,7 +190,7 @@ class GigsControllerTest < ActionDispatch::IntegrationTest
     with_media = create(:gig, :with_media)
     without_media = create(:gig)
 
-    get quick_query_gigs_path, params: { query_id: "with_media" }
+    get gigs_quick_query_path, params: { query_id: "with_media" }
     assert_response :success
   end
 
@@ -200,7 +200,7 @@ class GigsControllerTest < ActionDispatch::IntegrationTest
     gig_this_day = create(:gig, GigDate: Date.new(today.year - 1, today.month, today.day))
     gig_other_day = create(:gig, GigDate: Date.new(today.year - 1, (today.month % 12) + 1, 1))
 
-    get on_this_day_gigs_path
+    get gigs_on_this_day_path
     assert_response :success
   end
 

@@ -2,7 +2,7 @@ require 'test_helper'
 
 class AboutControllerTest < ActionDispatch::IntegrationTest
   test "should get about page" do
-    get about_url
+    get about_index_url
     assert_response :success
   end
 
@@ -13,14 +13,14 @@ class AboutControllerTest < ActionDispatch::IntegrationTest
     song = create(:song)
     create(:gigset, gig: gig, song: song)
 
-    get about_url
+    get about_index_url
     assert_response :success
     # The controller should set @stats with song_count, gig_count, gigset_count, venue_count
   end
 
   test "about page should handle empty database" do
     # No data created
-    get about_url
+    get about_index_url
     assert_response :success
     # Should still work even with no data
   end

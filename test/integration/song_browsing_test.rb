@@ -27,7 +27,7 @@ class SongBrowsingTest < ActionDispatch::IntegrationTest
     original = create(:song, Author: nil)
 
     # Use not_written_by_robyn query
-    get quick_query_songs_path, params: { query_id: "not_written_by_robyn" }
+    get songs_quick_query_path, params: { query_id: "not_written_by_robyn" }
     assert_response :success
   end
 

@@ -80,7 +80,7 @@ class CompositionsControllerTest < ActionDispatch::IntegrationTest
   # Quick queries
   test "should handle other_bands quick query" do
     create(:composition, Artist: "The Beatles")
-    get quick_query_compositions_path, params: { query_id: "other_bands" }
+    get compositions_quick_query_path, params: { query_id: "other_bands" }
     assert_response :success
   end
 end

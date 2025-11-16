@@ -232,7 +232,7 @@ class SongsControllerTest < ActionDispatch::IntegrationTest
     cover = create(:song, :cover)
     original = create(:song, Author: nil)
 
-    get quick_query_songs_path, params: { query_id: "not_written_by_robyn" }
+    get songs_quick_query_path, params: { query_id: "not_written_by_robyn" }
 
     assert_response :success
   end
@@ -241,13 +241,13 @@ class SongsControllerTest < ActionDispatch::IntegrationTest
     unreleased = create(:song)
     released = create(:song, :on_album)
 
-    get quick_query_songs_path, params: { query_id: "never_released" }
+    get songs_quick_query_path, params: { query_id: "never_released" }
 
     assert_response :success
   end
 
   test "should handle never_released with originals filter" do
-    get quick_query_songs_path, params: {
+    get songs_quick_query_path, params: {
       query_id: "never_released",
       query_attribute: "originals"
     }
@@ -256,7 +256,7 @@ class SongsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should handle never_released with covers filter" do
-    get quick_query_songs_path, params: {
+    get songs_quick_query_path, params: {
       query_id: "never_released",
       query_attribute: "covers"
     }
@@ -268,7 +268,7 @@ class SongsControllerTest < ActionDispatch::IntegrationTest
     with_tabs = create(:song, :with_tabs)
     without_tabs = create(:song)
 
-    get quick_query_songs_path, params: { query_id: "has_guitar_tabs" }
+    get songs_quick_query_path, params: { query_id: "has_guitar_tabs" }
 
     assert_response :success
   end
@@ -277,7 +277,7 @@ class SongsControllerTest < ActionDispatch::IntegrationTest
     with_lyrics = create(:song, :with_lyrics)
     without_lyrics = create(:song)
 
-    get quick_query_songs_path, params: { query_id: "has_lyrics" }
+    get songs_quick_query_path, params: { query_id: "has_lyrics" }
 
     assert_response :success
   end
@@ -286,7 +286,7 @@ class SongsControllerTest < ActionDispatch::IntegrationTest
     improvised = create(:song, :improvised)
     not_improvised = create(:song)
 
-    get quick_query_songs_path, params: { query_id: "improvised" }
+    get songs_quick_query_path, params: { query_id: "improvised" }
 
     assert_response :success
   end
@@ -295,7 +295,7 @@ class SongsControllerTest < ActionDispatch::IntegrationTest
     studio_only = create(:song, :on_album)
     played_live = create(:song, :with_performances)
 
-    get quick_query_songs_path, params: { query_id: "released_never_played_live" }
+    get songs_quick_query_path, params: { query_id: "released_never_played_live" }
 
     assert_response :success
   end

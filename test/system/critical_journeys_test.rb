@@ -234,7 +234,7 @@ class CriticalJourneysTest < ApplicationSystemTestCase
     gig_today = create(:gig, venue: venue, GigDate: Date.new(today.year - 5, today.month, today.day))
     gig_other = create(:gig, GigDate: Date.new(today.year - 1, (today.month % 12) + 1, 1))
 
-    visit on_this_day_gigs_path
+    visit gigs_on_this_day_path
 
     # Should see gig from this day in history
     assert_text "Fillmore"

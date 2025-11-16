@@ -27,7 +27,7 @@ class GigManagementTest < ActionDispatch::IntegrationTest
     gig_today = create(:gig, GigDate: Date.new(today.year - 1, today.month, today.day))
     gig_other = create(:gig, GigDate: Date.new(today.year - 1, (today.month % 12) + 1, 1))
 
-    get on_this_day_gigs_path
+    get gigs_on_this_day_path
     assert_response :success
   end
 

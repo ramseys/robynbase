@@ -66,13 +66,13 @@ class VenuesControllerTest < ActionDispatch::IntegrationTest
   # Quick queries
   test "should handle with_notes quick query" do
     create(:venue, :with_notes)
-    get quick_query_venues_path, params: { query_id: "with_notes" }
+    get venues_quick_query_path, params: { query_id: "with_notes" }
     assert_response :success
   end
 
   test "should handle with_location quick query" do
     create(:venue, :with_location)
-    get quick_query_venues_path, params: { query_id: "with_location" }
+    get venues_quick_query_path, params: { query_id: "with_location" }
     assert_response :success
   end
 end
