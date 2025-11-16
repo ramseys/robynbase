@@ -102,8 +102,8 @@ class GigTest < ActiveSupport::TestCase
   end
 
   test "search_by should find gigs by year" do
-    gig2020 = create(:gig, GigYear: "2020")
-    gig2021 = create(:gig, GigYear: "2021")
+    gig2020 = create(:gig, GigDate: Date.parse("2020-05-15"))
+    gig2021 = create(:gig, GigDate: Date.parse("2021-03-20"))
 
     results = Gig.search_by([:gig_year], "2020")
     assert_includes results, gig2020
@@ -126,7 +126,9 @@ class GigTest < ActiveSupport::TestCase
     venue2 = create(:venue, City: "Other")
     gig1 = create(:gig, Venue: "Test Venue", venue: venue2)
     gig2 = create(:gig, Venue: "Other", venue: venue1)
-    gig3 = create(:gig, Venue: "Different", GigYear: "Test", venue: venue2)
+    gig3 = create(:gig, Venue: "Different", venue: venue2, GigDate: Date.parse("2020-01-01"))
+    # Manually set GigYear after creation to override factory callback
+    gig3.update_column(:GigYear, "Test")
 
     results = Gig.search_by([:venue, :gig_year, :venue_city], "Test")
     assert_includes results, gig1
