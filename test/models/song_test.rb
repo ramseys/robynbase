@@ -53,7 +53,7 @@ class SongTest < ActiveSupport::TestCase
 
     results = Song.search_by([:title], "Madonna")
     assert_includes results, song
-    assert_equal 1, results.count
+    assert_equal 1, results.size
   end
 
   test "search_by should find songs by partial title match" do
@@ -64,7 +64,7 @@ class SongTest < ActiveSupport::TestCase
     results = Song.search_by([:title], "Love")
     assert_includes results, song1
     assert_includes results, song2
-    assert_equal 2, results.count
+    assert_equal 2, results.size
   end
 
   test "search_by should find songs by lyrics" do
@@ -73,7 +73,7 @@ class SongTest < ActiveSupport::TestCase
 
     results = Song.search_by([:lyrics], "Beautiful")
     assert_includes results, song
-    assert_equal 1, results.count
+    assert_equal 1, results.size
   end
 
   test "search_by should find songs by author" do
@@ -82,7 +82,7 @@ class SongTest < ActiveSupport::TestCase
 
     results = Song.search_by([:author], "Beatles")
     assert_includes results, cover
-    assert_equal 1, results.count
+    assert_equal 1, results.size
   end
 
   test "search_by should search multiple fields" do
@@ -94,7 +94,7 @@ class SongTest < ActiveSupport::TestCase
     assert_includes results, song1
     assert_includes results, song2
     assert_includes results, song3
-    assert_equal 3, results.count
+    assert_equal 3, results.size
   end
 
   test "search_by should return all songs when search is nil" do
@@ -103,7 +103,7 @@ class SongTest < ActiveSupport::TestCase
     create(:song)
 
     results = Song.search_by([:title], nil)
-    assert_equal 3, results.count
+    assert_equal 3, results.size
   end
 
   test "search_by should be case insensitive" do

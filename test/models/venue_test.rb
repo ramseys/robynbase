@@ -46,7 +46,7 @@ class VenueTest < ActiveSupport::TestCase
 
     results = Venue.search_by([:name], "Fillmore")
     assert_includes results, venue
-    assert_equal 1, results.count
+    assert_equal 1, results.size
   end
 
   test "search_by should find venues by city" do
@@ -95,7 +95,7 @@ class VenueTest < ActiveSupport::TestCase
     create(:venue)
 
     results = Venue.search_by([:name], nil)
-    assert_equal 3, results.count
+    assert_equal 3, results.size
   end
 
   test "search_by should be case insensitive" do
