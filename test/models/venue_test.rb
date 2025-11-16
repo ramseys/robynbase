@@ -46,7 +46,7 @@ class VenueTest < ActiveSupport::TestCase
 
     results = Venue.search_by([:name], "Fillmore")
     assert_includes results, venue
-    assert_equal 1, results.length
+    assert_equal 1, results.to_a.length
   end
 
   test "search_by should find venues by city" do
@@ -95,7 +95,7 @@ class VenueTest < ActiveSupport::TestCase
     create(:venue)
 
     results = Venue.search_by([:name], nil)
-    assert_equal 3, results.length
+    assert_equal 3, results.to_a.length
   end
 
   test "search_by should be case insensitive" do
@@ -130,9 +130,9 @@ class VenueTest < ActiveSupport::TestCase
 
     results = Venue.search_by([:name], nil).to_a
 
-    assert_equal venue_a, results[0]
-    assert_equal venue_b, results[1]
-    assert_equal venue_c, results[2]
+    assert_equal venue_a.VENUEID, results[0].VENUEID
+    assert_equal venue_b.VENUEID, results[1].VENUEID
+    assert_equal venue_c.VENUEID, results[2].VENUEID
   end
 
   # Quick queries
