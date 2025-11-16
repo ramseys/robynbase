@@ -98,9 +98,9 @@ class GigMediumTest < ActiveSupport::TestCase
 
   test "should support various video platforms" do
     gig = create(:gig)
-    youtube = create(:gig_medium, gig: gig, :youtube)
-    vimeo = create(:gig_medium, gig: gig, :vimeo)
-    archive = create(:gig_medium, gig: gig, :archive_org_video)
+    youtube = create(:gig_medium, :youtube, gig: gig)
+    vimeo = create(:gig_medium, :vimeo, gig: gig)
+    archive = create(:gig_medium, :archive_org_video, gig: gig)
 
     assert_equal 3, gig.gigmedia.count
     assert_equal 1, youtube.mediatype
@@ -110,8 +110,8 @@ class GigMediumTest < ActiveSupport::TestCase
 
   test "should support audio-only platforms" do
     gig = create(:gig)
-    soundcloud = create(:gig_medium, gig: gig, :soundcloud)
-    archive_audio = create(:gig_medium, gig: gig, :archive_org_audio)
+    soundcloud = create(:gig_medium, :soundcloud, gig: gig)
+    archive_audio = create(:gig_medium, :archive_org_audio, gig: gig)
 
     assert_equal 2, gig.gigmedia.count
     assert_equal 6, soundcloud.mediatype
