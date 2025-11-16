@@ -17,7 +17,7 @@ class Gig < ApplicationRecord
   has_many :songs, through: :gigsets, foreign_key: "GIGID"
   has_many_attached :images, :dependent => :destroy
 
-  belongs_to :venue, foreign_key: "VENUEID"
+  belongs_to :venue, foreign_key: "VENUEID", counter_cache: true
 
   accepts_nested_attributes_for :gigsets, :gigmedia
 

@@ -52,7 +52,8 @@ class ResourceSorter
     when 'author'
       collection.order('SONG.Author' => direction_sym)
     when 'performances'
-      collection.left_joins(:gigs).group("SONG.SONGID").order(Arel.sql("COUNT(GIG.GIGID)").send(direction == 'desc' ? :desc : :asc))
+      # Use counter cache instead of JOIN/COUNT for much better performance
+      collection.order(gigsets_count: direction_sym)
     else
       collection.order('SONG.Song' => :asc)
     end
@@ -92,7 +93,8 @@ class ResourceSorter
     when 'country'
       collection.order('VENUE.Country' => direction_sym)
     when 'performances'
-      collection.left_joins(:gigs).group("VENUE.VENUEID").order(Arel.sql("COUNT(GIG.GIGID)").send(direction == 'desc' ? :desc : :asc))
+      # Use counter cache instead of JOIN/COUNT for much better performance
+      collection.order(gigs_count: direction_sym)
     else
       collection.order('VENUE.Name' => :asc)
     end

@@ -67,10 +67,9 @@ class Song < ApplicationRecord
   end
 
   def self.prepare_query(songs)
-    songs.left_outer_joins(:gigsets)
-      .select('SONG.*, COUNT(GSET.SONGID) AS gig_count')
-      .group('SONG.SONGID')
-      .order(:Song => :asc)
+    # Counter cache automatically provides gigsets_count column
+    # No need for JOIN, COUNT, or GROUP BY - much faster!
+    songs.select('SONG.*').order(:Song => :asc)
   end
   
   def get_comments

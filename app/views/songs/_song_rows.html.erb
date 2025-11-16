@@ -27,7 +27,7 @@
 
     <td> <%= song.Author.nil? ? "Robyn Hitchcock" : song.Author %> </td>
 
-    <td> <%= song.gig_count %> </td>
+    <td> <%= song.gigsets_count %> </td>
 
     <% if can? :manage, Song %>
       <td class="actions">

@@ -57,10 +57,10 @@ class Venue < ApplicationRecord
 
   end
 
-  def self.prepare_query(songs)
-    songs.left_outer_joins(:gigs)
-      .select('VENUE.*, COUNT(GIG.VENUEID) AS gig_count')
-      .group('VENUE.VENUEID')
+  def self.prepare_query(venues)
+    # Counter cache automatically provides gigs_count column
+    # No need for JOIN, COUNT, or GROUP BY - much faster!
+    venues.select('VENUE.*')
   end
 
   # returns the notes for this venue (if any)
