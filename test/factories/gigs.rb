@@ -3,7 +3,10 @@ FactoryBot.define do
     association :venue, factory: :venue
     GigDate { Faker::Date.between(from: '1976-01-01', to: Date.today) }
     BilledAs { ["Robyn Hitchcock", "Robyn Hitchcock & The Egyptians", "Robyn Hitchcock & The Venus 3", "The Soft Boys"].sample }
-    GigYear { GigDate&.year&.to_s }
+
+    after(:build) do |gig|
+      gig.GigYear = gig.GigDate&.year&.to_s if gig.GigDate
+    end
 
     trait :with_setlist do
       transient do
