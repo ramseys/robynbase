@@ -74,7 +74,22 @@
             <%= f.text_area :Notes, :cols => 60, :rows => 5, :class => "form-control"  %>
         </div>
 
-    </div> 
+    </div>
+
+    <br>
+
+    <!-- image attachments -->
+    <div class="row">
+
+        <div class="col-sm-12">
+
+            <h3>Images</h3>
+
+            <%= render partial: '/robyn/image_table', :locals => {:object => @venue, :form => f} %>
+
+        </div>
+
+    </div>
 
     <%= f.submit "Save", class: "btn btn-large btn-primary" %>
     

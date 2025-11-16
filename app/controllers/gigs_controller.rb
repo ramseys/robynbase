@@ -1,6 +1,6 @@
 class GigsController < ApplicationController
 
-  include ImageUtils
+  include ImageAttachable
   include Paginated
   include InfiniteScrollConcern
 

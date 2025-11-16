@@ -8,6 +8,7 @@
 
       <small>
         <span class="inpage-navigation">
+          <% if @venue.images.attached? %> <span><a href="#images">Images</a></span> <% end %>
           <% if @venue.get_notes.present? %> <span><a href="#notes">Notes</a></span> <% end %>
           <% if @venue.gigs.present? %> <span><a href="#gigs">Gigs</a></span> <% end %>
         </span>
@@ -34,6 +35,13 @@
   <div class="image-container">
     <div id="map" class="venue-map"></div>
   </div>
+
+<% end %>
+
+<% if @venue.images.attached? %>
+
+  <a class="anchor" name="images"></a>
+  <%= render :partial => 'robyn/image_section', :locals => { object: @venue } %>
 
 <% end %>
 

@@ -1,6 +1,6 @@
 class CompositionsController < ApplicationController
 
-  include ImageUtils
+  include ImageAttachable
   include Paginated
   include InfiniteScrollConcern
 

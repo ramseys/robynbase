@@ -5,6 +5,7 @@ class Venue < ApplicationRecord
   self.table_name = "VENUE"
 
   has_many :gigs, -> { order('GIG.GigDate ASC') }, foreign_key: "VENUEID"
+  has_many_attached :images, :dependent => :destroy
 
   def self.get_venues_with_location
     where.not(:latitude => nil)
