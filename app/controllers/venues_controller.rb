@@ -17,7 +17,8 @@ class VenuesController < ApplicationController
   end
   
   def show
-    @venue = Venue.find(params[:id])
+    # Eager load associations to avoid N+1 queries
+    @venue = Venue.includes(:gigs).find(params[:id])
   end
 
   # Prepare venue create page

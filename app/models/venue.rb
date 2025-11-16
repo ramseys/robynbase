@@ -58,12 +58,9 @@ class Venue < ApplicationRecord
       .group('VENUE.VENUEID')
   end
 
-  # returns the notes for this venue (if any), formatted to display correctly in html
+  # returns the notes for this venue (if any)
   def get_notes
-    if self.Notes.present?
-      # Handle both Unix (\n) and Windows (\r\n) line endings
-      self.Notes.gsub(/\r\n|\n/, '<br>')
-    end
+    self.Notes if self.Notes.present?
   end
 
 

@@ -58,7 +58,7 @@
     <h3 class="section-header"> Notes </h4>
 
     <div>
-      <%= @venue.get_notes.html_safe %>
+      <%= simple_format(@venue.get_notes) %>
     </div>
 
   </div>

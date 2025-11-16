@@ -43,12 +43,9 @@ class Gig < ApplicationRecord
     where(:venueid => venueid)
   end
 
-  # returns the reviews for this gig (if any), formatted to display correctly in html
+  # returns the reviews for this gig (if any)
   def get_reviews
-    if self.Reviews.present?
-      # Handle both Unix (\n) and Windows (\r\n) line endings
-      self.Reviews.gsub(/\r\n|\n/, '<br>')
-    end
+    self.Reviews if self.Reviews.present?
   end
 
   def self.search_by(kind, search, date_criteria = nil, type = nil)
@@ -160,7 +157,12 @@ class Gig < ApplicationRecord
   ## quick queries
 
   def self.quick_query_gigs_with_setlists(secondary_attribute)
-    joins("LEFT OUTER JOIN GSET on GIG.gigid = GSET.gigid").where("GSET.setid IS #{secondary_attribute.nil? ? 'NOT' : ''} NULL").distinct.order(:GigDate)
+    query = joins("LEFT OUTER JOIN GSET on GIG.gigid = GSET.gigid")
+    if secondary_attribute.nil?
+      query.where("GSET.setid IS NOT NULL").distinct.order(:GigDate)
+    else
+      query.where("GSET.setid IS NULL").distinct.order(:GigDate)
+    end
   end
 
   def self.quick_query_gigs_without_definite_dates
@@ -227,10 +229,10 @@ class Gig < ApplicationRecord
       month = today.month
     end
 
-    if allow_empty_sets 
-      gigs = Gig.where("extract(month from GigDate) = #{month} and extract(day from GigDate) = #{day}")
+    if allow_empty_sets
+      gigs = Gig.where("extract(month from GigDate) = ? and extract(day from GigDate) = ?", month, day)
     else
-      gigs = Gig.where("extract(month from GigDate) = #{month} and extract(day from GigDate) = #{day} and EXISTS (SELECT 1 from GSET where GIG.GIGID = GSET.GIGID)")
+      gigs = Gig.where("extract(month from GigDate) = ? and extract(day from GigDate) = ? and EXISTS (SELECT 1 from GSET where GIG.GIGID = GSET.GIGID)", month, day)
     end
 
     # sort final results by date

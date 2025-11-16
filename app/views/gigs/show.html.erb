@@ -114,7 +114,7 @@
     <h3 class="section-header"> Notes </h3>
     
     <div>
-      <%= simple_format(@gig.ShortNote.html_safe) %>
+      <%= simple_format(@gig.ShortNote) %>
     </div>
   
   </div>
@@ -222,7 +222,7 @@
     <h3 class="section-header"> Reviews </h3>
 
     <div>
-      <%= @gig.get_reviews.html_safe %>
+      <%= simple_format(@gig.get_reviews) %>
     </div>
 
   </div>
