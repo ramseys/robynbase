@@ -114,7 +114,7 @@
     <h3 class="section-header"> Notes </h3>
     
     <div>
-      <%= simple_format(@gig.ShortNote.html_safe) %>
+      <%= @gig.get_short_note.html_safe %>
     </div>
   
   </div>
