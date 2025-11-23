@@ -10,32 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_10_01_125824) do
-  create_table "COMP", primary_key: "COMPID", id: :integer, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
-    t.string "Artist", limit: 64
-    t.string "Title", limit: 64
-    t.integer "Year"
-    t.string "Medium", limit: 16
-    t.string "MCODE", limit: 1
-    t.string "Label", limit: 64
-    t.string "CatNo", limit: 16
-    t.string "Type", limit: 16
-    t.boolean "Single", default: false
-    t.string "Desc", limit: 64
-    t.text "Comments"
-    t.integer "MAJRID", default: 0
-    t.string "CoverImage", limit: 32
-    t.string "Field9", limit: 2
-    t.string "Field11", limit: 2
-    t.string "discogs_url"
-    t.index ["Desc"], name: "Desc"
-    t.index ["MAJRID"], name: "MAJRID"
-    t.index ["MCODE"], name: "MCODE"
-    t.index ["Medium"], name: "Medium"
-    t.index ["Title"], name: "Title"
-    t.index ["Type"], name: "Type"
-  end
-
+ActiveRecord::Schema[7.2].define(version: 2025_11_16_133853) do
   create_table "FEG", primary_key: "FEGID", id: { type: :string, limit: 50 }, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
     t.string "Lastname", limit: 20
     t.string "Firstname", limit: 20
@@ -61,39 +36,6 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_01_125824) do
     t.string "CONNECTOR", limit: 8
     t.boolean "NICE", default: false
     t.index ["WORDTYPE"], name: "WORDTYPE"
-  end
-
-  create_table "GIG", primary_key: "GIGID", id: :integer, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
-    t.string "BilledAs", limit: 75, default: "Robyn Hitchcock"
-    t.string "Venue", limit: 128
-    t.integer "VENUEID", default: 0
-    t.string "GigType", limit: 16
-    t.datetime "GigDate", precision: nil
-    t.string "GigYear", limit: 4
-    t.boolean "Circa", default: false
-    t.integer "SetNum", limit: 1, default: 0
-    t.datetime "StartTime", precision: nil
-    t.integer "Length", default: 0
-    t.string "Guests", limit: 512
-    t.text "ShortNote"
-    t.string "Shirts", limit: 24
-    t.text "Reviews", size: :long
-    t.boolean "TapeExists", default: false
-    t.string "Performance", limit: 1
-    t.string "Sound", limit: 1
-    t.string "Rarity", limit: 1
-    t.string "Format", limit: 32
-    t.string "Genealogy", limit: 32
-    t.string "Flaws", limit: 32
-    t.boolean "Favorite", default: false
-    t.string "Master", limit: 32
-    t.string "Type", limit: 32, default: "aud"
-    t.text "Archived", size: :long
-    t.integer "FEGID", default: 0
-    t.timestamp "ModifyDate", default: -> { "CURRENT_TIMESTAMP" }, null: false
-    t.index ["BilledAs"], name: "BilledAs"
-    t.index ["GigDate"], name: "GigDate"
-    t.index ["VENUEID"], name: "VENUEID"
   end
 
   create_table "GSET", primary_key: "SETID", id: :integer, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
@@ -147,7 +89,117 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_01_125824) do
     t.index ["SITEID"], name: "SITEID"
   end
 
-  create_table "SONG", primary_key: "SONGID", id: :integer, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
+  create_table "XREF", primary_key: "XREFID", id: { type: :string, limit: 12 }, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
+    t.string "XLINK", limit: 32
+    t.string "XTEXT"
+    t.index ["XREFID"], name: "XREFID"
+  end
+
+  create_table "active_storage_attachments", charset: "latin1", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.bigint "blob_id", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", charset: "latin1", force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.bigint "byte_size", null: false
+    t.string "checksum"
+    t.datetime "created_at", precision: nil, null: false
+    t.string "service_name", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
+
+  create_table "active_storage_variant_records", charset: "latin1", force: :cascade do |t|
+    t.bigint "blob_id", null: false
+    t.string "variation_digest", null: false
+    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "comp", primary_key: "COMPID", id: :integer, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
+    t.string "Artist", limit: 64
+    t.string "Title", limit: 64
+    t.integer "Year"
+    t.string "Medium", limit: 16
+    t.string "MCODE", limit: 1
+    t.string "Label", limit: 64
+    t.string "CatNo", limit: 16
+    t.string "Type", limit: 16
+    t.boolean "Single", default: false
+    t.string "Desc", limit: 64
+    t.text "Comments"
+    t.integer "MAJRID", default: 0
+    t.string "CoverImage", limit: 32
+    t.string "Field9", limit: 2
+    t.string "Field11", limit: 2
+    t.string "discogs_url"
+    t.index ["Artist"], name: "index_comp_on_artist"
+    t.index ["Desc"], name: "Desc"
+    t.index ["MAJRID"], name: "MAJRID"
+    t.index ["MCODE"], name: "MCODE"
+    t.index ["Medium"], name: "Medium"
+    t.index ["Title"], name: "Title"
+    t.index ["Type"], name: "Type"
+  end
+
+  create_table "data_migrations", primary_key: "version", id: :string, charset: "latin1", force: :cascade do |t|
+  end
+
+  create_table "gig", primary_key: "GIGID", id: :integer, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
+    t.string "BilledAs", limit: 75, default: "Robyn Hitchcock"
+    t.string "Venue", limit: 128
+    t.integer "VENUEID", default: 0
+    t.string "GigType", limit: 16
+    t.datetime "GigDate", precision: nil
+    t.string "GigYear", limit: 4
+    t.boolean "Circa", default: false
+    t.integer "SetNum", limit: 1, default: 0
+    t.datetime "StartTime", precision: nil
+    t.integer "Length", default: 0
+    t.string "Guests", limit: 512
+    t.text "ShortNote"
+    t.string "Shirts", limit: 24
+    t.text "Reviews", size: :long
+    t.boolean "TapeExists", default: false
+    t.string "Performance", limit: 1
+    t.string "Sound", limit: 1
+    t.string "Rarity", limit: 1
+    t.string "Format", limit: 32
+    t.string "Genealogy", limit: 32
+    t.string "Flaws", limit: 32
+    t.boolean "Favorite", default: false
+    t.string "Master", limit: 32
+    t.string "Type", limit: 32, default: "aud"
+    t.text "Archived", size: :long
+    t.integer "FEGID", default: 0
+    t.timestamp "ModifyDate", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.index ["BilledAs"], name: "BilledAs"
+    t.index ["Circa"], name: "index_gig_on_circa"
+    t.index ["GigDate"], name: "GigDate"
+    t.index ["GigYear"], name: "index_gig_on_gigyear"
+    t.index ["VENUEID"], name: "VENUEID"
+  end
+
+  create_table "gigmedia", charset: "latin1", force: :cascade do |t|
+    t.integer "GIGID"
+    t.string "title"
+    t.string "mediaid"
+    t.integer "mediatype", limit: 2
+    t.integer "showplaylist", limit: 1, default: 0
+    t.integer "Chrono", default: 10
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
+    t.index ["GIGID"], name: "index_gigmedia_on_gigid"
+  end
+
+  create_table "song", primary_key: "SONGID", id: :integer, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
     t.string "Song", null: false
     t.string "Prefix", limit: 16
     t.string "Versions", limit: 50
@@ -171,12 +223,14 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_01_125824) do
     t.string "MP3File", limit: 64
     t.string "lyrics_ref"
     t.boolean "show_lyrics", default: false
+    t.index ["Author"], name: "index_song_on_author"
+    t.index ["Improvised"], name: "index_song_on_improvised"
     t.index ["MAJRID"], name: "MAJRID"
     t.index ["MUSOID"], name: "MUSOID"
     t.index ["Song"], name: "Song"
   end
 
-  create_table "TRAK", primary_key: "TRAKID", id: :integer, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
+  create_table "trak", primary_key: "TRAKID", id: :integer, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
     t.integer "COMPID"
     t.integer "SONGID"
     t.string "Song"
@@ -187,13 +241,24 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_01_125824) do
     t.string "VersionNotes"
     t.boolean "Hidden", default: false
     t.boolean "bonus", default: false
+    t.index ["COMPID"], name: "index_trak_on_compid"
     t.index ["Disc"], name: "Disc"
     t.index ["SONGID"], name: "SONGID"
     t.index ["Seq"], name: "Seq"
     t.index ["Side"], name: "Side"
   end
 
-  create_table "VENUE", primary_key: "VENUEID", id: :integer, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
+  create_table "users", charset: "latin1", force: :cascade do |t|
+    t.string "email"
+    t.string "password_digest"
+    t.string "first_name"
+    t.string "last_name"
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+  end
+
+  create_table "venue", primary_key: "VENUEID", id: :integer, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
     t.string "Name", limit: 48
     t.string "City", limit: 50
     t.string "State", limit: 50
@@ -209,61 +274,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_01_125824) do
     t.string "street_address2"
     t.index ["Name"], name: "Name"
     t.index ["NameSearch"], name: "NameSearch"
-  end
-
-  create_table "XREF", primary_key: "XREFID", id: { type: :string, limit: 12 }, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
-    t.string "XLINK", limit: 32
-    t.string "XTEXT"
-    t.index ["XREFID"], name: "XREFID"
-  end
-
-  create_table "active_storage_attachments", charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "record_type", null: false
-    t.bigint "record_id", null: false
-    t.bigint "blob_id", null: false
-    t.datetime "created_at", precision: nil, null: false
-    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
-    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
-  end
-
-  create_table "active_storage_blobs", charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
-    t.string "key", null: false
-    t.string "filename", null: false
-    t.string "content_type"
-    t.text "metadata"
-    t.bigint "byte_size", null: false
-    t.string "checksum"
-    t.datetime "created_at", precision: nil, null: false
-    t.string "service_name", null: false
-    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
-  end
-
-  create_table "active_storage_variant_records", charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
-    t.bigint "blob_id", null: false
-    t.string "variation_digest", null: false
-    t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
-  end
-
-  create_table "gigmedia", charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
-    t.integer "GIGID"
-    t.string "title"
-    t.string "mediaid"
-    t.integer "mediatype", limit: 2
-    t.integer "showplaylist", limit: 1, default: 0
-    t.integer "Chrono", default: 10
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
-  end
-
-  create_table "users", charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
-    t.string "email"
-    t.string "password_digest"
-    t.string "first_name"
-    t.string "last_name"
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["latitude", "longitude"], name: "index_venue_on_lat_lng"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

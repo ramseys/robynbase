@@ -40,7 +40,7 @@ class GigsController < ApplicationController
 
   def show
     # Eager load associations to avoid N+1 queries
-    @gig = Gig.includes(:venue, gigsets: :song, :gigmedia, images_attachments: :blob).find(params[:id])
+    @gig = Gig.includes(:venue, :gigmedia, gigsets: :song, images_attachments: :blob).find(params[:id])
   end
 
   # prepare gig create page

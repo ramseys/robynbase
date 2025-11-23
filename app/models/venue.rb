@@ -65,7 +65,7 @@ class Venue < ApplicationRecord
 
   # returns the notes for this venue (if any)
   def get_notes
-    sanitize_html(self.Notes)
+    add_linebreaks(self.Notes)
   end
 
 

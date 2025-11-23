@@ -49,12 +49,12 @@ class Gig < ApplicationRecord
 
   # returns the reviews for this gig (if any)
   def get_reviews
-    sanitize_html(self.Reviews)
+    add_linebreaks(self.Reviews)
   end
 
   # returns the short note for this gig (if any)
   def get_short_note
-    sanitize_html(self.ShortNote)
+    add_linebreaks(self.ShortNote)
   end
 
   def self.search_by(kind, search, date_criteria = nil, type = nil)

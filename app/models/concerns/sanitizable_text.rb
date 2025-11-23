@@ -33,10 +33,15 @@ module SanitizableText
     return nil if text.blank?
 
     ActionController::Base.helpers.sanitize(
-      text.gsub(/\r\n|\n/, '<br>'),
+      text,
       tags: SAFE_TAGS,
       attributes: SAFE_ATTRIBUTES
     )
+  end
+  
+  # Add explicit html <br>s for linebreaks
+  def add_linebreaks(text)
+    text&.gsub(/\r\n|\n/, '<br>')
   end
 
   private

@@ -74,7 +74,7 @@ class Song < ApplicationRecord
   end
   
   def get_comments
-    sanitize_html(self.Comments)
+    add_linebreaks(self.Comments)
   end
 
   def full_name
