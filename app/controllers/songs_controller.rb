@@ -93,12 +93,11 @@ class SongsController < ApplicationController
   end
   
   def show
-
-    @song = Song.find(params[:id])
+    # Eager load associations to avoid N+1 queries
+    @song = Song.includes(:gigs, :compositions).find(params[:id])
 
     @gigs_present = @song.gigs.present?
-    @albums_present = @song.compositions.present? 
-    
+    @albums_present = @song.compositions.present?
   end
 
   

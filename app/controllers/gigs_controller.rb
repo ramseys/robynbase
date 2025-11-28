@@ -39,7 +39,8 @@ class GigsController < ApplicationController
   end
 
   def show
-    @gig = Gig.find(params[:id])
+    # Eager load associations to avoid N+1 queries
+    @gig = Gig.includes(:venue, :gigmedia, gigsets: :song, images_attachments: :blob).find(params[:id])
   end
 
   # prepare gig create page
@@ -261,6 +262,10 @@ class GigsController < ApplicationController
 
     last_index = starting_index
 
+    # Preload all songs to avoid N+1 queries
+    song_ids = setlist_songs.values.map { |s| s["SONGID"].to_i }.compact.uniq
+    songs_by_id = Song.where(SONGID: song_ids).index_by(&:SONGID)
+
     # loop through every song in the setlist in order (non-encore or encore), normalizing their sequence numbers
     setlist_songs.values.select{|val| val["Encore"] == encore.to_s}.sort_by{|a| a["Chrono"].to_i }.each_with_index do |b, i|
 
@@ -270,13 +275,14 @@ class GigsController < ApplicationController
       b["Chrono"] = (last_index * 10).to_s
 
       # if there's no override song name, add in the real song name
-      if b["SONGID"].present?
-        b["Song"] = Song.find(b["SONGID"].to_i).full_name if b["Song"].empty?
+      if b["SONGID"].present? && b["Song"].empty?
+        song = songs_by_id[b["SONGID"].to_i]
+        b["Song"] = song.full_name if song
       end
 
       # empty text fields should be null in the database
-      b[:MediaLink] = nil if b[:MediaLink].strip.empty?
-      b[:VersionNotes] = nil if b[:VersionNotes].strip.empty?
+      b[:MediaLink] = nil if b[:MediaLink].present? && b[:MediaLink].strip.empty?
+      b[:VersionNotes] = nil if b[:VersionNotes].present? && b[:VersionNotes].strip.empty?
 
     end
 

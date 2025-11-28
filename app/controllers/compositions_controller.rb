@@ -41,13 +41,11 @@ class CompositionsController < ApplicationController
   end
 
   def show
-
-    # get the requested album
-    @comp = Composition.find(params[:id])
+    # get the requested album - eager load tracks and songs to avoid N+1 queries
+    @comp = Composition.includes(tracks: :song, images_attachments: :blob).find(params[:id])
 
     # get album art (if any)
     @associated_images = get_associated_images(@comp.Title)
-
   end
 
   def get_associated_images(title)
@@ -161,6 +159,10 @@ class CompositionsController < ApplicationController
 
     last_index = starting_index
 
+    # Preload all songs to avoid N+1 queries
+    song_ids = tracks.values.map { |t| t["SONGID"].to_i }.compact.uniq
+    songs_by_id = Song.where(SONGID: song_ids).index_by(&:SONGID)
+
     # loop through every song in the track list in order, normalizing their sequence numbers
     tracks.values.select{|val| val["bonus"] == bonus.to_s}.sort_by{ |a| a["Seq"].to_i }.each_with_index do |b, i|
 
@@ -170,11 +172,12 @@ class CompositionsController < ApplicationController
       b["Seq"] = (last_index * 10).to_s
 
       # if there's no override song name, add in the real song name
-      if b["SONGID"].present?
-        b["Song"] = Song.find(b["SONGID"].to_i).full_name if b["Song"].empty?
+      if b["SONGID"].present? && b["Song"].empty?
+        song = songs_by_id[b["SONGID"].to_i]
+        b["Song"] = song.full_name if song
       end
 
-      b[:VersionNotes] = nil if b[:VersionNotes].strip.empty?
+      b[:VersionNotes] = nil if b[:VersionNotes].present? && b[:VersionNotes].strip.empty?
 
     end
 

@@ -2,6 +2,7 @@
 #   GIGID
 
 class Song < ApplicationRecord
+  include SanitizableText
 
   self.table_name = "SONG"
 
@@ -10,7 +11,10 @@ class Song < ApplicationRecord
 
   has_many :tracks, foreign_key: "SONGID"
   has_many :compositions, through: :tracks, foreign_key: "SONGID"
-   
+
+  # Configure which fields to sanitize on save
+  sanitize_fields :Comments, :Lyrics
+
   @@quick_queries = [ 
     QuickQuery.new('songs', :not_written_by_robyn),
     QuickQuery.new('songs', :never_released, [:originals, :covers]),
@@ -70,10 +74,7 @@ class Song < ApplicationRecord
   end
   
   def get_comments
-    if self.Comments.present?
-      # Handle both Unix (\n) and Windows (\r\n) line endings
-      self.Comments.gsub(/\r\n|\n/, '<br>')
-    end
+    add_linebreaks(self.Comments)
   end
 
   def full_name
@@ -231,12 +232,12 @@ class Song < ApplicationRecord
   end
 
   def self.quick_query_guitar_tabs(has_tabs)
-    songs = where("tab IS #{has_tabs.nil? ? 'NOT': ''} NULL")
+    songs = has_tabs.nil? ? where("tab IS NOT NULL") : where("tab IS NULL")
     self.prepare_query(songs)
   end
 
   def self.quick_query_lyrics(has_lyrics)
-    songs = where("lyrics IS #{has_lyrics.nil? ? 'NOT': ''} NULL")
+    songs = has_lyrics.nil? ? where("lyrics IS NOT NULL") : where("lyrics IS NULL")
     self.prepare_query(songs)
   end
 
