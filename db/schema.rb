@@ -123,7 +123,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_16_133853) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "comp", primary_key: "COMPID", id: :integer, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
+  create_table "COMP", primary_key: "COMPID", id: :integer, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
     t.string "Artist", limit: 64
     t.string "Title", limit: 64
     t.integer "Year"
@@ -152,7 +152,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_16_133853) do
   create_table "data_migrations", primary_key: "version", id: :string, charset: "latin1", force: :cascade do |t|
   end
 
-  create_table "gig", primary_key: "GIGID", id: :integer, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
+  create_table "GIG", primary_key: "GIGID", id: :integer, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
     t.string "BilledAs", limit: 75, default: "Robyn Hitchcock"
     t.string "Venue", limit: 128
     t.integer "VENUEID", default: 0
@@ -199,7 +199,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_16_133853) do
     t.index ["GIGID"], name: "index_gigmedia_on_gigid"
   end
 
-  create_table "song", primary_key: "SONGID", id: :integer, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
+  create_table "SONG", primary_key: "SONGID", id: :integer, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
     t.string "Song", null: false
     t.string "Prefix", limit: 16
     t.string "Versions", limit: 50
@@ -230,7 +230,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_16_133853) do
     t.index ["Song"], name: "Song"
   end
 
-  create_table "trak", primary_key: "TRAKID", id: :integer, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
+  create_table "TRAK", primary_key: "TRAKID", id: :integer, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
     t.integer "COMPID"
     t.integer "SONGID"
     t.string "Song"
@@ -258,7 +258,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_16_133853) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
-  create_table "venue", primary_key: "VENUEID", id: :integer, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
+  create_table "VENUE", primary_key: "VENUEID", id: :integer, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
     t.string "Name", limit: 48
     t.string "City", limit: 50
     t.string "State", limit: 50
