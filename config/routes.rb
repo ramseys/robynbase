@@ -25,6 +25,9 @@ Rails.application.routes.draw do
   # get 'signup', to: 'users#new', as: 'signup'
   get 'login', to: 'sessions#new', as: 'login'
   get 'logout', to: 'sessions#destroy', as: 'logout'
+
+  get 'admin', to: 'admin#index', as: 'admin'
+  post 'admin/clear_sort_cookies', to: 'admin#clear_sort_cookies', as: 'clear_sort_cookies_admin'
   
   resources :songs do
     collection do

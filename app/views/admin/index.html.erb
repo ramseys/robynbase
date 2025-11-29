@@ -1,0 +1,43 @@
+<div class="admin-page">
+  <div class="row">
+    <div class="col-sm-12">
+      <h2>Admin</h2>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <h3 class="section-header">Table Sort Preferences</h3>
+
+      <% if @sort_cookies.any? %>
+
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Table ID</th>
+              <th>Sort Column</th>
+              <th>Direction</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @sort_cookies.each do |cookie| %>
+              <tr>
+                <td><code><%= cookie[:table_id] %></code></td>
+                <td><%= cookie[:column] %></td>
+                <td><%= cookie[:direction] %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+
+        <%= button_to "Clear All Sort Preferences",
+                      clear_sort_cookies_admin_path,
+                      method: :post,
+                      data: { confirm: "Are you sure you want to clear all table sort preferences?" },
+                      class: "btn btn-warning" %>
+      <% else %>
+        <p>No sort preferences are currently saved.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

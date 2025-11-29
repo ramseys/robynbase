@@ -2,13 +2,17 @@ class SongsController < ApplicationController
   include Paginated
   include InfiniteScrollConcern
 
+  DEFAULT_SORT_PARAMS = { sort: 'name', direction: 'asc' }.freeze
+  DEFAULT_SORT_SQL = "SONG.Song asc".freeze
+
   authorize_resource :only => [:new, :edit, :update, :create, :destroy]
 
   def index
+    apply_saved_sort('song-main', DEFAULT_SORT_PARAMS)
 
     if params[:search_type].present?
       songs_collection = Song.search_by(params[:search_type] ? params[:search_type].to_sym : nil, params[:search_value])
-      @pagy, @songs = apply_sorting_and_pagination(songs_collection, default_sort: "SONG.Song asc", default_sort_params: { sort: 'name', direction: 'asc' })
+      @pagy, @songs = apply_sorting_and_pagination(songs_collection, default_sort: DEFAULT_SORT_SQL, default_sort_params: DEFAULT_SORT_PARAMS)
     else 
       params[:search_type] = "title"
       @songs = nil
@@ -20,8 +24,10 @@ class SongsController < ApplicationController
   end
 
   def quick_query
+    apply_saved_sort('song-main', DEFAULT_SORT_PARAMS)
+
     songs_collection = Song.quick_query(params[:query_id], params[:query_attribute])
-    @pagy, @songs = apply_sorting_and_pagination(songs_collection, default_sort: "SONG.Song asc", default_sort_params: { sort: 'song', direction: 'asc' })
+    @pagy, @songs = apply_sorting_and_pagination(songs_collection, default_sort: DEFAULT_SORT_SQL, default_sort_params: DEFAULT_SORT_PARAMS)
     render "index"
   end
 

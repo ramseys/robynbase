@@ -43,6 +43,7 @@ $(window).on("turbo:load", function() {
     case currentPage.indexOf("venues") !== 0: return "robyn-venues";
     case currentPage.indexOf("map") !== 0: return "venue-map";
     case currentPage.indexOf("about") !== 0: return "robyn-about";
+    case currentPage.indexOf("admin") !== 0: return "robyn-admin";
     default: return "robyn-home";
   } })();
 

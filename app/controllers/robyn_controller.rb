@@ -24,16 +24,17 @@ class RobynController < ApplicationController
     search = params[:search_value]
     return head :bad_request unless search.present?
 
+    @table_id = "gig-omni"
+    apply_saved_sort(@table_id, GigsController::DEFAULT_SORT_PARAMS)
+
     gigs_collection = Gig.search_by([:venue], search)
     @pagy, @gigs = apply_sorting_and_pagination(
       gigs_collection,
-      default_sort: "GigDate asc",
-      default_sort_params: { sort: 'date', direction: 'desc' },
+      default_sort: GigsController::DEFAULT_SORT_SQL,
+      default_sort_params: GigsController::DEFAULT_SORT_PARAMS,
       items_per_page: 10,
       turbo_frame: "gigs_frame"
     )
-    
-    @table_id = "gig-omni"
 
     render partial: 'shared/turbo_gig_table', locals: { frame_name: "gigs_frame" }
   end
@@ -42,16 +43,17 @@ class RobynController < ApplicationController
     search = params[:search_value]
     return head :bad_request unless search.present?
 
+    @table_id = "song-omni"
+    apply_saved_sort(@table_id, SongsController::DEFAULT_SORT_PARAMS)
+
     songs_collection = Song.search_by([:title], search)
     @pagy, @songs = apply_sorting_and_pagination(
       songs_collection,
-      default_sort: "SONG.Song asc",
-      default_sort_params: { sort: 'name', direction: 'asc' },
+      default_sort: SongsController::DEFAULT_SORT_SQL,
+      default_sort_params: SongsController::DEFAULT_SORT_PARAMS,
       items_per_page: 10,
       turbo_frame: "songs_frame"
     )
-      
-    @table_id = "song-omni"
 
     render partial: 'shared/turbo_songs_table', locals: { frame_name: "songs_frame" }
   end
@@ -60,16 +62,17 @@ class RobynController < ApplicationController
     search = params[:search_value]
     return head :bad_request unless search.present?
 
+    @table_id = "album-omni"
+    apply_saved_sort(@table_id, CompositionsController::DEFAULT_SORT_PARAMS)
+
     compositions_collection = Composition.search_by([:title], search)
     @pagy, @compositions = apply_sorting_and_pagination(
       compositions_collection,
-      default_sort: "COMP.Title asc",
-      default_sort_params: { sort: 'title', direction: 'asc' },
+      default_sort: CompositionsController::DEFAULT_SORT_SQL,
+      default_sort_params: CompositionsController::DEFAULT_SORT_PARAMS,
       items_per_page: 10,
       turbo_frame: "compositions_frame"
     )
-    
-    @table_id = "album-omni"
 
     render partial: 'shared/turbo_releases_table', locals: { frame_name: "compositions_frame" }
   end
@@ -78,16 +81,17 @@ class RobynController < ApplicationController
     search = params[:search_value]
     return head :bad_request unless search.present?
 
+    @table_id = "venue-omni"
+    apply_saved_sort(@table_id, VenuesController::DEFAULT_SORT_PARAMS)
+
     venues_collection = Venue.search_by([:name], search)
     @pagy, @venues = apply_sorting_and_pagination(
       venues_collection,
-      default_sort: "VENUE.Name asc",
-      default_sort_params: { sort: 'venue', direction: 'asc' },
+      default_sort: VenuesController::DEFAULT_SORT_SQL,
+      default_sort_params: VenuesController::DEFAULT_SORT_PARAMS,
       items_per_page: 10,
       turbo_frame: "venues_frame"
     )
-    
-    @table_id = "venue-omni"
 
     render partial: 'shared/turbo_venues_table', locals: { frame_name: "venues_frame" }
   end

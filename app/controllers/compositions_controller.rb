@@ -4,9 +4,13 @@ class CompositionsController < ApplicationController
   include Paginated
   include InfiniteScrollConcern
 
+  DEFAULT_SORT_PARAMS = { sort: 'title', direction: 'asc' }.freeze
+  DEFAULT_SORT_SQL = "COMP.Title asc".freeze
+
   authorize_resource :only => [:new, :edit, :update, :create, :destroy]
 
   def index
+    apply_saved_sort('album-main', DEFAULT_SORT_PARAMS)
 
     search_type_param  = params[:search_type]
     release_type_param = params[:release_type]
@@ -28,9 +32,9 @@ class CompositionsController < ApplicationController
       # grab the albums, based on the given search criteria
       compositions_collection = Composition.search_by(search_type, params[:search_value], release_types)
       @pagy, @compositions = apply_sorting_and_pagination(
-        compositions_collection, 
-        default_sort: "Year asc", 
-        default_sort_params: { sort: 'year', direction: 'asc' }
+        compositions_collection,
+        default_sort: DEFAULT_SORT_SQL,
+        default_sort_params: DEFAULT_SORT_PARAMS
       )
 
     else
@@ -58,7 +62,7 @@ class CompositionsController < ApplicationController
 
     @comp = Composition.new
 
-    # get a list of all songs (for the songs selection dropddown)
+    # get a list of all songs (for the songs selection dropdown)
     @song_list = Song.order(:Song).collect{|s| [s.full_name, s.SONGID]}
 
     save_referrer
@@ -238,7 +242,10 @@ class CompositionsController < ApplicationController
   def for_resource
     resource_type = params[:resource_type]
     resource_id = params[:resource_id]
-    
+    @table_id = "releases-#{resource_type}"
+
+    apply_saved_sort(@table_id, DEFAULT_SORT_PARAMS)
+
     case resource_type
     when 'song'
       @resource = Song.find(resource_id)
@@ -252,26 +259,25 @@ class CompositionsController < ApplicationController
     end
 
     @pagy, @compositions = apply_sorting_and_pagination(
-      compositions_collection, 
-      default_sort: "Year asc", 
-      default_sort_params: { sort: 'year', direction: 'asc' },
+      compositions_collection,
+      default_sort: DEFAULT_SORT_SQL,
+      default_sort_params: DEFAULT_SORT_PARAMS,
       items_per_page: 10,
       turbo_frame: "releases_frame"
     )
-    
-    @table_id = "releases-#{resource_type}"
 
     render partial: 'shared/turbo_releases_table'
   end
 
   def quick_query
+    apply_saved_sort('album-main', DEFAULT_SORT_PARAMS)
 
     if params[:query_id].to_sym == :major_cd_releases
       @initial_sort = { :column_index => 4, :direction => 'asc' }
     end
 
     compositions_collection = Composition.quick_query(params[:query_id], params[:query_attribute])
-    @pagy, @compositions = apply_sorting_and_pagination(compositions_collection, default_sort: "Title asc", default_sort_params: { sort: 'title', direction: 'asc' })
+    @pagy, @compositions = apply_sorting_and_pagination(compositions_collection, default_sort: DEFAULT_SORT_SQL, default_sort_params: DEFAULT_SORT_PARAMS)
     render "index"
 
   end
