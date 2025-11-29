@@ -6,6 +6,38 @@
   color: red;
 }
 
+/* Clickable rows */
+.clickable-row {
+  position: relative;
+  cursor: pointer;
+  /* Safari fix: transform creates a proper positioning context for table rows */
+  transform: scale(1);
+}
+
+.clickable-row .row-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.clickable-row .row-link::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+/* Ensure action links and other interactive elements stay clickable */
+.clickable-row .actions,
+.clickable-row .actions a,
+.clickable-row .actions button,
+.clickable-row td a:not(.row-link) {
+  position: relative;
+  z-index: 2;
+}
+
 /* ====== Sortable Headers */
 .sortable-header {
   color: inherit;

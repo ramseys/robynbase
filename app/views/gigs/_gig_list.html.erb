@@ -13,7 +13,7 @@
 <table class="table table-striped table-hover main-search-list"
        data-id="<%= table_id %>"
        data-table-name="Gigs"
-       data-controller="row-navigation <%= 'infinite-scroll' unless use_pagination %>"
+       data-controller="<%= 'infinite-scroll' unless use_pagination %>"
        data-infinite-scroll-url-value="/gigs/infinite_scroll"
        data-infinite-scroll-current-page-value="<%= defined?(@pagy) && @pagy ? @pagy.page : 1 %>"
        data-infinite-scroll-has-next-page-value="<%= defined?(@pagy) && @pagy ? @pagy.next.present? : false %>"
