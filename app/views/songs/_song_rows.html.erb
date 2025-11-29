@@ -1,11 +1,9 @@
 <% show_lyrics_snippet = nil unless local_assigns.has_key? :show_lyrics_snippet %>
 
 <% for song in songs %>
-  <tr data-path="<%=song_path(song)%>"
-      data-action="click->row-navigation#rowClicked"
-      style="cursor: pointer;">
+  <tr class="clickable-row">
     <td class="main-column">
-      <%= song.full_name %>
+      <a href="<%= song_path(song) %>" class="row-link" data-turbo-frame="_top"><%= song.full_name %></a>
      <% if show_lyrics(song) %>
         <a href="<%= song_path(song) %>#lyrics">
           <span title="Lyrics provided" class="bi-file-text" aria-hidden="true"></span>

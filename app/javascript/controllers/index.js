@@ -5,7 +5,6 @@
 import { application } from "./application"
 
 import TableController from "./table_controller"
-import RowNavigationController from "./row_navigation_controller"
 import InfiniteScrollController from "./infinite_scroll_controller"
 import MapController from "./map_controller"
 import GigController from "./gig_controller"
@@ -13,7 +12,6 @@ import CompositionController from "./composition_controller"
 import VenueController from "./venue_controller"
 
 application.register("table", TableController)
-application.register("row-navigation", RowNavigationController)
 application.register("infinite-scroll", InfiniteScrollController)
 application.register("map", MapController)
 application.register("gig", GigController)
