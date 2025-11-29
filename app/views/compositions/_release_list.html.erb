@@ -5,8 +5,8 @@
 <% table_id = "" unless local_assigns.has_key? :table_id %>
 <% frame_name = "table_frame" unless local_assigns.has_key? :frame_name %>
 
-<% if local_assigns.has_key? :frame_name  %>
-  <h3 class="section-header">Releases</h3>
+<% unless use_paging %>
+  <%= render 'shared/result_count', pagy: @pagy, resource_label: "release" %>
 <% end %>
 
 <table class="table table-striped table-hover main-search-list"
@@ -33,7 +33,6 @@
     <tr>
       <th style="width: 30%;"><%= sortable_column_header('title', 'Title', params[:sort], params[:direction], frame_name) %></th>
       <th style="width: 20%;"><%= sortable_column_header('artist', 'Artist', params[:sort], params[:direction], frame_name) %></th>
-      <th style="width: 20%;"><%= sortable_column_header('label', 'Label', params[:sort], params[:direction], frame_name) %></th>
       <th style="width: 10%;"><%= sortable_column_header('type', 'Type', params[:sort], params[:direction], frame_name) %></th>
       <th style="width: 10%;"><%= sortable_column_header('year', 'Year', params[:sort], params[:direction], frame_name) %></th>
       <% if can? :manage, Composition %>

@@ -113,6 +113,8 @@
   <div class="col-sm-12">
 
     <a class="anchor" name="albums"></a>
+    <h3 class="section-header">Releases</h3>
+
     <%= turbo_frame_tag "releases_frame", src: for_resource_compositions_path(resource_type: 'song', resource_id: @song.id) do %>
       Loading releases...
     <% end %>
@@ -132,6 +134,8 @@
   <div class="col-sm-12">
 
     <a class="anchor" name="gigs"></a>
+    <h3 class="section-header">Gigs</h3>
+    
     <%= turbo_frame_tag "table_frame", src: for_resource_gigs_path(resource_type: 'song', resource_id: @song.id) do %>
       Loading gigs...
     <% end %>

@@ -16,60 +16,91 @@
   <% end %>
 
   <!-- omnisearch results -->
-  <% if [@has_songs, @has_compositions, @has_gigs, @has_venues].any? %>
+  <% if params['search_value'].present? %>
 
-    <% if [@has_songs, @has_compositions, @has_gigs, @has_venues].none? %>
+    <% if [@has_songs, @has_compositions, @has_gigs, @has_venues].any? %>
 
-      <%= render partial: '/robyn/nothing_found' %>
+      <div class="accordion omnisearch-tables">
+
+        <!-- gigs -->
+        <% if @has_gigs %>
+          <div class="accordion-item">
+            <h3 class="accordion-header">
+              <button class="accordion-button omnisearch-accordion-item" type="button" data-bs-toggle="collapse" data-bs-target="#gigsCollapse" aria-expanded="true" aria-controls="gigsCollapse">
+                <strong>Gigs</strong>
+              </button>
+            </h3>
+            <div id="gigsCollapse" class="accordion-collapse collapse show">
+              <div class="accordion-body">
+                <%= turbo_frame_tag "gigs_frame", src: robyn_omnisearch_gigs_path(search_value: params[:search_value]) do %>
+                  Loading gigs...
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- songs -->
+        <% if @has_songs %>
+          <div class="accordion-item">
+            <h3 class="accordion-header">
+              <button class="accordion-button omnisearch-accordion-item" type="button" data-bs-toggle="collapse" data-bs-target="#songsCollapse" aria-expanded="true" aria-controls="songsCollapse">
+                <strong>Songs</strong>
+              </button>
+            </h3>
+            <div id="songsCollapse" class="accordion-collapse collapse show">
+              <div class="accordion-body">
+                <%= turbo_frame_tag "songs_frame", src: robyn_omnisearch_songs_path(search_value: params[:search_value]) do %>
+                  Loading songs...
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- albums -->
+        <% if @has_compositions %>
+          <div class="accordion-item">
+            <h3 class="accordion-header">
+              <button class="accordion-button omnisearch-accordion-item" type="button" data-bs-toggle="collapse" data-bs-target="#releasesCollapse" aria-expanded="true" aria-controls="releasesCollapse">
+                <strong>Releases</strong>
+              </button>
+            </h3>
+            <div id="releasesCollapse" class="accordion-collapse collapse show">
+              <div class="accordion-body">
+                <%= turbo_frame_tag "compositions_frame", src: robyn_omnisearch_compositions_path(search_value: params[:search_value]) do %>
+                  Loading releases...
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- venues -->
+        <% if @has_venues %>
+          <div class="accordion-item">
+            <h3 class="accordion-header">
+              <button class="accordion-button omnisearch-accordion-item" type="button" data-bs-toggle="collapse" data-bs-target="#venuesCollapse" aria-expanded="true" aria-controls="venuesCollapse">
+                <strong>Venues</strong>
+              </button>
+            </h3>
+            <div id="venuesCollapse" class="accordion-collapse collapse show">
+              <div class="accordion-body">
+                <%= turbo_frame_tag "venues_frame", src: robyn_omnisearch_venues_path(search_value: params[:search_value]) do %>
+                  Loading venues...
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+      </div>
 
     <% else %>
-
-      <!-- gigs -->
-      <% if @has_gigs %>
-        <div class="row">
-          <div class="col-sm-12">
-            <%= turbo_frame_tag "gigs_frame", src: robyn_omnisearch_gigs_path(search_value: params[:search_value]) do %>
-              Loading gigs...
-            <% end %>
-          </div>
-        </div>
-      <% end %>
-
-      <!-- songs -->
-      <% if @has_songs %>
-        <div class="row">
-          <div class="col-sm-12">
-            <%= turbo_frame_tag "songs_frame", src: robyn_omnisearch_songs_path(search_value: params[:search_value]) do %>
-              Loading songs...
-            <% end %>
-          </div>
-        </div>
-      <% end %>
-
-      <!-- albums -->
-      <% if @has_compositions %>
-        <div class="row">
-          <div class="col-sm-12">
-            <%= turbo_frame_tag "compositions_frame", src: robyn_omnisearch_compositions_path(search_value: params[:search_value]) do %>
-              Loading releases...
-            <% end %>
-          </div>
-        </div>
-      <% end %>
-
-      <!-- venues -->
-      <% if @has_venues %>
-        <div class="row">
-          <div class="col-sm-12">
-            <%= turbo_frame_tag "venues_frame", src: robyn_omnisearch_venues_path(search_value: params[:search_value]) do %>
-              Loading venues...
-            <% end %>
-          </div>
-        </div>
-      <% end %>
-
+      <%= render partial: '/robyn/nothing_found' %>      
     <% end %>
 
+  <%# no active search %>
   <% else %>
 
     <%
@@ -90,16 +121,18 @@
         today_gigs = Gig.quick_query_gigs_on_this_day(today.month, today.day)
       end
 
-      selected_gig = today_gigs[rand(today_gigs.length)]
-
     %>
 
     <% if today_gigs.present? %>
 
+      <% selected_gig = today_gigs[rand(today_gigs.length)] %>
+
       <div class="quick-queries">
 
         <div>
-          <p class="header text-muted">On this Day - <%= today.strftime('%B %e') %></p>
+          <p class="header text-muted">
+            <a href="<%= gig_url(selected_gig) %>">On this Day - <%= today.strftime('%B %e') %></a>
+          </p>
         </div>
 
         <div class="blurb">

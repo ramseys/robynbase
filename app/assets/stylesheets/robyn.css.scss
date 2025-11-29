@@ -505,6 +505,22 @@ dl {
     }
 }
 
+.omnisearch-tables {
+    
+    padding-top: 20px;
+
+    .omnisearch-accordion-item {
+        
+        background-color: rgba(222, 226, 230, 0.5) !important;
+        
+        &:focus {
+            box-shadow: gray 0px 0px 0px 1px
+        }
+        
+    }
+    
+}
+
 .homepage-blurb {
     
     display: none;
@@ -669,8 +685,6 @@ table.image-table {
             align-items: last baseline;
             position: absolute;
             background: linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 100%);
-            // background-color: gray;
-            // opacity: 50%;
             flex-wrap: nowrap;
             flex-direction: row;
         }
