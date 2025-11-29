@@ -1,0 +1,7 @@
+<% if pagy && pagy.count > 0 %>
+  <div class="result-count-display mb-2">
+    <p class="text-muted mb-0">
+      <%= pluralize(pagy.count, resource_label) %> found
+    </p>
+  </div>
+<% end %>
