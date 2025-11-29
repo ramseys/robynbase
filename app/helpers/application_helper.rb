@@ -52,9 +52,12 @@ module ApplicationHelper
         # Build URL that preserves current path and parameters
         sort_url = url_for(sort_params.merge(only_path: true))
 
+        # Disable Turbo prefetch on sort links to prevent unwanted cookie saves on hover
+        # Sort links reload the same page with different data, so prefetching provides no benefit
+        # and causes the controller to run (and potentially save sort cookies) on mere hover
         link_to(sort_url,
                class: css_class,
-               data: { turbo_frame: turbo_frame }) do
+               data: { turbo_frame: turbo_frame, turbo_prefetch: false }) do
             "#{title} <i class='#{icon}' aria-hidden='true'></i>".html_safe
         end
     end
