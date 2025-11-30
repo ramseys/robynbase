@@ -42,6 +42,9 @@
             <li class="nav-item" id="robyn-venues"><a class="nav-link" href="/venues">Venues</a></li>
             <li class="nav-item" id="venue-map"><a class="nav-link" href="/map">Map</a></li>
             <li class="nav-item" id="robyn-about"><a class="nav-link" href="/about">About</a></li>
+            <% if current_user %>
+              <li class="nav-item" id="robyn-admin"><a class="nav-link" href="/admin">Admin</a></li>
+            <% end %>
           </ul>
 
           <ul class="nav navbar-nav">

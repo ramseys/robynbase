@@ -1,5 +1,6 @@
 module Paginated
   extend ActiveSupport::Concern
+  include SortPersistence
 
   private
 
@@ -15,7 +16,10 @@ module Paginated
   end
 
   # Combined method to apply sorting and pagination
-  def apply_sorting_and_pagination(collection, default_sort: nil, default_sort_params: nil, items_per_page: 20, turbo_frame: "table_frame")
+  def apply_sorting_and_pagination(collection, table_id: nil, default_sort: nil, default_sort_params: nil, items_per_page: 20, turbo_frame: "table_frame")
+
+    # Apply saved sort preferences from cookies if table_id provided
+    apply_saved_sort(table_id) if table_id.present?
 
     # Remove any existing ordering before applying our sort
     collection = collection.reorder('')
