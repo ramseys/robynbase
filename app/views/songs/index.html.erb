@@ -43,7 +43,7 @@
         <% if @songs.empty? %> 
           <%= render partial: '/robyn/nothing_found' %>
         <% else %>
-          <%= render partial: '/songs/song_list', locals: {songs: @songs, table_id: "song-main", show_lyrics_snippet: @show_lyrics ? params[:search_value] : nil} %>
+          <%= render partial: '/songs/song_list', locals: {songs: @songs, table_id: SongsController::TABLE_ID, show_lyrics_snippet: @show_lyrics ? params[:search_value] : nil} %>
         <% end %>
 
       <% else %>
