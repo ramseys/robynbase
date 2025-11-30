@@ -1,9 +1,7 @@
 <% for venue in venues %>
-  <tr data-path="<%=venue_path(venue)%>" 
-      data-action="click->row-navigation#rowClicked"
-      style="cursor: pointer;">
-    <td class="main-column"> 
-      <%= venue.Name %> 
+  <tr class="clickable-row">
+    <td class="main-column">
+      <a href="<%= venue_path(venue) %>" class="row-link" data-turbo-frame="_top"><%= venue.Name %></a>
     </td>
     <td>
       <%= venue.City%>
