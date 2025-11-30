@@ -2,17 +2,16 @@ class VenuesController < ApplicationController
   include Paginated
   include InfiniteScrollConcern
 
+  TABLE_ID = 'venue-main'.freeze
   DEFAULT_SORT_PARAMS = { sort: 'venue', direction: 'asc' }.freeze
   DEFAULT_SORT_SQL = "VENUE.Name asc".freeze
 
   authorize_resource :only => [:new, :edit, :update, :create, :destroy]
 
   def index
-    apply_saved_sort('venue-main', DEFAULT_SORT_PARAMS)
-
     if params[:search_type].present?
       venues_collection = Venue.search_by(params[:search_type].to_sym, params[:search_value])
-      @pagy, @venues = apply_sorting_and_pagination(venues_collection, default_sort: DEFAULT_SORT_SQL, default_sort_params: DEFAULT_SORT_PARAMS)
+      @pagy, @venues = apply_sorting_and_pagination(venues_collection, table_id: TABLE_ID, default_sort: DEFAULT_SORT_SQL, default_sort_params: DEFAULT_SORT_PARAMS)
     else 
       params[:search_type] = "name"
       @venues = nil
@@ -78,10 +77,8 @@ class VenuesController < ApplicationController
   end
 
   def quick_query
-    apply_saved_sort('venue-main', DEFAULT_SORT_PARAMS)
-
     venues_collection = Venue.quick_query(params[:query_id], params[:query_attribute])
-    @pagy, @venues = apply_sorting_and_pagination(venues_collection, default_sort: DEFAULT_SORT_SQL, default_sort_params: DEFAULT_SORT_PARAMS)
+    @pagy, @venues = apply_sorting_and_pagination(venues_collection, table_id: TABLE_ID, default_sort: DEFAULT_SORT_SQL, default_sort_params: DEFAULT_SORT_PARAMS)
     render "index"
   end
 

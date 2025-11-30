@@ -13,15 +13,13 @@ module SortPersistence
 
   private
 
-  def apply_saved_sort(table_id, default_sort_params = nil)
+  def apply_saved_sort(table_id)
     cookie_key = "#{SORT_COOKIE_PREFIX}#{table_id}".to_sym
-
-    Rails.logger.debug "BEFORE: params[:sort]=#{params[:sort]}, params[:direction]=#{params[:direction]}"
 
     # Check if user explicitly provided sort params (clicked a column header)
     user_explicitly_sorted = params[:sort].present? && params[:direction].present?
 
-    # If no sort params in URL, check cookies or use defaults
+    # If no sort params in URL, check cookies
     unless user_explicitly_sorted
       if cookies[cookie_key].present?
         begin
@@ -29,14 +27,8 @@ module SortPersistence
           params[:sort] = saved['column']
           params[:direction] = saved['direction']
         rescue JSON::ParserError
-          # Invalid cookie, ignore and fall through to defaults
+          # Invalid cookie, ignore
         end
-      end
-
-      # If still no sort params and defaults provided, use defaults
-      if params[:sort].blank? && default_sort_params.present?
-        params[:sort] = default_sort_params[:sort]
-        params[:direction] = default_sort_params[:direction]
       end
     end
 

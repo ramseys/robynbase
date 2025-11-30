@@ -43,7 +43,7 @@
         <% if @venues.empty? %> 
           <%= render partial: '/robyn/nothing_found' %>
         <% else %>
-          <%= render partial: '/venues/venue_list', locals: {venues: @venues, table_id: "venue-main"} %>
+          <%= render partial: '/venues/venue_list', locals: {venues: @venues, table_id: VenuesController::TABLE_ID} %>
         <% end %>
 
       <% else %>

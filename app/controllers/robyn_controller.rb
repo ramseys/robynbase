@@ -25,11 +25,11 @@ class RobynController < ApplicationController
     return head :bad_request unless search.present?
 
     @table_id = "gig-omni"
-    apply_saved_sort(@table_id, GigsController::DEFAULT_SORT_PARAMS)
 
     gigs_collection = Gig.search_by([:venue], search)
     @pagy, @gigs = apply_sorting_and_pagination(
       gigs_collection,
+      table_id: @table_id,
       default_sort: GigsController::DEFAULT_SORT_SQL,
       default_sort_params: GigsController::DEFAULT_SORT_PARAMS,
       items_per_page: 10,
@@ -44,11 +44,11 @@ class RobynController < ApplicationController
     return head :bad_request unless search.present?
 
     @table_id = "song-omni"
-    apply_saved_sort(@table_id, SongsController::DEFAULT_SORT_PARAMS)
 
     songs_collection = Song.search_by([:title], search)
     @pagy, @songs = apply_sorting_and_pagination(
       songs_collection,
+      table_id: @table_id,
       default_sort: SongsController::DEFAULT_SORT_SQL,
       default_sort_params: SongsController::DEFAULT_SORT_PARAMS,
       items_per_page: 10,
@@ -63,11 +63,11 @@ class RobynController < ApplicationController
     return head :bad_request unless search.present?
 
     @table_id = "album-omni"
-    apply_saved_sort(@table_id, CompositionsController::DEFAULT_SORT_PARAMS)
 
     compositions_collection = Composition.search_by([:title], search)
     @pagy, @compositions = apply_sorting_and_pagination(
       compositions_collection,
+      table_id: @table_id,
       default_sort: CompositionsController::DEFAULT_SORT_SQL,
       default_sort_params: CompositionsController::DEFAULT_SORT_PARAMS,
       items_per_page: 10,
@@ -82,11 +82,11 @@ class RobynController < ApplicationController
     return head :bad_request unless search.present?
 
     @table_id = "venue-omni"
-    apply_saved_sort(@table_id, VenuesController::DEFAULT_SORT_PARAMS)
 
     venues_collection = Venue.search_by([:name], search)
     @pagy, @venues = apply_sorting_and_pagination(
       venues_collection,
+      table_id: @table_id,
       default_sort: VenuesController::DEFAULT_SORT_SQL,
       default_sort_params: VenuesController::DEFAULT_SORT_PARAMS,
       items_per_page: 10,

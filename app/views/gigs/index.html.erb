@@ -101,7 +101,7 @@
         <% if @gigs.empty? %>
           <%= render partial: '/robyn/nothing_found' %>
         <% else %>
-          <%= render partial: '/gigs/gig_list', locals: {gigs: @gigs, table_id: "gig-main"} %>
+          <%= render partial: '/gigs/gig_list', locals: {gigs: @gigs, table_id: GigsController::TABLE_ID} %>
         <% end %>
 
       <% else %>

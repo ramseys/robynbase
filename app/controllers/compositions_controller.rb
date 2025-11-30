@@ -4,14 +4,13 @@ class CompositionsController < ApplicationController
   include Paginated
   include InfiniteScrollConcern
 
+  TABLE_ID = 'album-main'.freeze
   DEFAULT_SORT_PARAMS = { sort: 'title', direction: 'asc' }.freeze
   DEFAULT_SORT_SQL = "COMP.Title asc".freeze
 
   authorize_resource :only => [:new, :edit, :update, :create, :destroy]
 
   def index
-    apply_saved_sort('album-main', DEFAULT_SORT_PARAMS)
-
     search_type_param  = params[:search_type]
     release_type_param = params[:release_type]
 
@@ -33,6 +32,7 @@ class CompositionsController < ApplicationController
       compositions_collection = Composition.search_by(search_type, params[:search_value], release_types)
       @pagy, @compositions = apply_sorting_and_pagination(
         compositions_collection,
+        table_id: TABLE_ID,
         default_sort: DEFAULT_SORT_SQL,
         default_sort_params: DEFAULT_SORT_PARAMS
       )
@@ -244,8 +244,6 @@ class CompositionsController < ApplicationController
     resource_id = params[:resource_id]
     @table_id = "releases-#{resource_type}"
 
-    apply_saved_sort(@table_id, DEFAULT_SORT_PARAMS)
-
     case resource_type
     when 'song'
       @resource = Song.find(resource_id)
@@ -260,6 +258,7 @@ class CompositionsController < ApplicationController
 
     @pagy, @compositions = apply_sorting_and_pagination(
       compositions_collection,
+      table_id: @table_id,
       default_sort: DEFAULT_SORT_SQL,
       default_sort_params: DEFAULT_SORT_PARAMS,
       items_per_page: 10,
@@ -270,14 +269,12 @@ class CompositionsController < ApplicationController
   end
 
   def quick_query
-    apply_saved_sort('album-main', DEFAULT_SORT_PARAMS)
-
     if params[:query_id].to_sym == :major_cd_releases
       @initial_sort = { :column_index => 4, :direction => 'asc' }
     end
 
     compositions_collection = Composition.quick_query(params[:query_id], params[:query_attribute])
-    @pagy, @compositions = apply_sorting_and_pagination(compositions_collection, default_sort: DEFAULT_SORT_SQL, default_sort_params: DEFAULT_SORT_PARAMS)
+    @pagy, @compositions = apply_sorting_and_pagination(compositions_collection, table_id: TABLE_ID, default_sort: DEFAULT_SORT_SQL, default_sort_params: DEFAULT_SORT_PARAMS)
     render "index"
 
   end
