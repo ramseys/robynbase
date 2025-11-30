@@ -1,5 +1,6 @@
 class AdminController < ApplicationController
   before_action :require_login
+  include SortPersistence
 
   def index
     @sort_cookies = []

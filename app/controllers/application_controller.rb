@@ -1,6 +1,5 @@
 class ApplicationController < ActionController::Base
   include Pagy::Backend
-  include SortPersistence
 
   protect_from_forgery
 
