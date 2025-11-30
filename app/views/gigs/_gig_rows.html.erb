@@ -1,8 +1,8 @@
 <% for gig in gigs %>
-  <tr data-path="<%= gig_path(gig) %>"
-      data-action="click->row-navigation#rowClicked"
-      style="cursor: pointer;">
-    <td class="main-column"> <%= gig.Venue %> </td>
+  <tr class="clickable-row">
+    <td class="main-column">
+      <a href="<%= gig_path(gig) %>" class="row-link" data-turbo-frame="_top"><%= gig.Venue %></a>
+    </td>
     <td> <%= gig.BilledAs.present? ? gig.BilledAs : 'Robyn Hitchcock' %> </td>
     <td> <%= gig.venue.nil? ? nil : gig.venue.City %> </td>
     <td> <%= gig.venue.nil? || gig.venue.State.nil? ? nil : gig.venue.State %> </td>
