@@ -31,7 +31,8 @@ class Gig < ApplicationRecord
     QuickQuery.new('gigs', :with_media, [:without]),
     QuickQuery.new('gigs', :with_images),
     QuickQuery.new('gigs', :on_this_day),
-    QuickQuery.new('gigs', :cancelled, [:not_cancelled])
+    QuickQuery.new('gigs', :cancelled, [:not_cancelled]),
+    QuickQuery.new('gigs', :favorites)
   ]
 
   # returns the songs played in the gig (non-encore)
@@ -138,6 +139,8 @@ class Gig < ApplicationRecord
         gigs = quick_query_gigs_on_this_day
       when :cancelled.to_s
         gigs = quick_query_gigs_cancelled(secondary_attribute)
+      when :favorites.to_s
+        gigs = quick_query_gigs_favorites
     end
 
     gigs.where.not(:venue => nil)
@@ -258,6 +261,10 @@ class Gig < ApplicationRecord
     else
       where(cancelled: false)
     end
+  end
+
+  def self.quick_query_gigs_favorites
+    where(Favorite: true)
   end
 
 end

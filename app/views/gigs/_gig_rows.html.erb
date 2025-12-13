@@ -2,6 +2,11 @@
   <tr class="clickable-row">
     <td class="main-column">
       <a href="<%= gig_path(gig) %>" class="row-link" data-turbo-frame="_top"><%= gig.Venue %><%= " (Cancelled)" if gig.cancelled %></a>
+      <% if gig.Favorite %>
+        <a href="<%= gig_path(gig) %>" data-turbo-frame="_top">
+          <span title="Favorite" class="bi-star-fill" aria-hidden="true" style="color: gold; text-shadow: 0 0 3px #000, 0 0 3px #000;"></span>
+        </a>
+      <% end %>
     </td>
     <td> <%= gig.BilledAs.present? ? gig.BilledAs : 'Robyn Hitchcock' %> </td>
     <td> <%= gig.venue.nil? ? nil : gig.venue.City %> </td>
