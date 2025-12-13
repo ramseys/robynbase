@@ -54,6 +54,8 @@ en:
       with_media_without: "Without"
       with_images: "Gigs with images"
       on_this_day: "Gigs on this day"
+      cancelled: "Cancelled gigs"
+      cancelled_not_cancelled: "Not cancelled"
     venues:
       with_notes: "Venues with notes"
       with_notes_without: "Without"

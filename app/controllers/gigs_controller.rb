@@ -392,7 +392,7 @@ class GigsController < ApplicationController
     # permit attributes we're saving
     params
       .require(:gig)
-      .permit(:VENUEID, :GigDate, :ShortNote, :Reviews, :Guests, :BilledAs, :GigType, :Venue, :Circa, :images,
+      .permit(:VENUEID, :GigDate, :ShortNote, :Reviews, :Guests, :BilledAs, :GigType, :Venue, :Circa, :cancelled, :images,
              images: [],
              deleted_img_ids: [],
              gigsets_attributes: [ :Chrono, :SONGID, :Song, :VersionNotes, :Encore, :MediaLink],
