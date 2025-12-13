@@ -24,13 +24,14 @@ class Gig < ApplicationRecord
   # Configure which fields to sanitize on save
   sanitize_fields :Reviews, :ShortNote
 
-  @@quick_queries = [ 
+  @@quick_queries = [
     QuickQuery.new('gigs', :with_setlists, [:without]),
     QuickQuery.new('gigs', :without_definite_dates),
     QuickQuery.new('gigs', :with_reviews, [:without]),
     QuickQuery.new('gigs', :with_media, [:without]),
     QuickQuery.new('gigs', :with_images),
-    QuickQuery.new('gigs', :on_this_day)
+    QuickQuery.new('gigs', :on_this_day),
+    QuickQuery.new('gigs', :favorites)
   ]
 
   # returns the songs played in the gig (non-encore)
@@ -135,6 +136,8 @@ class Gig < ApplicationRecord
         gigs = quick_query_gigs_with_images
       when :on_this_day.to_s
         gigs = quick_query_gigs_on_this_day
+      when :favorites.to_s
+        gigs = quick_query_gigs_favorites
     end
 
     gigs.where.not(:venue => nil)
@@ -247,6 +250,10 @@ class Gig < ApplicationRecord
     # sort final results by date
     gigs.order(GigDate: :asc)
 
+  end
+
+  def self.quick_query_gigs_favorites
+    where(Favorite: true)
   end
 
 end

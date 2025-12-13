@@ -12,14 +12,19 @@
         <div class="col-sm-6">
             <div class="row">
 
-                <div class="col-sm-9">
+                <div class="col-sm-6">
                     <%= f.label :GigDate %> <span class="required">*</span>
-                    <%= f.date_field :GigDate, :class => "form-control"  %> 
+                    <%= f.date_field :GigDate, :class => "form-control"  %>
                 </div>
-            
+
                 <div class="col-sm-3">
                     <br>
                     <%= f.check_box :Circa %>&nbsp;<%= f.label :Circa %>
+                </div>
+
+                <div class="col-sm-3">
+                    <br>
+                    <%= f.check_box :Favorite %>&nbsp;<%= f.label :Favorite %>
                 </div>
 
             </div>
