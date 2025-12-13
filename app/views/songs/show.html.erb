@@ -8,7 +8,7 @@
 
     <% performance_info = @song.performance_info %>
 
-    <h2><%= @song.full_name %> 
+    <h2><%= @song.full_name %>
 
       <small>
         <span class="inpage-navigation">
@@ -18,7 +18,7 @@
             <span>
               <a href="<%= @song.lyrics_ref %>" target="_blank">Lyrics</a>
             </span>
-          <% elsif show_lyrics(@song) %> 
+          <% elsif show_lyrics(@song) %>
             <span><a href="#lyrics">Lyrics</a></span>
           <% end %>
           <% if @song.Comments.present? %> <span><a href="#comments">Comments</a></span> <% end %>
@@ -82,7 +82,7 @@
 
         <div>
           According to our records, Robyn has played this song <%= @song.gigs.distinct.length %> times, most recently at <a href="<%= gig_path(performance_info["last"])%>"><%= performance_info["last"].Venue %></a>
-          on <%= performance_info["last"].GigDate.to_date.to_formatted_s(:long) %>. 
+          on <%= performance_info["last"].GigDate.to_date.to_formatted_s(:long) %>.
 
           He first performed it at <a href="<%= gig_path(performance_info["first"])%>"><%= performance_info["first"].Venue %></a>
           on <%= performance_info["first"].GigDate.to_date.to_formatted_s(:long) %><%= performance_info["duration"].present? ? ", #{performance_info["duration"]}" : ""%>.
@@ -98,7 +98,7 @@
 
       <% end%>
 
-      
+
     </div>
 
   </div>
@@ -135,7 +135,7 @@
 
     <a class="anchor" name="gigs"></a>
     <h3 class="section-header">Gigs</h3>
-    
+
     <%= turbo_frame_tag "table_frame", src: for_resource_gigs_path(resource_type: 'song', resource_id: @song.id) do %>
       Loading gigs...
     <% end %>
@@ -153,7 +153,7 @@
   <div class="col-sm-12">
 
     <a class="anchor" name="comments"></a>
-    <h3 class="section-header">Comments</h4>
+    <h3 class="section-header">Comments</h3>
 
     <div class="notes-section">
       <%= @song.get_comments.html_safe %>
