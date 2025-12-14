@@ -10,7 +10,7 @@
 
     <h2>
 
-      <%= "#{@gig.Venue} #{ '(cancelled)' if @gig.cancelled}" %>
+      <%= "#{@gig.Venue} #{ '(Cancelled)' if @gig.cancelled}" %>
       <% if @gig.Favorite %>
         <span title="Favorite" class="bi-star-fill" aria-hidden="true" style="color: gold; text-shadow: 0 0 3px #000, 0 0 3px #000;"></span>
       <% end %>
