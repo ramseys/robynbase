@@ -59,7 +59,7 @@ class Venue < ApplicationRecord
 
   def self.prepare_query(songs)
     songs.left_outer_joins(:gigs)
-      .select('VENUE.*, COUNT(GIG.VENUEID) AS gig_count')
+      .select('VENUE.*, COUNT(CASE WHEN GIG.cancelled = 0 OR GIG.cancelled IS NULL THEN 1 END) AS gig_count')
       .group('VENUE.VENUEID')
   end
 

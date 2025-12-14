@@ -10,28 +10,11 @@
         </div>
     
         <div class="col-sm-6">
-            <div class="row">
-
-                <div class="col-sm-6">
-                    <%= f.label :GigDate %> <span class="required">*</span>
-                    <%= f.date_field :GigDate, :class => "form-control"  %>
-                </div>
-
-                <div class="col-sm-3">
-                    <br>
-                    <%= f.check_box :Circa %>&nbsp;<%= f.label :Circa %>
-                </div>
-
-                <div class="col-sm-3">
-                    <br>
-                    <%= f.check_box :Favorite %>&nbsp;<%= f.label :Favorite %>
-                </div>
-
-            </div>
-
+            <%= f.label :GigDate %> <span class="required">*</span>
+            <%= f.date_field :GigDate, :class => "form-control"  %>
         </div>
 
-    </div>
+    </div>    
 
     <div class="row">
 
@@ -60,6 +43,26 @@
         </div>
 
     </div>
+
+    <div class="row">
+        
+        <div class="col-sm-6">
+        
+            Attributes
+        
+            <div class="attribute-box">      
+        
+                <%= f.check_box :Circa %>&nbsp;<%= f.label :Circa %>
+                <br/>
+                <%= f.check_box :cancelled %>&nbsp;<%= f.label :cancelled, "Cancelled" %>
+                <br/>                    
+                <%= f.check_box :Favorite %>&nbsp;<%= f.label :Favorite %>
+        
+            </div>
+
+        </div>
+            
+    </div>    
 
     <div class="row">
         <div class="col-sm-12">

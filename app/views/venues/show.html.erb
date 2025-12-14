@@ -45,7 +45,7 @@
 
     <br/> <br/>
 
-    Robyn has played this venue <%= pluralize(@venue.gigs.length, "time") %>.
+    Robyn has played this venue <%= pluralize(@venue.gigs.where(cancelled: false).length, "time") %>.
       
   </div>
 

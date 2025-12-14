@@ -29,9 +29,10 @@ class Gig < ApplicationRecord
     QuickQuery.new('gigs', :without_definite_dates),
     QuickQuery.new('gigs', :with_reviews, [:without]),
     QuickQuery.new('gigs', :with_media, [:without]),
+    QuickQuery.new('gigs', :cancelled, [:not_cancelled]),
     QuickQuery.new('gigs', :with_images),
-    QuickQuery.new('gigs', :on_this_day),
-    QuickQuery.new('gigs', :favorites)
+    QuickQuery.new('gigs', :favorites),
+    QuickQuery.new('gigs', :on_this_day)
   ]
 
   # returns the songs played in the gig (non-encore)
@@ -136,6 +137,8 @@ class Gig < ApplicationRecord
         gigs = quick_query_gigs_with_images
       when :on_this_day.to_s
         gigs = quick_query_gigs_on_this_day
+      when :cancelled.to_s
+        gigs = quick_query_gigs_cancelled(secondary_attribute)
       when :favorites.to_s
         gigs = quick_query_gigs_favorites
     end
@@ -250,6 +253,14 @@ class Gig < ApplicationRecord
     # sort final results by date
     gigs.order(GigDate: :asc)
 
+  end
+
+  def self.quick_query_gigs_cancelled(secondary_attribute)
+    if secondary_attribute.nil?
+      where(cancelled: true)
+    else
+      where(cancelled: false)
+    end
   end
 
   def self.quick_query_gigs_favorites

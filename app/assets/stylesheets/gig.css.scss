@@ -3,75 +3,101 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 .gig-list {
-
-  .advanced-options {
-    .criteria {
-      span {
-        padding: 0 5px 0 0;
-      }
+    .advanced-options {
+        .criteria {
+            span {
+                padding: 0 5px 0 0;
+            }
+        }
     }
-  }
-
 }
 
 .gig-edit-page {
-
-  table {
-    border-collapse: collapse;
-    width: 100%;
-  }
-  
-  td, th {
-    border: 1px solid #999;
-    padding: 0.5rem;
-  }
-
-  .row {
-    margin-bottom: 10px;
-  }
-
-  .gig-image-table {
-
-    width: auto;
-
-    td {
-      padding: 20px;
+    table {
+        border-collapse: collapse;
+        width: 100%;
     }
 
-    .image-cell {
-      display: table-cell; 
-      vertical-align: middle;
+    td,
+    th {
+        border: 1px solid #999;
+        padding: 0.5rem;
     }
 
-  }
+    .row {
+        margin-bottom: 10px;
+    }
 
+    .gig-image-table {
+        width: auto;
+
+        td {
+            padding: 20px;
+        }
+
+        .image-cell {
+            display: table-cell;
+            vertical-align: middle;
+        }
+    }
+   
+    // TODO this was an attempt to add a watermark to the page for cancelled gigs; keeping it around
+    // in case I ever find a way to make it look right
+    
+    // .gig-page.cancelled-gig {
+    //     position: relative;
+    // 
+    //     &::before {
+    //         content: "CANCELLED";
+    //         position: fixed;
+    //         top: 52%;
+    //         left: 50%;
+    //         //background-color: #cccccc6b;
+    //         transform: translate(-50%, -50%) rotate(-45deg);
+    //         font-size: 100px;
+    //         font-weight: bold;
+    //         color: #e9ecef;
+    //         text-transform: uppercase;
+    //         letter-spacing: 5px;
+    //         pointer-events: none;
+    //         user-select: none;
+    //         z-index: 1;
+    //         white-space: nowrap;
+    //         padding: 10px 20px;
+    //         border: 6px solid #e9ecef;
+    //         border-radius: 20px;
+    //     }
+    // 
+    //     > * {
+    //         position: relative;
+    //         z-index: 2;
+    //     }
+    // }
+    
 }
 
-
 .gig-media {
+    width: 640px;
+    margin-bottom: 20px;
 
-  width: 640px;
-  margin-bottom: 20px;
+    .gig-media-title {
+        background-color: #ce1515;
+        color: white;
+        padding: 8px;
 
-  .gig-media-title {
-    background-color: #CE1515;
-    color: white;
-    padding: 8px;
-
-    h5 {
-      margin-top: 2px;
-      margin-bottom: 2px;
-
+        h5 {
+            margin-top: 2px;
+            margin-bottom: 2px;
+        }
     }
-  }
 
-  .gig-media-content {
-    line-height: 0;
-    background-color: #363636;
-  }
-
+    .gig-media-content {
+        line-height: 0;
+        background-color: #363636;
+    }
 }
 
 .form-control-checkbox {
-  height: 17px;
+    height: 17px;
 }
+

@@ -129,6 +129,13 @@ table.main-search-list {
 
 }
 
+.item-form {
+    .attribute-box {
+        padding: 10px; 
+        border: 1px solid var(--bs-border-color);
+    }
+}
+
 .section-header {
     padding-bottom: 3px;
     font-size: 18px;
