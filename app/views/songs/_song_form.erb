@@ -24,22 +24,24 @@
         </div>
     
         <div class="col-sm-6">
-            <br>                    
-            <%= f.check_box :Improvised %> <%= f.label :Improvised %>
+            <%= f.label :lyrics_ref, "Lyrics URL" %>
+            <%= f.text_field :lyrics_ref, :class => "form-control" %>
         </div>
     
     </div>    
 
     <div class="row">
-        
+
         <div class="col-sm-6">
-            <%= f.label :lyrics_ref, "Lyrics URL" %>
-            <%= f.text_field :lyrics_ref, :class => "form-control" %>
-        </div>
     
-        <div class="col-sm-6">
-            <br>                    
-            <%= f.check_box :show_lyrics %> <%= f.label :show_lyrics, "Show lyrics" %>
+            Attributes
+    
+            <div class="attribute-box">      
+                <%= f.check_box :show_lyrics %> <%= f.label :show_lyrics, "Show lyrics" %>
+                <br>                    
+                <%= f.check_box :Improvised %> <%= f.label :Improvised %>
+            </div>
+            
         </div>
 
     </div>

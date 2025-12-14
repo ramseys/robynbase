@@ -29,10 +29,10 @@ class Gig < ApplicationRecord
     QuickQuery.new('gigs', :without_definite_dates),
     QuickQuery.new('gigs', :with_reviews, [:without]),
     QuickQuery.new('gigs', :with_media, [:without]),
-    QuickQuery.new('gigs', :with_images),
-    QuickQuery.new('gigs', :on_this_day),
     QuickQuery.new('gigs', :cancelled, [:not_cancelled]),
-    QuickQuery.new('gigs', :favorites)
+    QuickQuery.new('gigs', :with_images),
+    QuickQuery.new('gigs', :favorites),
+    QuickQuery.new('gigs', :on_this_day)
   ]
 
   # returns the songs played in the gig (non-encore)
