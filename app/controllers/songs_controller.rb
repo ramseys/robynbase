@@ -4,14 +4,13 @@ class SongsController < ApplicationController
 
   TABLE_ID = 'song-main'.freeze
   DEFAULT_SORT_PARAMS = { sort: 'name', direction: 'asc' }.freeze
-  DEFAULT_SORT_SQL = "SONG.Song asc".freeze
-
+  
   authorize_resource :only => [:new, :edit, :update, :create, :destroy]
 
   def index
     if params[:search_type].present?
       songs_collection = Song.search_by(params[:search_type] ? params[:search_type].to_sym : nil, params[:search_value])
-      @pagy, @songs = apply_sorting_and_pagination(songs_collection, table_id: TABLE_ID, default_sort: DEFAULT_SORT_SQL, default_sort_params: DEFAULT_SORT_PARAMS)
+      @pagy, @songs = apply_sorting_and_pagination(songs_collection, table_id: TABLE_ID, default_sort_params: DEFAULT_SORT_PARAMS)
     else 
       params[:search_type] = "title"
       @songs = nil
@@ -24,7 +23,7 @@ class SongsController < ApplicationController
 
   def quick_query
     songs_collection = Song.quick_query(params[:query_id], params[:query_attribute])
-    @pagy, @songs = apply_sorting_and_pagination(songs_collection, table_id: TABLE_ID, default_sort: DEFAULT_SORT_SQL, default_sort_params: DEFAULT_SORT_PARAMS)
+    @pagy, @songs = apply_sorting_and_pagination(songs_collection, table_id: TABLE_ID, default_sort_params: DEFAULT_SORT_PARAMS)
     render "index"
   end
 
@@ -111,10 +110,9 @@ class SongsController < ApplicationController
         model: Song,
         records_name: :songs,
         partial: 'song_rows',
-        default_sort: "SONG.Song asc",
-        default_sort_params: { sort: 'name', direction: 'asc' },
-        additional_locals: { 
-          show_lyrics: (params[:search_type] == "lyrics"), 
+        default_sort_params: DEFAULT_SORT_PARAMS,
+        additional_locals: {
+          show_lyrics: (params[:search_type] == "lyrics"),
           show_lyrics_snippet: params[:search_type] == "lyrics" ? params[:search_value] : nil }
       }
     end

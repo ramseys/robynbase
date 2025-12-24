@@ -42,6 +42,6 @@
   </tbody>
 </table>
 
-<% if defined?(@pagy) && @pagy && @pagy.pages > 1 %>
+<% if use_paging && defined?(@pagy) && @pagy && @pagy.pages > 1 %>
   <%= render 'shared/pagination', pagy: @pagy %> 
 <% end %>

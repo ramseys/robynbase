@@ -6,8 +6,7 @@ class GigsController < ApplicationController
 
   TABLE_ID = 'gig-main'.freeze
   DEFAULT_SORT_PARAMS = { sort: 'date', direction: 'desc' }.freeze
-  DEFAULT_SORT_SQL = "GigDate desc".freeze
-
+  
   authorize_resource :only => [:new, :edit, :update, :create, :destroy]
 
   RANGE_TYPE = {
@@ -25,13 +24,13 @@ class GigsController < ApplicationController
 
       # grab gigs that meet *all* the specified criteria
       gigs_collection = Gig.search_by(search_type, params[:search_value], date_criteria, params[:gig_type])
-      @pagy, @gigs = apply_sorting_and_pagination(gigs_collection, table_id: TABLE_ID, default_sort: DEFAULT_SORT_SQL, default_sort_params: DEFAULT_SORT_PARAMS)
+      @pagy, @gigs = apply_sorting_and_pagination(gigs_collection, table_id: TABLE_ID, default_sort_params: DEFAULT_SORT_PARAMS)
 
     # if we're looking for gigs for a given venue
     elsif params[:venue_id].present?
 
       gigs_collection = Gig.get_gigs_by_venueid(params[:venue_id])
-      @pagy, @gigs = apply_sorting_and_pagination(gigs_collection, table_id: TABLE_ID, default_sort: DEFAULT_SORT_SQL, default_sort_params: DEFAULT_SORT_PARAMS)
+      @pagy, @gigs = apply_sorting_and_pagination(gigs_collection, table_id: TABLE_ID, default_sort_params: DEFAULT_SORT_PARAMS)
 
     else
       params[:search_type] = "venue"
@@ -175,7 +174,6 @@ class GigsController < ApplicationController
     @pagy, @gigs = apply_sorting_and_pagination(
       gigs_collection,
       table_id: @table_id,
-      default_sort: DEFAULT_SORT_SQL,
       default_sort_params: DEFAULT_SORT_PARAMS,
       items_per_page: 10,
       turbo_frame: "table_frame"
@@ -186,13 +184,13 @@ class GigsController < ApplicationController
 
   def quick_query
     gigs_collection = Gig.quick_query(params[:query_id], params[:query_attribute])
-    @pagy, @gigs = apply_sorting_and_pagination(gigs_collection, table_id: TABLE_ID, default_sort: DEFAULT_SORT_SQL, default_sort_params: DEFAULT_SORT_PARAMS)
+    @pagy, @gigs = apply_sorting_and_pagination(gigs_collection, table_id: TABLE_ID, default_sort_params: DEFAULT_SORT_PARAMS)
     render "index"
   end
 
   def on_this_day
     gigs_collection = Gig.quick_query_gigs_on_this_day(params['date']['month'], params['date']['day'])
-    @pagy, @gigs = apply_sorting_and_pagination(gigs_collection, table_id: TABLE_ID, default_sort: DEFAULT_SORT_SQL, default_sort_params: DEFAULT_SORT_PARAMS)
+    @pagy, @gigs = apply_sorting_and_pagination(gigs_collection, table_id: TABLE_ID, default_sort_params: DEFAULT_SORT_PARAMS)
     render "index"
   end
 
@@ -227,8 +225,7 @@ class GigsController < ApplicationController
       model: Gig,
       records_name: :gigs,
       partial: 'gig_rows',
-      default_sort: "GigDate desc",
-      default_sort_params: { sort: 'date', direction: 'desc' },
+      default_sort_params: DEFAULT_SORT_PARAMS,
       additional_search_params: ->(params) { [build_date_criteria_from_params(params), params[:gig_type]] }
     }
   end

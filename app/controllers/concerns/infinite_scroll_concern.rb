@@ -8,8 +8,7 @@ module InfiniteScrollConcern
     return if performed? # In case build_collection_from_params rendered a response
 
     config = infinite_scroll_config
-    @pagy, records = apply_sorting_and_pagination(collection, 
-      default_sort: config[:default_sort], 
+    @pagy, records = apply_sorting_and_pagination(collection,
       default_sort_params: config[:default_sort_params]
     )
     Rails.logger.debug "Found #{records.length} records on page #{@pagy.page}"
@@ -75,12 +74,11 @@ module InfiniteScrollConcern
   end
 
   # Subclasses must implement this method to configure infinite scroll behavior
-  # 
+  #
   # Returns a hash with the following required keys:
   #   :model - The ActiveRecord model class (e.g., Song, Venue)
   #   :records_name - Symbol for the collection variable name (e.g., :songs, :venues)
   #   :partial - String path to the table rows partial (e.g., 'song_rows', 'venue_rows')
-  #   :default_sort - String for default SQL ORDER BY clause (e.g., "SONG.Song asc")
   #   :default_sort_params - Hash with :sort and :direction for UI state (e.g., { sort: 'name', direction: 'asc' })
   #
   # Optional keys:
@@ -93,7 +91,6 @@ module InfiniteScrollConcern
   #       model: Song,
   #       records_name: :songs,
   #       partial: 'song_rows',
-  #       default_sort: "SONG.Song asc",
   #       default_sort_params: { sort: 'name', direction: 'asc' },
   #       additional_locals: { show_lyrics: (params[:search_type] == "lyrics") },
   #       additional_search_params: ->(params) { [build_date_criteria(params), params[:gig_type]] }

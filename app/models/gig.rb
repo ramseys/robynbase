@@ -143,10 +143,7 @@ class Gig < ApplicationRecord
         gigs = quick_query_gigs_favorites
     end
 
-    gigs.where.not(:venue => nil)
-
-    # sort final results by date
-    gigs.order(GigDate: :asc)
+    gigs = gigs.where.not(:venue => nil)
 
   end
 
@@ -174,14 +171,14 @@ class Gig < ApplicationRecord
   def self.quick_query_gigs_with_setlists(secondary_attribute)
     query = joins("LEFT OUTER JOIN GSET on GIG.gigid = GSET.gigid")
     if secondary_attribute.nil?
-      query.where("GSET.setid IS NOT NULL").distinct.order(:GigDate)
+      query.where("GSET.SETID IS NOT NULL").distinct
     else
-      query.where("GSET.setid IS NULL").distinct.order(:GigDate)
+      query.where("GSET.SETID IS NULL").distinct
     end
   end
 
   def self.quick_query_gigs_without_definite_dates
-    where(:circa => 1).order(:GigDate)
+    where(:circa => 1)
   end
 
   def self.quick_query_gigs_with_reviews(no_reviews)
@@ -249,9 +246,6 @@ class Gig < ApplicationRecord
     else
       gigs = Gig.where("extract(month from GigDate) = ? and extract(day from GigDate) = ? and EXISTS (SELECT 1 from GSET where GIG.GIGID = GSET.GIGID)", month, day)
     end
-
-    # sort final results by date
-    gigs.order(GigDate: :asc)
 
   end
 

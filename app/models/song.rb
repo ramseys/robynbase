@@ -70,7 +70,6 @@ class Song < ApplicationRecord
     songs.left_outer_joins(:gigsets)
       .select('SONG.*, COUNT(GSET.SONGID) AS gig_count')
       .group('SONG.SONGID')
-      .order(:Song => :asc)
   end
   
   def get_comments
