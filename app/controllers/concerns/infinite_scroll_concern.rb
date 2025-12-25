@@ -1,6 +1,10 @@
 module InfiniteScrollConcern
   extend ActiveSupport::Concern
 
+  included do
+    before_action :set_query_type_for_quick_query, only: [:quick_query]
+  end
+
   def infinite_scroll
     Rails.logger.debug "Infinite scroll params: #{params.inspect}"
     
@@ -37,6 +41,10 @@ module InfiniteScrollConcern
   end
 
   private
+
+  def set_query_type_for_quick_query
+    params[:query_type] = 'quick_query'
+  end
 
   def build_collection_from_params
     config = infinite_scroll_config

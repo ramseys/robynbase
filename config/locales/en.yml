@@ -37,21 +37,28 @@ en:
       not_written_by_robyn: "Songs not written by Robyn himself"
       never_released: "Songs that Robyn has never released"
       never_released_originals: Originals only
+      never_released_originals_full: Original songs that Robyn has never released
       never_released_covers: Covers only
+      never_released_covers_full: Cover songs that Robyn has never released
       has_guitar_tabs: Songs with guitar tabs
       has_guitar_tabs_no_tabs: No tabs
+      has_guitar_tabs_no_tabs_full: Songs without guitar tabs
       has_lyrics: Songs for which lyrics have been entered
       has_lyrics_no_lyrics: No lyrics
+      has_lyrics_no_lyrics_full: Songs for which lyrics have not been entered
       released_never_played_live: Released songs that Robyn has never played live
       improvised: Songs that were improvised
     gigs:
       without_definite_dates: "Gigs with uncertain dates"
       with_setlists: "Gigs with setlists"
       with_setlists_without: "Without"
+      with_setlists_without_full: "Gigs without setlists"
       with_reviews: "Gigs with reviews"
       with_reviews_without: "Without"
+      with_reviews_without_full: "Gigs without reviews"
       with_media: "Gigs with media"
       with_media_without: "Without"
+      with_media_without_full: "Gigs without media"
       with_images: "Gigs with images"
       on_this_day: "Gigs on this day"
       cancelled: "Cancelled gigs"
@@ -60,8 +67,10 @@ en:
     venues:
       with_notes: "Venues with notes"
       with_notes_without: "Without"
+      with_notes_without_full: "Venues without notes"
       with_location: "Venues with location"
       with_location_without: "Without"
+      with_location_without_full: "Venues without location"
     compositions:
       major_cd_releases: "Somewhat chronological list of major releases on CD"
       other_bands: "Records recorded with non-Robyn bands"

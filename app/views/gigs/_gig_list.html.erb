@@ -6,7 +6,7 @@
 <% frame_name = "table_frame" unless local_assigns.has_key? :frame_name %>
 
 <% unless use_paging %>
-  <%= render 'shared/result_count', pagy: @pagy, resource_label: "gig" %>
+  <%= render 'shared/result_count', pagy: @pagy, resource_label: "gig", area: 'gigs' %>
 <% end %>
 
 <table class="table table-striped table-hover main-search-list"
