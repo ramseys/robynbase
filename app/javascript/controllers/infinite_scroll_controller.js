@@ -72,33 +72,26 @@ export default class extends Controller {
       const nextPage = this.currentPageValue + 1
       const url = new URL(this.urlValue, window.location.origin)
       url.searchParams.set('page', nextPage)
-      
+
+      // Helper to add param only if it has a meaningful value
+      const addSearchParam = (key, value) => {
+        if (value && value !== 'null' && value !== '') {
+          url.searchParams.set(key, value)
+        }
+      }
+
       // Add search parameters
-      if (this.searchTypeValue) {
-        url.searchParams.set('search_type', this.searchTypeValue || '')
-      }
-      if (this.searchValueValue) {
-        url.searchParams.set('search_value', this.searchValueValue === 'null' ? '' : this.searchValueValue)
-      }
-      
+      addSearchParam('search_type', this.searchTypeValue)
+      addSearchParam('search_value', this.searchValueValue)
+
       // Add current sort parameters
-      if (this.currentSortValue) {
-        url.searchParams.set('sort', this.currentSortValue)
-      }
-      if (this.currentDirectionValue) {
-        url.searchParams.set('direction', this.currentDirectionValue)
-      }
-      
+      addSearchParam('sort', this.currentSortValue)
+      addSearchParam('direction', this.currentDirectionValue)
+
       // Add query type parameters
-      if (this.queryTypeValue) {
-        url.searchParams.set('query_type', this.queryTypeValue)
-      }
-      if (this.queryIdValue) {
-        url.searchParams.set('query_id', this.queryIdValue)
-      }
-      if (this.queryAttributeValue) {
-        url.searchParams.set('query_attribute', this.queryAttributeValue)
-      }
+      addSearchParam('query_type', this.queryTypeValue)
+      addSearchParam('query_id', this.queryIdValue)
+      addSearchParam('query_attribute', this.queryAttributeValue)
       
       // Add advanced query parameters
       if (this.advancedQueryParamsValue) {

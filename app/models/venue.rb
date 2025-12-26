@@ -51,8 +51,6 @@ class Venue < ApplicationRecord
       venues = all
     end
 
-    venues.order(:Name => :asc)
-
     self.prepare_query(venues)
 
   end

@@ -73,10 +73,10 @@ class Composition < ApplicationRecord
 
     end
 
-    # remove duplicated releases (ie, releases with multiple editions) and order by year
+    # remove duplicated releases (ie, releases with multiple editions)
     # Use a subquery to keep only the record with smallest COMPID for each title
     min_compids = releases.select("Title, MIN(COMPID) as min_compid").group("Title")
-    releases = releases.joins("INNER JOIN (#{min_compids.to_sql}) earliest ON COMP.Title = earliest.Title AND COMP.COMPID = earliest.min_compid").order("COMP.Year ASC, COMP.COMPID ASC")
+    releases = releases.joins("INNER JOIN (#{min_compids.to_sql}) earliest ON COMP.Title = earliest.Title AND COMP.COMPID = earliest.min_compid")
 
   end 
 

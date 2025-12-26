@@ -30,7 +30,6 @@ class RobynController < ApplicationController
     @pagy, @gigs = apply_sorting_and_pagination(
       gigs_collection,
       table_id: @table_id,
-      default_sort: GigsController::DEFAULT_SORT_SQL,
       default_sort_params: GigsController::DEFAULT_SORT_PARAMS,
       items_per_page: 10,
       turbo_frame: "gigs_frame"
@@ -49,7 +48,6 @@ class RobynController < ApplicationController
     @pagy, @songs = apply_sorting_and_pagination(
       songs_collection,
       table_id: @table_id,
-      default_sort: SongsController::DEFAULT_SORT_SQL,
       default_sort_params: SongsController::DEFAULT_SORT_PARAMS,
       items_per_page: 10,
       turbo_frame: "songs_frame"
@@ -68,7 +66,6 @@ class RobynController < ApplicationController
     @pagy, @compositions = apply_sorting_and_pagination(
       compositions_collection,
       table_id: @table_id,
-      default_sort: CompositionsController::DEFAULT_SORT_SQL,
       default_sort_params: CompositionsController::DEFAULT_SORT_PARAMS,
       items_per_page: 10,
       turbo_frame: "compositions_frame"
@@ -87,7 +84,6 @@ class RobynController < ApplicationController
     @pagy, @venues = apply_sorting_and_pagination(
       venues_collection,
       table_id: @table_id,
-      default_sort: VenuesController::DEFAULT_SORT_SQL,
       default_sort_params: VenuesController::DEFAULT_SORT_PARAMS,
       items_per_page: 10,
       turbo_frame: "venues_frame"
@@ -102,8 +98,8 @@ class RobynController < ApplicationController
 
     logger.info "song search: #{search}"
 
-    if not search.nil? 
-      @songs = Song.search_by [:title], search
+    if not search.nil?
+      @songs = Song.search_by([:title], search).order(:Song => :asc)
     end
 
     logger.info @songs
@@ -118,8 +114,8 @@ class RobynController < ApplicationController
 
     logger.info "gig search: #{search}"
 
-    if not search.nil? 
-      @gigs = Gig.search_by [:venue], search
+    if not search.nil?
+      @gigs = Gig.search_by([:venue], search).order(:GigDate => :asc)
     end
 
     logger.info "found gigs: #{@gigs}"
@@ -134,8 +130,8 @@ class RobynController < ApplicationController
 
     logger.info "venue search: #{search}"
 
-    if not search.nil? 
-      @venues = Venue.search_by [:name], search
+    if not search.nil?
+      @venues = Venue.search_by([:name], search).order(:Name => :asc)
     end
 
     logger.info "found venues: #{@venues}"
@@ -151,7 +147,7 @@ class RobynController < ApplicationController
     logger.info "composition search: #{search}"
 
     if not search.nil?
-      @compositions = Composition.search_by [:title], search
+      @compositions = Composition.search_by([:title], search).order(:Title => :asc)
     end
 
     logger.info "found compositions: #{@compositions}"

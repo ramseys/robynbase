@@ -5,8 +5,7 @@ class CompositionsController < ApplicationController
   include InfiniteScrollConcern
 
   TABLE_ID = 'album-main'.freeze
-  DEFAULT_SORT_PARAMS = { sort: 'title', direction: 'asc' }.freeze
-  DEFAULT_SORT_SQL = "COMP.Title asc".freeze
+  DEFAULT_SORT_PARAMS = { sort: 'year', direction: 'asc' }.freeze
 
   authorize_resource :only => [:new, :edit, :update, :create, :destroy]
 
@@ -33,7 +32,6 @@ class CompositionsController < ApplicationController
       @pagy, @compositions = apply_sorting_and_pagination(
         compositions_collection,
         table_id: TABLE_ID,
-        default_sort: DEFAULT_SORT_SQL,
         default_sort_params: DEFAULT_SORT_PARAMS
       )
 
@@ -259,7 +257,6 @@ class CompositionsController < ApplicationController
     @pagy, @compositions = apply_sorting_and_pagination(
       compositions_collection,
       table_id: @table_id,
-      default_sort: DEFAULT_SORT_SQL,
       default_sort_params: DEFAULT_SORT_PARAMS,
       items_per_page: 10,
       turbo_frame: "releases_frame"
@@ -274,7 +271,7 @@ class CompositionsController < ApplicationController
     end
 
     compositions_collection = Composition.quick_query(params[:query_id], params[:query_attribute])
-    @pagy, @compositions = apply_sorting_and_pagination(compositions_collection, table_id: TABLE_ID, default_sort: DEFAULT_SORT_SQL, default_sort_params: DEFAULT_SORT_PARAMS)
+    @pagy, @compositions = apply_sorting_and_pagination(compositions_collection, table_id: TABLE_ID, default_sort_params: DEFAULT_SORT_PARAMS)
     render "index"
 
   end
@@ -305,8 +302,7 @@ class CompositionsController < ApplicationController
       model: Composition,
       records_name: :albums,
       partial: 'composition_rows',
-      default_sort: "Title asc",
-      default_sort_params: { sort: 'title', direction: 'asc' },
+      default_sort_params: DEFAULT_SORT_PARAMS,
       additional_search_params: ->(params) { [build_release_types_from_params(params)] }
     }
   end

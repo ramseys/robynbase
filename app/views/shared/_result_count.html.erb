@@ -1,6 +1,10 @@
 <% if pagy && pagy.count > 0 %>
   <div class="result-count-display mb-2">
     <p class="text-muted mb-0">
+      <% if params[:query_type] == 'quick_query' && local_assigns[:area].present? %>
+        <strong><%= QuickQuery.new(area, params[:query_id]).full_label(params[:query_attribute]) %></strong>
+        <span class="mx-2">|</span>
+      <% end %>
       <%= pluralize(pagy.count, resource_label) %> found
     </p>
   </div>

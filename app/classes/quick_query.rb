@@ -34,6 +34,14 @@ class QuickQuery
     I18n.t resource, scope: [:quick_query, @area]
 
   end
+  
+  def full_label(query_attribute)
+
+    full_query_attribute = "#{query_attribute}_full" if query_attribute.present?
+    
+    label(full_query_attribute)
+
+  end
 
 
 
