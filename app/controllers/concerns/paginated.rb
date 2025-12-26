@@ -5,7 +5,7 @@ module Paginated
   private
 
   # Helper method to paginate collections with preserved search parameters
-  def paginate_collection(collection, items_per_page: 20, turbo_frame: "table_frame")
+  def paginate_collection(collection, items_per_page: 40, turbo_frame: "table_frame")
     Rails.logger.debug "Paginating with #{items_per_page} items per page"
     pagy(collection, items: items_per_page, limit: items_per_page, link_extra: "data-turbo-frame=\"#{turbo_frame}\"")
   end
@@ -16,7 +16,7 @@ module Paginated
   end
 
   # Combined method to apply sorting and pagination
-  def apply_sorting_and_pagination(collection, table_id: nil, default_sort_params: nil, items_per_page: 20, turbo_frame: "table_frame")
+  def apply_sorting_and_pagination(collection, table_id: nil, default_sort_params: nil, items_per_page: 40, turbo_frame: "table_frame")
 
     # Apply saved sort preferences from cookies if table_id provided
     apply_saved_sort(table_id) if table_id.present?
