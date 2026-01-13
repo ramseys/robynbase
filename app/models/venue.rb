@@ -59,6 +59,7 @@ class Venue < ApplicationRecord
     songs.left_outer_joins(:gigs)
       .select('VENUE.*, COUNT(CASE WHEN GIG.cancelled = 0 OR GIG.cancelled IS NULL THEN 1 END) AS gig_count')
       .group('VENUE.VENUEID')
+      .order('VENUE.Name ASC')
   end
 
   # returns the notes for this venue (if any)

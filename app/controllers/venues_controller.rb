@@ -106,7 +106,7 @@ class VenuesController < ApplicationController
       session[:return_to_venue] = request.referer
     end
 
-    def return_to_previous_page(song)
+    def return_to_previous_page(venue)
       previous_page = session.delete(:return_to_venue)
       if previous_page.present?
         redirect_to previous_page

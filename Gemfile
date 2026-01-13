@@ -76,3 +76,13 @@ group :development do
   gem 'pry-rails'
   gem 'pry-byebug'
 end
+
+group :test do
+  gem 'factory_bot_rails'
+  gem 'faker'
+  gem 'shoulda-matchers'
+  gem 'database_cleaner-active_record'
+  gem 'simplecov', require: false
+  gem 'capybara'
+  gem 'selenium-webdriver'
+end
