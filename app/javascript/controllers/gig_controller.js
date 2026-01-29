@@ -54,10 +54,11 @@ export default class extends Controller {
     const newRow = document.createElement("tr")
     newRow.dataset.row = this.gigSongIndex
     newRow.innerHTML = `
-      <td>
-          <input class="form-control" size="3" type="text" 
-                value="${maxSequence + 1}" 
-                name="gig[gigsets_attributes][${this.gigSongIndex}][Chrono]" 
+      <td class="drag-handle">
+          <i class="bi bi-grip-vertical"></i>
+          <input type="hidden"
+                value="${maxSequence + 1}"
+                name="gig[gigsets_attributes][${this.gigSongIndex}][Chrono]"
                 id="gig_gigsets_attributes_${this.gigSongIndex}_Chrono">
       </td>
       <td></td>
@@ -90,7 +91,8 @@ export default class extends Controller {
       </td>
     `
 
-    table.appendChild(newRow)
+    const tbody = table.querySelector("tbody")
+    tbody.appendChild(newRow)
 
     const songSelectorCell = newRow.querySelector("td:nth-child(2)")
     this.addGigSongSelector(songSelectorCell, this.gigSongIndex)
@@ -113,10 +115,11 @@ export default class extends Controller {
     const newRow = document.createElement("tr")
     newRow.dataset.row = this.mediaIndex
     newRow.innerHTML = `
-      <td>
-          <input class="form-control" size="3" type="text" 
-                value="${maxSequence + 1}" 
-                name="gig[gigmedia_attributes][${this.mediaIndex}][Chrono]" 
+      <td class="drag-handle">
+          <i class="bi bi-grip-vertical"></i>
+          <input type="hidden"
+                value="${maxSequence + 1}"
+                name="gig[gigmedia_attributes][${this.mediaIndex}][Chrono]"
                 id="gig_gigmedia_attributes_${this.mediaIndex}_Chrono">
       </td>
       <td>
@@ -151,7 +154,8 @@ export default class extends Controller {
       </td>
     `
 
-    table.appendChild(newRow)
+    const tbody = table.querySelector("tbody")
+    tbody.appendChild(newRow)
     this.mediaIndex++
   }
 

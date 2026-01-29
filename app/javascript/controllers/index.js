@@ -10,6 +10,7 @@ import MapController from "./map_controller"
 import GigController from "./gig_controller"
 import CompositionController from "./composition_controller"
 import VenueController from "./venue_controller"
+import SortableController from "./sortable_controller"
 
 application.register("table", TableController)
 application.register("infinite-scroll", InfiniteScrollController)
@@ -17,3 +18,4 @@ application.register("map", MapController)
 application.register("gig", GigController)
 application.register("composition", CompositionController)
 application.register("venue", VenueController)
+application.register("sortable", SortableController)

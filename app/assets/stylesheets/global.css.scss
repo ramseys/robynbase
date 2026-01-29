@@ -65,3 +65,33 @@
 .sortable-header:hover i {
   opacity: 1;
 }
+
+/* ====== Draggable Table Rows */
+.sortable-table {
+  .drag-handle {
+    cursor: grab;
+    text-align: center;
+    width: 30px;
+    color: #6c757d;
+    user-select: none;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  .sortable-ghost {
+    opacity: 0.4;
+    background-color: #f8f9fa;
+  }
+
+  .sortable-chosen {
+    background-color: #e3f2fd;
+  }
+
+  .sortable-drag {
+    opacity: 0.9;
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  }
+}

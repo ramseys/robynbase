@@ -1,8 +1,8 @@
-<table id="<%=id%>">
+<table id="<%=id%>" class="sortable-table">
 
     <thead>
         <tr>
-            <th>Order</th>
+            <th></th>
             <th>Title</th>
             <th>Media ID</th>
             <th>Type</th>
@@ -11,13 +11,16 @@
     </thead>
 
 
-    <tbody>
+    <tbody data-controller="sortable" data-sortable-field-value="Chrono">
 
     <% sequenceIndex = 1 %>
 
     <%= f.fields_for :gigmedia, gigmedia do |gigmedium_fields| %>
         <tr data-row=<%= sequenceIndex %>>
-            <td> <%= gigmedium_fields.text_field :Chrono, { class: "form-control", size: 3, value: sequenceIndex }%></td>
+            <td class="drag-handle">
+                <i class="bi bi-grip-vertical"></i>
+                <%= gigmedium_fields.hidden_field :Chrono, value: sequenceIndex %>
+            </td>
             <td> <%= gigmedium_fields.text_field :title, { class: "form-control" }%></td>
             <td> <%= gigmedium_fields.text_field :mediaid, { class: "form-control" }%></td>
             <td> <%= gigmedium_fields.select(
