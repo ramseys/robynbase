@@ -80,7 +80,7 @@ export default class extends Controller {
   addCompositionTableRow(tableId, bonus) {
     let maxSequence = 0
     const table = document.getElementById(tableId)
-    
+
     // Find largest order index
     table.querySelectorAll("tr").forEach(row => {
       const sequenceInput = row.querySelector("td:first-child input")
@@ -92,29 +92,30 @@ export default class extends Controller {
     const newRow = document.createElement("tr")
     newRow.dataset.row = this.compositionSongIndex
     newRow.innerHTML = `
-      <td>
-          <input class="form-control" size="3" type="text" 
-                 value="${maxSequence + 1}" 
-                 name="composition[tracks_attributes][${this.compositionSongIndex}][Seq]" 
+      <td class="drag-handle">
+          <i class="bi bi-grip-vertical"></i>
+          <input type="hidden"
+                 value="${maxSequence + 1}"
+                 name="composition[tracks_attributes][${this.compositionSongIndex}][Seq]"
                  id="composition_tracks_attributes_${this.compositionSongIndex}_Seq">
       </td>
       <td></td>
       <td>
-          <input class="form-control" type="text" value="" 
-                 name="composition[tracks_attributes][${this.compositionSongIndex}][Song]" 
+          <input class="form-control" type="text" value=""
+                 name="composition[tracks_attributes][${this.compositionSongIndex}][Song]"
                  id="composition_tracks_attributes_${this.compositionSongIndex}_Song">
       </td>
       <td>
-          <input class="form-control" type="text" 
-                 name="composition[tracks_attributes][${this.compositionSongIndex}][VersionNotes]" 
+          <input class="form-control" type="text"
+                 name="composition[tracks_attributes][${this.compositionSongIndex}][VersionNotes]"
                  id="composition_tracks_attributes_${this.compositionSongIndex}_VersionNotes">
-          <input type="hidden" 
-                 value="${bonus}" 
-                 name="composition[tracks_attributes][${this.compositionSongIndex}][bonus]" 
+          <input type="hidden"
+                 value="${bonus}"
+                 name="composition[tracks_attributes][${this.compositionSongIndex}][bonus]"
                  id="composition_tracks_attributes_${this.compositionSongIndex}_bonus">
       </td>
-      <td> 
-          <button type="button" class="btn btn-link" 
+      <td>
+          <button type="button" class="btn btn-link"
                   data-action="click->composition#removeTrack"
                   data-composition-table-id-param="${tableId}"
                   data-composition-row-id-param="${this.compositionSongIndex}">
@@ -123,7 +124,8 @@ export default class extends Controller {
       </td>
     `
 
-    table.appendChild(newRow)
+    const tbody = table.querySelector("tbody")
+    tbody.appendChild(newRow)
 
     const songSelectorCell = newRow.querySelector("td:nth-child(2)")
     this.addCompositionSongSelector(songSelectorCell, this.compositionSongIndex)

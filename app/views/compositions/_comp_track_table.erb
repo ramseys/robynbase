@@ -1,8 +1,8 @@
-<table id="<%=id%>">
+<table id="<%=id%>" class="sortable-table">
 
     <thead>
         <tr>
-            <th>Order</th>
+            <th></th>
             <th>Song</th>
             <th>Song Name Override</th>
             <th>Version Notes</th>
@@ -11,7 +11,7 @@
     </thead>
 
 
-    <tbody>
+    <tbody data-controller="sortable" data-sortable-field-value="Seq">
 
     <% sequenceIndex = 1 %>
 
@@ -26,15 +26,18 @@
 
     <%= f.fields_for :tracks, tracks do |track_fields| %>
         <tr data-row=<%= sequenceIndex %>>
-            <td> <%= track_fields.text_field :Seq, { class: "form-control", size: 3, value: sequenceIndex }%></td>
+            <td class="drag-handle">
+                <i class="bi bi-grip-vertical"></i>
+                <%= track_fields.hidden_field :Seq, value: sequenceIndex %>
+            </td>
             <td> <%= track_fields.select(:SONGID, @song_list, {include_blank: true}, { class: "form-control song-selector" })%> </td>
             <td> <%= track_fields.text_field :Song, :class => "form-control" %></td>
-            <td> 
+            <td>
                 <%= track_fields.text_field :VersionNotes, :class => "form-control" %>
-                <%= track_fields.hidden_field :bonus %> 
+                <%= track_fields.hidden_field :bonus %>
             </td>
-            <td> 
-                <Button type="button" class="btn btn-link" 
+            <td>
+                <Button type="button" class="btn btn-link"
                         data-action="click->composition#removeTrack"
                         data-composition-table-id-param="<%=id%>"
                         data-composition-row-id-param="<%=sequenceIndex%>">
