@@ -45,7 +45,10 @@ export default class extends Controller {
     updateOrder() {
         const rows = this.element.querySelectorAll("tr")
         rows.forEach((row, index) => {
-            const field = row.querySelector(`[name*="[${this.fieldValue}]"]`)
+            // Look for field by name pattern (e.g., model[Chrono]) or by data-field attribute
+            const field = 
+              row.querySelector(`[name*="[${this.fieldValue}]"]`) ||
+              row.querySelector(`[data-field="${this.fieldValue}"]`)
             if (field) {
                 field.value = (index + 1) * this.incrementValue
             }

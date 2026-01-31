@@ -7,6 +7,7 @@
 
 class Gig < ApplicationRecord
   include SanitizableText
+  include OrderableImages
 
   self.table_name = "GIG"
 
@@ -15,7 +16,6 @@ class Gig < ApplicationRecord
   has_many :gigsets, -> {order 'Chrono'}, foreign_key: "GIGID", dependent: :delete_all
   has_many :gigmedia, -> {order 'Chrono'}, foreign_key: "GIGID", dependent: :delete_all, class_name: 'GigMedium'
   has_many :songs, through: :gigsets, foreign_key: "GIGID"
-  has_many_attached :images, :dependent => :destroy
 
   belongs_to :venue, foreign_key: "VENUEID"
 
@@ -93,7 +93,7 @@ class Gig < ApplicationRecord
 
     else
       gigs = all.includes(:venue)
-      
+
     end
 
     # if advanced date criteria were provided, narrow the search to the requested data range
@@ -117,7 +117,7 @@ class Gig < ApplicationRecord
 
 
   # an array of all available quick queries
-  def self.get_quick_queries 
+  def self.get_quick_queries
     @@quick_queries
   end
 
@@ -184,7 +184,7 @@ class Gig < ApplicationRecord
   def self.quick_query_gigs_with_reviews(no_reviews)
     if (no_reviews.nil?)
       where("Reviews IS NOT NULL AND Reviews <> ''")
-    else 
+    else
       where("Reviews IS NULL OR Reviews = ''")
     end
   end
@@ -208,11 +208,11 @@ class Gig < ApplicationRecord
 
       # gigs that have no direct media
       no_gig_media = joins("LEFT JOIN gigmedia on GIG.gigid = gigmedia.gigid").where("gigmedia.gigid IS NULL").to_a
-      
+
       # gigs whose gigsets have no media
       no_song_media = Gig.find_by_sql(
-        "SELECT * 
-        FROM GIG 
+        "SELECT *
+        FROM GIG
         where NOT EXISTS (SELECT 1 FROM GSET WHERE GSET.gigid = GIG.gigid and GSET.MediaLink IS NOT NULL)"
       )
 
@@ -223,7 +223,7 @@ class Gig < ApplicationRecord
       Gig.where(gigid: no_media_both.map(&:GIGID))
 
     end
-    
+
   end
 
   def self.quick_query_gigs_with_images
@@ -246,6 +246,8 @@ class Gig < ApplicationRecord
     else
       gigs = Gig.where("extract(month from GigDate) = ? and extract(day from GigDate) = ? and EXISTS (SELECT 1 from GSET where GIG.GIGID = GSET.GIGID)", month, day)
     end
+
+    gigs
 
   end
 

@@ -1,6 +1,7 @@
 class GigsController < ApplicationController
 
   include ImageUtils
+  include ImageOrderingConcern
   include Paginated
   include InfiniteScrollConcern
 
@@ -90,6 +91,9 @@ class GigsController < ApplicationController
         @gig.gigmedia.create(media)
       end
 
+      # assign positions to newly uploaded images
+      assign_positions_to_new_images(@gig)
+
       redirect_to(@gig)
 
     else
@@ -133,6 +137,12 @@ class GigsController < ApplicationController
       # will always replace existing images with the new ones; we need to
       # append these to exiting images
       gig.images.attach(images) if images.present?
+
+      # assign positions to newly uploaded images
+      assign_positions_to_new_images(gig)
+
+      # update positions for reordered images
+      update_image_positions
 
     end
 

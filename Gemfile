@@ -75,4 +75,5 @@ group :development do
   gem 'web-console'
   gem 'pry-rails'
   gem 'pry-byebug'
+  gem 'ruby-lsp-rails'
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_13_175822) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_29_020037) do
   create_table "COMP", primary_key: "COMPID", id: :integer, charset: "utf8mb3", options: "ENGINE=MyISAM", force: :cascade do |t|
     t.string "Artist", limit: 64
     t.string "Title", limit: 64
@@ -269,6 +269,14 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_13_175822) do
     t.index ["GIGID"], name: "index_gigmedia_on_gigid"
   end
 
+  create_table "image_orderings", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "attachment_id", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["attachment_id"], name: "index_image_orderings_on_attachment_id", unique: true
+  end
+
   create_table "users", charset: "latin1", force: :cascade do |t|
     t.string "email"
     t.string "password_digest"
@@ -281,4 +289,5 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_13_175822) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "image_orderings", "active_storage_attachments", column: "attachment_id", on_delete: :cascade
 end

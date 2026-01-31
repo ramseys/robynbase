@@ -1,6 +1,7 @@
 class CompositionsController < ApplicationController
 
   include ImageUtils
+  include ImageOrderingConcern
   include Paginated
   include InfiniteScrollConcern
 
@@ -95,6 +96,9 @@ class CompositionsController < ApplicationController
         @comp.tracks.create(tracks)
       end
 
+      # assign positions to newly uploaded images
+      assign_positions_to_new_images(@comp)
+
       redirect_to(@comp)
 
     else
@@ -127,6 +131,12 @@ class CompositionsController < ApplicationController
     end
 
     comp.update(filtered_params)
+
+    # assign positions to newly uploaded images
+    assign_positions_to_new_images(comp)
+
+    # update positions for reordered images
+    update_image_positions
 
     redirect_to(comp)
 

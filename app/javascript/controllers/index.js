@@ -11,6 +11,7 @@ import GigController from "./gig_controller"
 import CompositionController from "./composition_controller"
 import VenueController from "./venue_controller"
 import SortableController from "./sortable_controller"
+import ImageTableController from "./image_table_controller"
 
 application.register("table", TableController)
 application.register("infinite-scroll", InfiniteScrollController)
@@ -19,3 +20,4 @@ application.register("gig", GigController)
 application.register("composition", CompositionController)
 application.register("venue", VenueController)
 application.register("sortable", SortableController)
+application.register("image-table", ImageTableController)

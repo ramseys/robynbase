@@ -4,9 +4,11 @@ module ImageUtils
     def optimize_images(params)
 
         if params[:images].present?
-            
+
             params[:images].each do |image|
-            
+                # skip non-image files (e.g., videos)
+                next unless image.content_type.start_with?('image/')
+
                 mini_image = MiniMagick::Image.new(image.tempfile.path)
 
                 if mini_image.width > 1200 || mini_image.height > 1200
@@ -14,9 +16,9 @@ module ImageUtils
                 end
 
             end
-            
+
         end
-                
+
     end  
 
     # purge images marked for removal
