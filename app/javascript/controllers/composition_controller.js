@@ -5,27 +5,6 @@ export default class extends Controller {
 
   connect() {
     this.compositionSongIndex = 100
-    this.setupImageGallery()
-  }
-
-  setupImageGallery() {
-    // Set up album art lightbox using fancybox
-    const imageGalleries = this.element.querySelectorAll("a.image-gallery")
-    imageGalleries.forEach(gallery => {
-      gallery.setAttribute("rel", "gallery")
-    })
-    
-    // Initialize fancybox if available
-    if (typeof $.fn.fancybox !== 'undefined') {
-      $(this.element).find("a.image-gallery").fancybox({
-        helpers: { 
-          thumbs: {
-            width: 50,
-            height: 50
-          }
-        }
-      })
-    }
   }
 
   toggleAlbumBlock(event) {

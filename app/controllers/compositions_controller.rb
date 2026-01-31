@@ -114,13 +114,13 @@ class CompositionsController < ApplicationController
 
     comp = Composition.find(params[:id])
 
-    filtered_params, tracks = prepare_params()
+    filtered_params, tracks, images = prepare_params(true)
 
     # purge images marked for removal
     purge_marked_images(params)
 
     # optimize new images
-    optimize_images(filtered_params)
+    optimize_images({ images: images }) if images.present?
 
     # TODO put all this in a transaction
     comp.tracks.clear()
@@ -131,6 +131,12 @@ class CompositionsController < ApplicationController
     end
 
     comp.update(filtered_params)
+
+    # if there are any image updates, attach them to the composition
+    # note: we can't rely on the model to do this for us, because rails
+    # will always replace existing images with the new ones; we need to
+    # append these to existing images
+    comp.images.attach(images) if images.present?
 
     # assign positions to newly uploaded images
     assign_positions_to_new_images(comp)
@@ -197,7 +203,7 @@ class CompositionsController < ApplicationController
 
   end
 
-  def prepare_params
+  def prepare_params(extract_images = false)
 
     new_params = comp_params()
 
@@ -216,7 +222,14 @@ class CompositionsController < ApplicationController
     # empty comments are stored as nil
     new_params[:Comments] = nil  if new_params[:Comments].strip.empty?
 
-    return [new_params, tracks.present? ? tracks.values : nil]
+    # if requested, extract images into a separate variable
+    images = nil
+    if extract_images
+      images = new_params["images"]
+      new_params.delete("images") if images.present?
+    end
+
+    [new_params, tracks.present? ? tracks.values : nil, images]
 
   end
 

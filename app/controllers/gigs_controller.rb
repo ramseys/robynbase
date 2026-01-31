@@ -115,7 +115,7 @@ class GigsController < ApplicationController
     purge_marked_images(params)
 
     # optimize new images
-    optimize_images(filtered_params)
+    optimize_images({ images: images }) if images.present?
 
     # TODO put all this in a transaction
     gig.gigsets.clear()

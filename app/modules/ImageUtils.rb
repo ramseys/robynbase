@@ -10,11 +10,11 @@ module ImageUtils
                 next unless image.content_type.start_with?('image/')
 
                 mini_image = MiniMagick::Image.new(image.tempfile.path)
-
+                
                 if mini_image.width > 1200 || mini_image.height > 1200
                     mini_image.resize '1200x1200'
                 end
-
+                
             end
 
         end
