@@ -1,38 +1,58 @@
 <% if object.images.attached? %>
 
-    Select the images to remove
+    <div data-controller="image-table">
+        <table class="image-table sortable-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th>Action</th>
+                </tr>
+            </thead>
 
-    <table class="image-table">
+            <tbody data-controller="sortable" data-sortable-field-value="position">
 
-        <tbody>
+            <% object.ordered_images.each_with_index do |img, index| %>
+                <tr data-attachment-id="<%= img.id %>">
+                    <td class="drag-handle">
+                        <i class="bi bi-grip-vertical"></i>
+                        <input type="hidden"
+                               name="image_positions[<%= img.id %>]"
+                               value="<%= index + 1 %>"
+                               data-field="position">
+                    </td>
+                    <td>
+                        <div data-imgid="<%= img.id %>" class="image-cell">
 
-        <% object.images.each_with_index do |img, index| %>
-            <tr>
-                <td style="text-align: center">
-                    <%= check_box_tag "deleted_img_ids[]", img.id %>
-                </td>
-                <td> <%= index + 1 %> </td>
-                <td>
-                    <div data-imgid="<%=img.id%>" class="image-cell">
+                            <%# make sure this is an image type that active storage knows how to transform%>
+                            <% if img.variable? %>
+                                <%= image_tag img.variant(resize: "100x100") %>
+                            <% else %>
+                                <%= image_tag img, height: "100px" %>
+                            <% end %>
 
-                        <%# make sure this is an image type that active storage knows how to transform%>
-                        <% if img.variable? %>
-                            <%= image_tag img.variant(resize: "100x100") %>
-                        <% else %>  
-                            <%= image_tag img, height: "100px" %>
-                        <% end %>
+                        </div>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-link"
+                                data-action="click->image-table#removeImage"
+                                data-attachment-id="<%= img.id %>">
+                            Remove
+                        </button>
+                    </td>
+                </tr>
+            <% end %>
 
-                    </div>
-                </td>
-            </tr>
-        <% end %>
+            </tbody>
 
-        </tbody>
+        </table>
 
-    </table>
+        <%# Container for hidden fields tracking deleted images %>
+        <div data-image-table-target="deletions"></div>
+    </div>
 
 <% end %>
 
 <br/>
 
-<%= form.file_field :images, :multiple => true %>
+<%= form.file_field :images, multiple: true, accept: "image/*" %>

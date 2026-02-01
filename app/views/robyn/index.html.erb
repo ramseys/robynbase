@@ -138,9 +138,14 @@
         <div class="blurb">
 
           <% if selected_gig.images.attached? %>
+            <% first_image = selected_gig.ordered_images.first %>
             <div class="gig-image">
-              <a class="image-gallery images" href="<%= polymorphic_url(selected_gig.images.first) %>">
-                <%= image_tag selected_gig.images.first.variant(resize: "200x200") %>
+              <a class="image-gallery images" href="<%= polymorphic_url(first_image) %>">
+                <% if first_image.variable? %>
+                  <%= image_tag first_image.variant(resize: "200x200") %>
+                <% else %>
+                  <%= image_tag first_image, height: "200px" %>
+                <% end %>
               </a>
             </div>
           <% end %>
