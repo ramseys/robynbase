@@ -9,3 +9,10 @@
 * When creating migrations that modify the GIG table, always use uppercase "GIG" in the migration file
 * After running migrations, check db/schema.rb - the table name may be lowercased to "gig" due to MySQL's lower_case_table_names setting
 * If this happens, change `create_table "gig"` back to `create_table "GIG"` in schema.rb to maintain consistency with the codebase
+
+
+# Plans
+
+Put all plan files in the `./docs/plans` directory.
+
+If there are multiple files involved in the plan (eg, scripts to run as part of it), create a subdirectory under that directory and place them there.
