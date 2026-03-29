@@ -65,18 +65,7 @@ set :linked_dirs, %w{public/images/album-art active-storage-files}
 # Default value for default_env is {}
 # set :default_env, { path: "/opt/ruby/bin:$PATH" }
 
-# EXPERIMENT: Temporarily allowing capistrano-rails to link public/assets to shared
-# to observe what happens during asset precompilation
-# Prevent capistrano-rails from automatically linking public/assets to shared
-# The gem's default behavior (in assets.rake) adds public/assets to linked_dirs,
-# which prevents fresh asset compilation on each deploy. We override that task here.
 namespace :deploy do
-  # COMMENTED OUT FOR EXPERIMENT: Allowing default asset linking behavior
-  # task :set_linked_dirs do
-  #   # Override the capistrano-rails gem task to prevent automatic asset linking
-  #   # This ensures assets are compiled fresh on each deployment
-  # end
-
   # Handle modern Rails 7+ asset bundling (jsbundling-rails + cssbundling-rails)
   namespace :assets do
     desc 'Run yarn install'
@@ -133,3 +122,10 @@ end
 before 'deploy:assets:precompile', 'deploy:assets:yarn_install'
 before 'deploy:assets:precompile', 'deploy:assets:build_js'
 before 'deploy:assets:precompile', 'deploy:assets:build_css'
+
+# capistrano-rails automatically adds public/assets to linked_dirs (a Sprockets-era
+# optimization to skip recompilation when assets haven't changed). That doesn't work
+# with jsbundling/cssbundling, so we strip it out after the gem adds it.
+Rake::Task['deploy:set_linked_dirs'].enhance do
+  set :linked_dirs, fetch(:linked_dirs).reject { |d| d == "public/#{fetch(:assets_prefix)}" }
+end
