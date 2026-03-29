@@ -17,7 +17,7 @@
 
 # server 'example.com', user: 'deploy', roles: %w{web app}, my_property: :my_value
 
-server "66.228.36.37", user: 'ramseys', roles: %w{:app, :web, :db}, :primary => true
+server "66.228.36.37", user: 'ramseys', roles: %w{app web db}, primary: true
 
 # Custom SSH Options
 # ==================
