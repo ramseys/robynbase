@@ -62,5 +62,9 @@ fi
 TABLE_COUNT=$(mysql -u root --socket=/var/run/mysqld/mysqld.sock robynbase_development -e "SHOW TABLES;" 2>/dev/null | wc -l)
 if [ "$TABLE_COUNT" -lt 5 ]; then
   cd "$CLAUDE_PROJECT_DIR"
-  bin/rails db:schema:load 2>/dev/null || true
+  # MariaDB doesn't support the utf8mb4_0900_ai_ci collation (MySQL 8.0+),
+  # so replace it with the equivalent MariaDB collation before loading.
+  sed -i 's/utf8mb4_0900_ai_ci/utf8mb4_unicode_ci/g' db/schema.rb
+  bin/rails db:schema:load
+  git checkout db/schema.rb
 fi
