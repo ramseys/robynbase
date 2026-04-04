@@ -269,7 +269,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_29_020037) do
     t.index ["GIGID"], name: "index_gigmedia_on_gigid"
   end
 
-  create_table "image_orderings", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "image_orderings", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.bigint "attachment_id", null: false
     t.integer "position", default: 0, null: false
     t.datetime "created_at", null: false
