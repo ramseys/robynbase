@@ -68,6 +68,7 @@ class VenuesController < ApplicationController
     @venue = Venue.new(filtered_params)
 
     if @venue.save
+      @venue.images.attach(images) if images.present?
       assign_positions_to_new_images(@venue)
       return_to_previous_page(@venue)
     else
