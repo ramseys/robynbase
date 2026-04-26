@@ -19,10 +19,8 @@ a {
     padding-bottom: 30px;
 }
 
-
 /* navbar customizations */
 .navbar-robyn {
-
     background-color: #000000;
     background-image: none;
     background-repeat: no-repeat;
@@ -31,12 +29,10 @@ a {
     margin-bottom: 0 !important;
     border: solid;
     border-width: 0 0 1px;
-    border-color: #CE1515;
+    border-color: #ce1515;
 
     .navbar-nav {
-
         li {
-
             a {
                 background-image: none;
                 background-repeat: no-repeat;
@@ -45,29 +41,22 @@ a {
                 &:hover {
                     color: white;
                 }
-
             }
 
             &.active {
-
                 a {
                     background-image: none;
                     background-repeat: no-repeat;
                     color: white;
-                    background-color: #CE1515;
+                    background-color: #ce1515;
 
                     &:hover {
-                        background-color: #CE1515;
+                        background-color: #ce1515;
                     }
                 }
-
             }
-
         }
-
-
     }
-
 }
 
 .navbar-nav .nav-link {
@@ -80,7 +69,6 @@ a {
 }
 
 table.main-search-list {
-
     tbody {
         tr:hover {
             cursor: pointer;
@@ -88,7 +76,7 @@ table.main-search-list {
     }
 
     .main-column {
-        color: rgb(10, 88, 202)
+        color: rgb(10, 88, 202);
     }
 
     td:first-child,
@@ -96,7 +84,6 @@ table.main-search-list {
         padding: 8px 8px 8px 4px;
         // width: 70%;
     }
-
 
     .glyphicon {
         top: 2px;
@@ -106,7 +93,6 @@ table.main-search-list {
     .actions {
         white-space: nowrap;
     }
-
 }
 
 .inpage-navigation {
@@ -119,19 +105,17 @@ table.main-search-list {
         &:after {
             content: "|";
             padding-left: 7px;
-
         }
 
         &:last-child:after {
-            content: ""
+            content: "";
         }
     }
-
 }
 
 .item-form {
     .attribute-box {
-        padding: 10px; 
+        padding: 10px;
         border: 1px solid var(--bs-border-color);
     }
 }
@@ -144,7 +128,6 @@ table.main-search-list {
         padding-top: 4px;
         padding-bottom: initial;
     }
-
 }
 
 .main-search {
@@ -168,7 +151,6 @@ table.main-search-list {
 }
 
 .main-page {
-
     .typeahead,
     .tt-query,
     .tt-hint {
@@ -176,11 +158,9 @@ table.main-search-list {
         outline: none;
         border-radius: 0;
     }
-
 }
 
 .search-criteria {
-
     // input[name=search_value] {
     .search-field {
         width: 300px;
@@ -193,7 +173,7 @@ table.main-search-list {
 
     padding: 10px 0 0;
 
-    input[type=submit] {
+    input[type="submit"] {
         margin-left: 5px;
         padding: 6px;
     }
@@ -203,7 +183,6 @@ table.main-search-list {
     }
 
     .criteria {
-
         position: relative;
         z-index: 100;
         background-color: white;
@@ -229,15 +208,12 @@ table.main-search-list {
         input[type="date"] {
             line-height: initial;
         }
-
     }
-
 }
 
 .search-results {
     padding-top: 10px;
 }
-
 
 /* typeahead overrides */
 
@@ -248,7 +224,6 @@ table.main-search-list {
 }
 
 .navbar {
-
     .typeahead,
     .tt-query,
     .tt-hint {
@@ -278,7 +253,7 @@ table.main-search-list {
     }
 
     .tt-hint {
-        color: #999
+        color: #999;
     }
 
     .tt-dropdown-menu {
@@ -314,9 +289,7 @@ table.main-search-list {
     }
 }
 
-
 .tt-dropdown-menu {
-
     font-size: 14px;
 
     h4 {
@@ -327,9 +300,7 @@ table.main-search-list {
         font-size: 16px;
         font-weight: bold;
     }
-
 }
-
 
 /* override bootstrap description styles for larger viewports */
 dl {
@@ -350,7 +321,6 @@ dl {
             grid-column-start: 2;
         }
     }
-
 }
 
 .lyrics {
@@ -389,13 +359,10 @@ dl {
 }
 
 .row.advanced-options {
-
     display: none;
     padding-left: 15px;
 
-
     .criteria {
-
         .header-name {
             font-size: 13px;
             font-weight: strong;
@@ -406,13 +373,11 @@ dl {
             border: 1px gray dotted;
             font-size: 12px;
         }
-
     }
 
     &.expanded {
         display: block;
     }
-
 }
 
 .nothing-found {
@@ -438,7 +403,6 @@ dl {
 }
 
 .quick-queries {
-
     margin: auto;
     width: 50%;
 
@@ -468,7 +432,6 @@ dl {
     }
 
     small {
-
         padding-left: 5px;
         text-transform: lowercase;
 
@@ -478,23 +441,19 @@ dl {
             &:visited {
                 color: #777;
             }
-
         }
 
         &:before {
-            content: "| "
+            content: "| ";
         }
-
     }
 
     li {
         padding-top: 5px;
     }
-
 }
 
 .homepage-heading {
-
     margin: auto;
     width: 50%;
     text-align: center;
@@ -513,23 +472,18 @@ dl {
 }
 
 .omnisearch-tables {
-    
     padding-top: 20px;
 
     .omnisearch-accordion-item {
-        
         background-color: rgba(222, 226, 230, 0.5) !important;
-        
+
         &:focus {
-            box-shadow: gray 0px 0px 0px 1px
+            box-shadow: gray 0px 0px 0px 1px;
         }
-        
     }
-    
 }
 
 .homepage-blurb {
-    
     display: none;
 
     @media only screen and (min-height: 680px) {
@@ -546,18 +500,15 @@ dl {
 
     font-size: 16px;
     text-align: center;
-
 }
 
 .robyn-page {
-
     .row {
         margin-bottom: 30px;
     }
 
-    .image-container {
-
-        &>div {
+    .side-content {
+        & > div {
             display: inline-block;
         }
 
@@ -567,11 +518,9 @@ dl {
             float: right;
             padding-left: 30px;
         }
-
     }
 
     .images {
-
         // disable focus ring around images (only seems to be needed by safari)
         &:active,
         &:focus {
@@ -584,13 +533,10 @@ dl {
             border: 1px solid #dddddd;
             border-radius: 5px;
         }
-
     }
 
     .song-list-section {
-
         ol.song-list {
-
             padding-left: 25px;
 
             .song-version-notes {
@@ -603,11 +549,9 @@ dl {
             }
 
             &.action-item {
-
                 padding-left: 40px;
 
                 li {
-
                     position: relative;
 
                     img {
@@ -616,10 +560,8 @@ dl {
                         padding-left: 10px;
                         left: -58px;
                     }
-
                 }
             }
-
         }
 
         .additional-songs {
@@ -628,14 +570,10 @@ dl {
             font-style: italic;
             padding: 10px 0 5px;
         }
-
     }
-
 }
 
-
 table.image-table {
-
     width: auto;
 
     td {
@@ -646,7 +584,6 @@ table.image-table {
         display: table-cell;
         vertical-align: middle;
     }
-
 }
 
 .about {
@@ -673,7 +610,6 @@ table.image-table {
     }
 
     &.overlay {
-
         position: relative;
 
         div::before {
@@ -691,22 +627,25 @@ table.image-table {
             border-radius: 5px;
             align-items: last baseline;
             position: absolute;
-            background: linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 100%);
+            background: linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.5) 0%,
+                rgba(0, 0, 0, 0) 100%
+            );
             flex-wrap: nowrap;
             flex-direction: row;
         }
 
         &.single {
             div::before {
-                content: "Expand"
+                content: "Expand";
             }
         }
-
     }
 
     &.multiple {
-
         position: relative;
+        margin-bottom: 5px;
         z-index: 0;
 
         &::before {
@@ -716,8 +655,8 @@ table.image-table {
             display: flex;
             width: 100%;
             height: 100%;
-            margin-left: 5px;
-            margin-top: -5px;
+            margin-left: 3px;
+            margin-top: 3px;
             border-radius: 5px;
             border: 1px solid rgba(198, 195, 188, 0.48);
         }
@@ -726,7 +665,5 @@ table.image-table {
             z-index: 20;
             position: relative;
         }
-
     }
-
 }

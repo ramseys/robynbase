@@ -3,6 +3,7 @@
 #   TaperFriendly
 class Venue < ApplicationRecord
   include SanitizableText
+  include OrderableImages
 
   self.table_name = "VENUE"
 

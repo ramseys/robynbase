@@ -3,7 +3,7 @@
 <div class="row" style="margin-bottom: 0px">
   <div class="col-sm-10">
     <h2 class="main-header">
-    
+
       <%= @venue.Name %>
 
       <small>
@@ -11,8 +11,8 @@
           <% if @venue.get_notes.present? %> <span><a href="#notes">Notes</a></span> <% end %>
           <% if @venue.gigs.present? %> <span><a href="#gigs">Gigs</a></span> <% end %>
         </span>
-      </small>      
-      
+      </small>
+
     </h2>
 
   </div>
@@ -29,12 +29,40 @@
 
 </div>
 
-<% if @venue.latitude.present? %>
+<% has_map = @venue.latitude.present? %>
+<% has_images = @venue.images.attached? %>
 
-  <div class="image-container">
-    <div id="map" class="venue-map"></div>
+<% if has_map || has_images %>
+  <div class="side-content">
+    <div>
+
+      <% if has_map && has_images %>
+        <div class="venue-toggle mb-2">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-sm btn-outline-secondary active"
+                        data-venue-target="photosTab"
+                        data-action="click->venue#showPhotos">Photos</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary"
+                        data-venue-target="mapTab"
+                        data-action="click->venue#showMap">Map</button>
+            </div>
+        </div>
+      <% end %>
+
+      <% if has_map %>
+        <div data-venue-target="mapContainer">
+          <div id="map" class="venue-map"></div>
+        </div>
+      <% end %>
+
+      <% if has_images %>
+        <div data-venue-target="photosContainer">
+          <%= render partial: 'robyn/image_section', locals: { object: @venue } %>
+        </div>
+      <% end %>
+
+    </div>
   </div>
-
 <% end %>
 
   <div>
@@ -46,7 +74,7 @@
     <br/> <br/>
 
     Robyn has played this venue <%= pluralize(@venue.gigs.where(cancelled: false).length, "time") %>.
-      
+
   </div>
 
 <% if @venue.get_notes.present? %>
