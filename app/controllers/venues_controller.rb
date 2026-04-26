@@ -1,6 +1,8 @@
 class VenuesController < ApplicationController
   include Paginated
   include InfiniteScrollConcern
+  include ImageUtils
+  include ImageOrderingConcern
 
   TABLE_ID = 'venue-main'.freeze
   DEFAULT_SORT_PARAMS = { sort: 'venue', direction: 'asc' }.freeze
@@ -37,30 +39,38 @@ class VenuesController < ApplicationController
   end
 
   # Update existing venue
-  def update 
-  
+  def update
+
     venue = Venue.find(params[:id])
-    
-    filtered_params = prepare_params
-        
-    venue.update!(filtered_params)
-    
+
+    filtered_params, images = prepare_params
+
+    purge_marked_images(params)
+    optimize_images({ images: images }) if images.present?
+
+    if venue.update(filtered_params)
+      venue.images.attach(images) if images.present?
+      assign_positions_to_new_images(venue)
+      update_image_positions
+    end
+
     return_to_previous_page(venue)
-    
+
   end
 
   # Create a new venue
   def create
 
-    filtered_params = prepare_params
-        
+    filtered_params, images = prepare_params
+
+    optimize_images({ images: images }) if images.present?
+
     @venue = Venue.new(filtered_params)
 
     if @venue.save
+      assign_positions_to_new_images(@venue)
       return_to_previous_page(@venue)
     else
-      # This line overrides the default rendering behavior, which
-      # would have been to render the "create" view.
       render "new"
     end
 
@@ -115,22 +125,23 @@ class VenuesController < ApplicationController
       end
     end
 
-    # Massage incoming params for saving
+    # Massage incoming params for saving; returns [filtered_params, images]
     def prepare_params
 
       filtered_params = venue_params
 
-      # if no value is specified for these fields, store a null
+      images = filtered_params.delete(:images)
+
       filtered_params[:SubCity] = nil if filtered_params[:SubCity].strip.empty?
       filtered_params[:State] = nil   if filtered_params[:State].strip.empty?
 
-      filtered_params
+      [filtered_params, images]
 
     end
 
     def venue_params
       params.require(:venue).
-        permit(:Name, :street_address1, :street_address2, :City, :SubCity, :State, :Country, :longitude, :latitude, :Notes).tap do |params|
+        permit(:Name, :street_address1, :street_address2, :City, :SubCity, :State, :Country, :longitude, :latitude, :Notes, images: [], deleted_img_ids: []).tap do |params|
         params.require([:Name, :City, :Country])
       end
     end

@@ -1,4 +1,4 @@
-<%= form_for(@venue) do |f| %>
+<%= form_for(@venue, html: { multipart: true }) do |f| %>
 
 <div class="item-form">
         
@@ -75,6 +75,13 @@
         </div>
 
     </div> 
+
+    <div class="row">
+      <div class="col-sm-12">
+        <h3>Images</h3>
+        <%= render partial: '/robyn/image_table', locals: { object: @venue, form: f } %>
+      </div>
+    </div>
 
     <%= f.submit "Save", class: "btn btn-large btn-primary" %>
     

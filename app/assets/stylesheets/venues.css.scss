@@ -17,5 +17,13 @@
 }
 
 .gig-section {
-    clear: right;    
+    clear: right;
+}
+
+.venue-toggle {
+    text-align: left;
+
+    @media screen and (min-width: 700px) {
+        text-align: right;
+    }
 }

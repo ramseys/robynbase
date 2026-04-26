@@ -43,7 +43,9 @@
 
 <% if @gig.images.attached? %>
 
-<%= render :partial => 'robyn/image_section', :locals => { object: @gig } %>
+<div class="side-content">
+  <%= render :partial => 'robyn/image_section', :locals => { object: @gig } %>
+</div>
 
 <% end %>
 
