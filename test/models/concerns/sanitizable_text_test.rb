@@ -47,6 +47,18 @@ class SanitizableTextTest < ActiveSupport::TestCase
     assert_includes result, 'sandbox="allow-scripts allow-same-origin"'
   end
 
+  test "sanitize_html strips user-submitted sandbox attribute" do
+    result = @model.sanitize_html('<iframe src="https://example.com" sandbox="allow-forms allow-top-navigation"></iframe>')
+    assert_not_includes result, 'allow-forms'
+    assert_not_includes result, 'allow-top-navigation'
+    assert_includes result, 'sandbox="allow-scripts allow-same-origin"'
+  end
+
+  test "sanitize_html strips allow attribute" do
+    result = @model.sanitize_html('<iframe src="https://example.com" allow="camera; microphone"></iframe>')
+    assert_not_includes result, 'allow='
+  end
+
   # --- enforce_iframe_sandbox ---
 
   test "enforce_iframe_sandbox returns nil for nil input" do
@@ -60,12 +72,6 @@ class SanitizableTextTest < ActiveSupport::TestCase
   test "enforce_iframe_sandbox adds sandbox when attribute is absent" do
     result = @model.enforce_iframe_sandbox('<iframe src="https://example.com"></iframe>')
     assert_includes result, 'sandbox="allow-scripts allow-same-origin"'
-  end
-
-  test "enforce_iframe_sandbox overwrites an existing sandbox value" do
-    result = @model.enforce_iframe_sandbox('<iframe src="https://example.com" sandbox="allow-forms"></iframe>')
-    assert_includes result, 'sandbox="allow-scripts allow-same-origin"'
-    assert_not_includes result, 'allow-forms'
   end
 
   test "enforce_iframe_sandbox applies sandbox to every iframe in the string" do
