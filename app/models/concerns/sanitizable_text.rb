@@ -6,10 +6,10 @@ module SanitizableText
   extend ActiveSupport::Concern
 
   # Safe HTML tags that are allowed in user content
-  SAFE_TAGS = %w[br p strong em b i u ul ol li a blockquote].freeze
+  SAFE_TAGS = %w[br p strong em b i u ul ol li a blockquote iframe].freeze
 
   # Safe HTML attributes that are allowed
-  SAFE_ATTRIBUTES = %w[href].freeze
+  SAFE_ATTRIBUTES = %w[href src width height frameborder allowfullscreen allow title sandbox].freeze
 
   included do
     # Store fields to sanitize at class level
