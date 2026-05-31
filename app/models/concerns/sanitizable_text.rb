@@ -9,7 +9,7 @@ module SanitizableText
   SAFE_TAGS = %w[br p strong em b i u ul ol li a blockquote iframe].freeze
 
   # Safe HTML attributes that are allowed
-  SAFE_ATTRIBUTES = %w[href src width height frameborder allowfullscreen title].freeze
+  SAFE_ATTRIBUTES = %w[href src width height frameborder title].freeze
 
   included do
     # Store fields to sanitize at class level

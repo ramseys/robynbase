@@ -59,6 +59,11 @@ class SanitizableTextTest < ActiveSupport::TestCase
     assert_not_includes result, 'allow='
   end
 
+  test "sanitize_html strips allowfullscreen attribute" do
+    result = @model.sanitize_html('<iframe src="https://example.com" allowfullscreen></iframe>')
+    assert_not_includes result, 'allowfullscreen'
+  end
+
   # --- enforce_iframe_sandbox ---
 
   test "enforce_iframe_sandbox returns nil for nil input" do
