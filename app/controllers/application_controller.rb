@@ -13,4 +13,11 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # Returns IDs of any nested-attribute hashes that include an existing :id.
+  # New rows submitted without an id are omitted; those are handled by accepts_nested_attributes_for.
+  def extract_submitted_ids(attrs_hash)
+    return [] if attrs_hash.blank?
+    attrs_hash.values.map { |a| a["id"] }.compact.map(&:to_i)
+  end
+
 end

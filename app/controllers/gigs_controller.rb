@@ -7,7 +7,7 @@ class GigsController < ApplicationController
 
   TABLE_ID = 'gig-main'.freeze
   DEFAULT_SORT_PARAMS = { sort: 'date', direction: 'desc' }.freeze
-  
+
   authorize_resource :only => [:new, :edit, :update, :create, :destroy]
 
   RANGE_TYPE = {
@@ -75,31 +75,23 @@ class GigsController < ApplicationController
   # create a new gig
   def create
 
-    params, setlist_songs, media = prepare_params()
+    filtered_params, _images = prepare_params()
 
-    optimize_images(params)
+    optimize_images(filtered_params)
 
-    @gig = Gig.new(params)
+    @gig = Gig.new(filtered_params)
 
-    if @gig.save
+    ActiveRecord::Base.transaction do
+      if @gig.save
 
-      if setlist_songs.present?
-        @gig.gigsets.create(setlist_songs)
+        # assign positions to newly uploaded images
+        assign_positions_to_new_images(@gig)
+
+        redirect_to(@gig)
+
+      else
+        render "new"
       end
-
-      if media.present?
-        @gig.gigmedia.create(media)
-      end
-
-      # assign positions to newly uploaded images
-      assign_positions_to_new_images(@gig)
-
-      redirect_to(@gig)
-
-    else
-      # This line overrides the default rendering behavior, which
-      # would have been to render the "create" view.
-      render "new"
     end
 
   end
@@ -109,7 +101,7 @@ class GigsController < ApplicationController
 
     gig = Gig.find(params[:id])
 
-    filtered_params, setlist_songs, media, images = prepare_params(true)
+    filtered_params, images = prepare_params(true)
 
     # purge images marked for removal
     purge_marked_images(params)
@@ -117,36 +109,26 @@ class GigsController < ApplicationController
     # optimize new images
     optimize_images({ images: images }) if images.present?
 
-    # TODO put all this in a transaction
-    gig.gigsets.clear()
-    gig.gigmedia.clear()
+    ActiveRecord::Base.transaction do
+      if gig.update(filtered_params)
 
-    # update with latest setlist info
-    if setlist_songs.present?
-      gig.gigsets.build(setlist_songs)
+        # if there are any image updates, attach them to the gig
+        # note: we can't rely on the model to do this for us, because rails
+        # will always replace existing images with the new ones; we need to
+        # append these to exiting images
+        gig.images.attach(images) if images.present?
+
+        # assign positions to newly uploaded images
+        assign_positions_to_new_images(gig)
+
+        # update positions for reordered images
+        update_image_positions
+
+        redirect_to(gig)
+      else
+        render "edit"
+      end
     end
-
-    if media.present?
-      gig.gigmedia.build(media)
-    end
-
-    if gig.update(filtered_params) then
-
-      # if there are any image updates, attach them to the gig
-      # note: we can't rely on the model to do this for us, because rails
-      # will always replace existing images with the new ones; we need to
-      # append these to exiting images
-      gig.images.attach(images) if images.present?
-
-      # assign positions to newly uploaded images
-      assign_positions_to_new_images(gig)
-
-      # update positions for reordered images
-      update_image_positions
-
-    end
-
-    redirect_to(gig)
 
   end
 
@@ -277,7 +259,7 @@ class GigsController < ApplicationController
     songs_by_id = Song.where(SONGID: song_ids).index_by(&:SONGID)
 
     # loop through every song in the setlist in order (non-encore or encore), normalizing their sequence numbers
-    setlist_songs.values.select{|val| val["Encore"] == encore.to_s}.sort_by{|a| a["Chrono"].to_i }.each_with_index do |b, i|
+    setlist_songs.values.select{|val| !val["_destroy"].present? && val["Encore"] == encore.to_s}.sort_by{|a| a["Chrono"].to_i }.each_with_index do |b, i|
 
       last_index = starting_index + i
 
@@ -305,6 +287,8 @@ class GigsController < ApplicationController
     # loop through every media item in order, normalizing their sequence numbers
     media_links.values.sort_by{|a| a["Chrono"].to_i }.each_with_index do |b, i|
 
+      next if b["_destroy"].present?
+
       # sequence in 10s
       b["Chrono"] = (i * 10).to_s
 
@@ -314,7 +298,7 @@ class GigsController < ApplicationController
       # if a full youtube link was provided, extract the id
       if b[:mediatype].to_i === GigMedium::MEDIA_TYPE["YouTube"]
         if b[:mediaid][/watch\?/].present?
-          b[:mediaid] = b[:mediaid][/v=([^&?]*)[\?]/, 1]
+          b[:mediaid] = b[:mediaid][/v=([^&?]*)/, 1]
         elsif b[:mediaid][/youtu\.be/].present?
           b[:mediaid] = b[:mediaid][/youtu\.be\/([^&?]*)/, 1]
         end
@@ -349,7 +333,7 @@ class GigsController < ApplicationController
   # 1. Orders the songs in the setlists and encores
   # 2. Save denormalized vendor name in Gig table
   # 3. Save denormalized gig year in Gig table
-  # 4. Optionally extracts attaches images into a separate return value
+  # 4. Optionally extracts images into a separate return value
   def prepare_params(extract_images = false)
 
     new_params = gig_params()
@@ -369,10 +353,6 @@ class GigsController < ApplicationController
       prepare_media(media)
     end
 
-    # get rid of now-extraneous setlist params
-    new_params.delete("gigsets_attributes")
-    new_params.delete("gigmedia_attributes")
-
     # save the name of the venue
     new_params["Venue"] = Venue.find(new_params["VENUEID"].to_i).Name if new_params["Venue"].strip.empty?
 
@@ -382,15 +362,10 @@ class GigsController < ApplicationController
     # if requested, extract images into a separate variable
     if extract_images then
       images = new_params["images"]
-      if (images.present?) then
-        new_params.delete("images")
-      end
+      new_params.delete("images") if images.present?
     end
 
-    return [new_params,
-            setlist_songs.present? ? setlist_songs.values : nil,
-            media.present? ? media.values : nil,
-            images]
+    [new_params, images]
 
   end
 
@@ -402,22 +377,24 @@ class GigsController < ApplicationController
       .permit(:VENUEID, :GigDate, :ShortNote, :Reviews, :Guests, :BilledAs, :GigType, :Venue, :Circa, :cancelled, :Favorite, :images,
              images: [],
              deleted_img_ids: [],
-             gigsets_attributes: [ :Chrono, :SONGID, :Song, :VersionNotes, :Encore, :MediaLink],
-             gigmedia_attributes: [ :Chrono, :title, :mediaid, :mediatype ]).tap do |params|
+             gigsets_attributes: [ :id, :_destroy, :Chrono, :SONGID, :Song, :VersionNotes, :Encore, :MediaLink],
+             gigmedia_attributes: [ :id, :_destroy, :Chrono, :title, :mediaid, :mediatype ]).tap do |params|
 
           # every gig needs at least a venue id and a date
           params.require([:VENUEID, :GigDate])
 
-          # every item in a setlist requires a sequence number
+          # every item in a setlist requires a sequence number (skip destroy-only entries)
           if params["gigsets_attributes"].present?
             params["gigsets_attributes"].each do |key, params|
+              next if params["_destroy"].present?
               params.require([:Chrono])
             end
           end
 
-          # every item in a media list requires a sequence number and a media identifier
+          # every item in a media list requires a sequence number and a media identifier (skip destroy-only entries)
           if params["gigmedia_attributes"].present?
             params["gigmedia_attributes"].each do |key, params|
+              next if params["_destroy"].present?
               params.require([:Chrono])
               params.require([:mediaid])
             end

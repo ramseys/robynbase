@@ -22,13 +22,13 @@ export default class extends Controller {
     }
   }
 
-  addSong(event) {
+  addSongRow(event) {
     const tableId = event.params.tableId
     const encore = event.params.encore || false
-    this.addTableRow(tableId, encore)
+    this.addSongTableRow(tableId, encore)
   }
 
-  addMedia(event) {
+  addMediaRow(event) {
     const tableId = event.params.tableId
     this.addMediaTableRow(tableId)
   }
@@ -39,7 +39,7 @@ export default class extends Controller {
     this.removeTableRow(tableId, rowId)
   }
 
-  addTableRow(tableId, encore) {
+  addSongTableRow(tableId, encore) {
     let maxSequence = 0
     const table = document.getElementById(tableId)
     
@@ -178,11 +178,18 @@ export default class extends Controller {
     const row = table.querySelector(`tr[data-row="${rowId}"]`)
     
     if (row) {
-      const identifier = row.nextElementSibling
-      if (identifier && identifier.tagName === "INPUT") {
-        identifier.remove()
+      const idInput = row.querySelector('input[name$="[id]"]');
+
+      if (idInput) {
+        const destroy = document.createElement("input");
+        destroy.type = "hidden";
+        destroy.name = idInput.name.replace("[id]", "[_destroy]");
+        destroy.value = "1";
+        row.appendChild(destroy);
+        row.style.display = "none";
+      } else {
+        row.remove();
       }
-      row.remove()
     }
   }
 }

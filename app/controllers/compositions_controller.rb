@@ -84,27 +84,25 @@ class CompositionsController < ApplicationController
   # create a new composition
   def create
 
-    params, tracks = prepare_params()
+    filtered_params, _images = prepare_params()
 
-    optimize_images(params)
+    optimize_images(filtered_params)
 
-    @comp = Composition.new(params)
+    @comp = Composition.new(filtered_params)
 
-    if @comp.save
+    ActiveRecord::Base.transaction do
+      if @comp.save
 
-      if tracks.present?
-        @comp.tracks.create(tracks)
+        # assign positions to newly uploaded images
+        assign_positions_to_new_images(@comp)
+
+        redirect_to(@comp)
+
+      else
+        # This line overrides the default rendering behavior, which
+        # would have been to render the "create" view.
+        render "new"
       end
-
-      # assign positions to newly uploaded images
-      assign_positions_to_new_images(@comp)
-
-      redirect_to(@comp)
-
-    else
-      # This line overrides the default rendering behavior, which
-      # would have been to render the "create" view.
-      render "new"
     end
 
   end
@@ -114,7 +112,7 @@ class CompositionsController < ApplicationController
 
     comp = Composition.find(params[:id])
 
-    filtered_params, tracks, images = prepare_params(true)
+    filtered_params, images = prepare_params(true)
 
     # purge images marked for removal
     purge_marked_images(params)
@@ -122,29 +120,26 @@ class CompositionsController < ApplicationController
     # optimize new images
     optimize_images({ images: images }) if images.present?
 
-    # TODO put all this in a transaction
-    comp.tracks.clear()
+    ActiveRecord::Base.transaction do
+      if comp.update(filtered_params)
 
-    # update with latest setlist info
-    if tracks.present?
-      comp.tracks.build(tracks)
+        # if there are any image updates, attach them to the composition
+        # note: we can't rely on the model to do this for us, because rails
+        # will always replace existing images with the new ones; we need to
+        # append these to existing images
+        comp.images.attach(images) if images.present?
+
+        # assign positions to newly uploaded images
+        assign_positions_to_new_images(comp)
+
+        # update positions for reordered images
+        update_image_positions
+
+        redirect_to(comp)
+      else
+        render "edit"
+      end
     end
-
-    comp.update(filtered_params)
-
-    # if there are any image updates, attach them to the composition
-    # note: we can't rely on the model to do this for us, because rails
-    # will always replace existing images with the new ones; we need to
-    # append these to existing images
-    comp.images.attach(images) if images.present?
-
-    # assign positions to newly uploaded images
-    assign_positions_to_new_images(comp)
-
-    # update positions for reordered images
-    update_image_positions
-
-    redirect_to(comp)
 
   end
 
@@ -182,7 +177,7 @@ class CompositionsController < ApplicationController
     songs_by_id = Song.where(SONGID: song_ids).index_by(&:SONGID)
 
     # loop through every song in the track list in order, normalizing their sequence numbers
-    tracks.values.select{|val| val["bonus"] == bonus.to_s}.sort_by{ |a| a["Seq"].to_i }.each_with_index do |b, i|
+    tracks.values.select{|val| !val["_destroy"].present? && val["bonus"] == bonus.to_s}.sort_by{ |a| a["Seq"].to_i }.each_with_index do |b, i|
 
       last_index = starting_index + i
 
@@ -216,20 +211,16 @@ class CompositionsController < ApplicationController
       prepare_tracks(tracks, start_bonus_index, true)
     end
 
-    # get rid of now-extraneous track list params
-    new_params.delete("tracks_attributes")
-
     # empty comments are stored as nil
     new_params[:Comments] = nil  if new_params[:Comments].strip.empty?
 
     # if requested, extract images into a separate variable
-    images = nil
     if extract_images
       images = new_params["images"]
       new_params.delete("images") if images.present?
     end
 
-    [new_params, tracks.present? ? tracks.values : nil, images]
+    [new_params, images]
 
   end
 
@@ -241,14 +232,15 @@ class CompositionsController < ApplicationController
       .require(:composition)
       .permit(:Title, :Artist, :Year, :Label, :discogs_url, :Comments, :Type, :images,
               images: [],
-              tracks_attributes: [ :Seq, :SONGID, :Song, :VersionNotes, :bonus, :id ]).tap do |params|
+              tracks_attributes: [ :id, :_destroy, :Seq, :SONGID, :Song, :VersionNotes, :bonus ]).tap do |params|
 
           # every gig needs at least a title and artist
           params.require([:Title, :Artist])
 
-          # every item in a track list requires a sequence number
+          # every item in a track list requires a sequence number (skip destroy-only entries)
           if params["tracks_attributes"].present?
             params["tracks_attributes"].each do |key, params|
+              next if params["_destroy"].present?
               params.require([:Seq])
             end
           end

@@ -28,6 +28,7 @@
         <tr data-row=<%= sequenceIndex %>>
             <td class="drag-handle">
                 <i class="bi bi-grip-vertical"></i>
+                <%= track_fields.hidden_field :id %>
                 <%= track_fields.hidden_field :Seq, value: sequenceIndex %>
             </td>
             <td> <%= track_fields.select(:SONGID, @song_list, {include_blank: true}, { class: "form-control song-selector" })%> </td>

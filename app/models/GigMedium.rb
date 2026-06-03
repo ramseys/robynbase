@@ -2,7 +2,7 @@ class GigMedium < ApplicationRecord
 
     self.table_name = "gigmedia"
 
-    belongs_to :gig, foreign_key: "GIGID"
+    belongs_to :gig, foreign_key: "GIGID", inverse_of: :gigmedia
 
     MEDIA_TYPE = {
         "YouTube" => 1,

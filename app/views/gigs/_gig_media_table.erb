@@ -19,6 +19,7 @@
         <tr data-row=<%= sequenceIndex %>>
             <td class="drag-handle">
                 <i class="bi bi-grip-vertical"></i>
+                <%= gigmedium_fields.hidden_field :id %>
                 <%= gigmedium_fields.hidden_field :Chrono, value: sequenceIndex %>
             </td>
             <td> <%= gigmedium_fields.text_field :title, { class: "form-control" }%></td>
@@ -57,5 +58,5 @@
 <br/>
 
 <button type="button" class="btn btn-primary" 
-        data-action="click->gig#addMedia"
+        data-action="click->gig#addMediaRow"
         data-gig-table-id-param="<%=id%>">Add Media</button>

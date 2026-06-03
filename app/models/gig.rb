@@ -13,13 +13,13 @@ class Gig < ApplicationRecord
 
   GIG_TYPES = ["Concert", "Online", "Radio", "Televison", "In-Store", "Promotional", "Podcast"]
 
-  has_many :gigsets, -> {order 'Chrono'}, foreign_key: "GIGID", dependent: :delete_all
-  has_many :gigmedia, -> {order 'Chrono'}, foreign_key: "GIGID", dependent: :delete_all, class_name: 'GigMedium'
+  has_many :gigsets, -> {order 'Chrono'}, foreign_key: "GIGID", dependent: :destroy, inverse_of: :gig
+  has_many :gigmedia, -> {order 'Chrono'}, foreign_key: "GIGID", dependent: :destroy, class_name: 'GigMedium', inverse_of: :gig
   has_many :songs, through: :gigsets, foreign_key: "GIGID"
 
   belongs_to :venue, foreign_key: "VENUEID"
 
-  accepts_nested_attributes_for :gigsets, :gigmedia
+  accepts_nested_attributes_for :gigsets, :gigmedia, allow_destroy: true
 
   # Configure which fields to sanitize on save
   sanitize_fields :Reviews, :ShortNote
