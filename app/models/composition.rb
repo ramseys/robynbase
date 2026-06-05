@@ -3,10 +3,10 @@ class Composition < ApplicationRecord
 
   self.table_name = "COMP"
 
-  has_many :tracks, -> {order 'Seq'}, foreign_key: "COMPID", dependent: :delete_all
+  has_many :tracks, -> {order 'Seq'}, foreign_key: "COMPID", dependent: :destroy, inverse_of: :composition
   has_many :songs, through: :tracks, foreign_key: "TRAKID"
 
-  accepts_nested_attributes_for :tracks
+  accepts_nested_attributes_for :tracks, allow_destroy: true
 
   # types of releases, in the order in which they should appear
   RELEASE_TYPES = {

@@ -3,6 +3,11 @@
 * Follow the eslint rules defined in this repository (if present)
 * Avoid multiple return statements in a single method where possible
 * Where possible, looks for ways to consolidate solutions that apply to all the difference (and very similar) category pages in this app: Gig, Song, Release, Venue
+* When editing JS files, do not add or remove semicolons, do not change quote style (single vs double), and do not add arrow-function parentheses. Match the style of lines you are not touching exactly.
+
+# Git
+
+* Before recommending `git checkout`, `git restore`, or any other command that discards uncommitted changes, always run `git diff HEAD -- <file>` in full and confirm there are no functional changes. Never assume a diff is purely cosmetic from a partial view.
 
 # Database Migration Guidelines
 

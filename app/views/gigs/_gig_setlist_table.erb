@@ -29,6 +29,7 @@
         <tr data-row=<%= sequenceIndex %>>
             <td class="drag-handle">
                 <i class="bi bi-grip-vertical"></i>
+                <%= gigset_fields.hidden_field :id %>
                 <%= gigset_fields.hidden_field :Chrono, value: sequenceIndex %>
             </td>
             <td> <%= gigset_fields.select(:SONGID, @song_list, {include_blank: true}, { class: "form-control song-selector" })%> </td>
@@ -60,6 +61,6 @@
 <br/>
 
 <button type="button" class="btn btn-primary" 
-        data-action="click->gig#addSong"
+        data-action="click->gig#addSongRow"
         data-gig-table-id-param="<%=id%>"
         data-gig-encore-param="<%=encore%>">Add Song</button>

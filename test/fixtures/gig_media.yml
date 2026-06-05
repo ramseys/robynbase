@@ -1,13 +1,13 @@
-# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-one:
+media_one:
   GIGID: 1
-  MediaUrl: MyString
-  MediaType: 1
-  Chrono: 1
+  title: Full show
+  mediaid: abc123xyz
+  mediatype: 2
+  Chrono: 10
 
-two:
+media_two:
   GIGID: 1
-  MediaUrl: MyString
-  MediaType: 1
-  Chrono: 1
+  title: Highlights
+  mediaid: def456uvw
+  mediatype: 2
+  Chrono: 20

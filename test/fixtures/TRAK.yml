@@ -1,0 +1,15 @@
+track_one:
+  TRAKID: 1
+  COMPID: 1
+  SONGID: 1
+  Song: Madonna of the Wasps
+  Seq: 10
+  bonus: false
+
+track_two:
+  TRAKID: 2
+  COMPID: 1
+  SONGID: 2
+  Song: The Cheese Alarm
+  Seq: 20
+  bonus: false

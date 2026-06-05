@@ -1,0 +1,15 @@
+setlist_one:
+  SETID: 1
+  GIGID: 1
+  SONGID: 1
+  Song: Madonna of the Wasps
+  Chrono: 10
+  Encore: false
+
+setlist_two:
+  SETID: 2
+  GIGID: 1
+  SONGID: 2
+  Song: The Cheese Alarm
+  Chrono: 20
+  Encore: false
