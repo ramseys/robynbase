@@ -16,6 +16,10 @@
 * If this happens, change `create_table "gig"` back to `create_table "GIG"` in schema.rb to maintain consistency with the codebase
 
 
+# npm Dependencies
+
+* Always pin npm dependencies to exact versions (no `^` or `~` prefixes) in package.json.
+
 # Plans
 
 Put all plan files in the `./docs/plans` directory.
