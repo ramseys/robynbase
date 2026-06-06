@@ -52,7 +52,6 @@ export default class extends Controller {
             if (field) {
                 field.value = (index + 1) * this.incrementValue
             }
-            row.setAttribute("data-row", index + 1)
         })
     }
 }
