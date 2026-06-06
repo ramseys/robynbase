@@ -6,10 +6,10 @@ module SanitizableText
   extend ActiveSupport::Concern
 
   # Safe HTML tags that are allowed in user content
-  SAFE_TAGS = %w[br p strong em b i u ul ol li a blockquote].freeze
+  SAFE_TAGS = %w[br p strong em b i u ul ol li a blockquote iframe].freeze
 
   # Safe HTML attributes that are allowed
-  SAFE_ATTRIBUTES = %w[href].freeze
+  SAFE_ATTRIBUTES = %w[href src width height frameborder title].freeze
 
   included do
     # Store fields to sanitize at class level
@@ -27,16 +27,27 @@ module SanitizableText
     end
   end
 
+  IFRAME_SANDBOX = 'allow-scripts allow-same-origin'
+
   # Sanitize HTML content, allowing safe tags while blocking XSS
   # Also converts newlines to <br> tags for proper display
   def sanitize_html(text)
     return nil if text.blank?
 
-    ActionController::Base.helpers.sanitize(
+    sanitized = ActionController::Base.helpers.sanitize(
       text,
       tags: SAFE_TAGS,
       attributes: SAFE_ATTRIBUTES
     )
+    enforce_iframe_sandbox(sanitized)
+  end
+
+  def enforce_iframe_sandbox(html)
+    return html if html.blank?
+
+    doc = Nokogiri::HTML::DocumentFragment.parse(html)
+    doc.css('iframe').each { |iframe| iframe['sandbox'] = IFRAME_SANDBOX }
+    doc.to_html
   end
   
   # Add explicit html <br>s for linebreaks
