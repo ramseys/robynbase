@@ -16,9 +16,10 @@
 * If this happens, change `create_table "gig"` back to `create_table "GIG"` in schema.rb to maintain consistency with the codebase
 
 
-# npm Dependencies
+# npm
 
 * Always pin npm dependencies to exact versions (no `^` or `~` prefixes) in package.json.
+* This project uses yarn. Use yarn command to updates its dependencies. In particular: don't use things like `npm install` to install or update dependencies. This project should never have a `package-lock.json` file.
 
 # Plans
 
