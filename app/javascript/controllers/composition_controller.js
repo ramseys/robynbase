@@ -129,13 +129,20 @@ export default class extends Controller {
   removeCompositionTableRow(tableId, rowId) {
     const table = document.getElementById(tableId)
     const row = table.querySelector(`tr[data-row="${rowId}"]`)
-    
+
     if (row) {
-      const identifier = row.nextElementSibling
-      if (identifier && identifier.tagName === "INPUT") {
-        identifier.remove()
+      const idInput = row.querySelector('input[name$="[id]"]')
+
+      if (idInput) {
+        const destroy = document.createElement('input')
+        destroy.type = 'hidden'
+        destroy.name = idInput.name.replace('[id]', '[_destroy]')
+        destroy.value = '1'
+        row.appendChild(destroy)
+        row.style.display = 'none'
+      } else {
+        row.remove()
       }
-      row.remove()
     }
   }
 }
