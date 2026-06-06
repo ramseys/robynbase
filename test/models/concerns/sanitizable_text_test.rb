@@ -23,8 +23,8 @@ class SanitizableTextTest < ActiveSupport::TestCase
   end
 
   test "sanitize_html allows permitted formatting tags" do
-    html = '<p>Hello <strong>world</strong></p>'
-    assert_includes @model.sanitize_html(html), '<p>Hello <strong>world</strong></p>'
+    html = '<p>Hello <strong>world</strong> <b>world</b> <i>world</i> <em>world</em></p>'
+    assert_includes @model.sanitize_html(html), '<p>Hello <strong>world</strong> <b>world</b> <i>world</i> <em>world</em></p>'
   end
 
   test "sanitize_html strips disallowed attributes" do
