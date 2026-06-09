@@ -60,3 +60,5 @@ active-storage-files/
 /app/assets/builds/*
 !/app/assets/builds/.keep
 
+# LLM
+.claude/settings.local.json
