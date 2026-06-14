@@ -180,6 +180,11 @@ GEM
       racc (~> 1.4)
     ostruct (0.6.3)
     pagy (9.4.0)
+    paper_trail (17.0.0)
+      activerecord (>= 7.1)
+      request_store (~> 1.4)
+    paper_trail-association_tracking (2.3.0)
+      paper_trail (>= 12.0)
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
@@ -252,6 +257,8 @@ GEM
       tsort
     reline (0.6.3)
       io-console (~> 0.5)
+    request_store (1.7.0)
+      rack (>= 1.4)
     ruby-lsp (0.26.9)
       language_server-protocol (~> 3.17.0)
       prism (>= 1.2, < 2.0)
@@ -337,6 +344,8 @@ DEPENDENCIES
   mini_magick
   mysql2 (= 0.5.6)
   pagy (~> 9.0)
+  paper_trail (~> 17.0)
+  paper_trail-association_tracking (~> 2.2)
   pry-byebug
   pry-rails
   puma

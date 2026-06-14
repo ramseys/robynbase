@@ -3,6 +3,7 @@
 
 class Song < ApplicationRecord
   include SanitizableText
+  include Auditable
 
   self.table_name = "SONG"
 
@@ -12,8 +13,15 @@ class Song < ApplicationRecord
   has_many :tracks, foreign_key: "SONGID"
   has_many :compositions, through: :tracks, foreign_key: "SONGID"
 
+  audited
+
   # Configure which fields to sanitize on save
   sanitize_fields :Comments, :Lyrics
+
+  # Human-readable label for the audit trail: the full song name.
+  def audit_name
+    full_name.presence || self.Song
+  end
 
   @@quick_queries = [ 
     QuickQuery.new('songs', :not_written_by_robyn),

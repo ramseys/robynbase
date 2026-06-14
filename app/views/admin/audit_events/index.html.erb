@@ -1,0 +1,49 @@
+<div class="admin-page">
+  <p class="mb-1"><%= link_to "Back to Admin", admin_path %></p>
+  <div class="row">
+    <div class="col-sm-12">
+      <h2>Audit Trail</h2>
+      <p class="text-muted">Recent changes to gigs, songs, releases, venues and their setlists, tracklists and media.</p>
+    </div>
+  </div>
+
+  <%= form_with url: admin_audit_events_path, method: :get, local: true, class: "row g-2 align-items-end mb-3" do %>
+    <div class="col-auto">
+      <label class="form-label mb-0">Item type</label>
+      <%= select_tag :item_type,
+            options_for_select([["All", ""]] + @item_types.map { |t| [t, t] }, params[:item_type]),
+            class: "form-select form-select-sm" %>
+    </div>
+    <div class="col-auto">
+      <label class="form-label mb-0">Action</label>
+      <%= select_tag :event_type,
+            options_for_select([["All", ""]] + @event_types.map { |e| [e.humanize, e] }, params[:event_type]),
+            class: "form-select form-select-sm" %>
+    </div>
+    <div class="col-auto">
+      <label class="form-label mb-0">User</label>
+      <%= select_tag :whodunnit,
+            options_for_select([["All", ""]] + @actors.map { |w| [AuditEvent.label_for(w), w] }, params[:whodunnit]),
+            class: "form-select form-select-sm" %>
+    </div>
+    <div class="col-auto">
+      <label class="form-label mb-0">From</label>
+      <%= date_field_tag :start_date, params[:start_date], class: "form-control form-control-sm" %>
+    </div>
+    <div class="col-auto">
+      <label class="form-label mb-0">To</label>
+      <%= date_field_tag :end_date, params[:end_date], class: "form-control form-control-sm" %>
+    </div>
+    <div class="col-auto">
+      <%= submit_tag "Filter", class: "btn btn-sm btn-primary" %>
+      <%= link_to "Clear", admin_audit_events_path, class: "btn btn-sm btn-outline-secondary" %>
+    </div>
+  <% end %>
+
+  <% if @audit_events.any? %>
+    <%= render "audit_table", audit_events: @audit_events %>
+    <%= render "shared/pagination", pagy: @pagy %>
+  <% else %>
+    <p>No audited activity matches the current filters.</p>
+  <% end %>
+</div>
