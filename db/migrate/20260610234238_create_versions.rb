@@ -1,0 +1,35 @@
+# This migration creates the `versions` table for the Version class.
+# All other migrations PT provides are optional.
+class CreateVersions < ActiveRecord::Migration[7.2]
+
+  # The largest text column available in all supported RDBMS is
+  # 1024^3 - 1 bytes, roughly one gibibyte.  We specify a size
+  # so that MySQL will use `longtext` instead of `text`.  Otherwise,
+  # when serializing very large objects, `text` might not be big enough.
+  TEXT_BYTES = 1_073_741_823
+
+  def change
+    create_table :versions, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci" do |t|
+      # Consider using bigint type for performance if you are going to store only numeric ids.
+      # t.bigint   :whodunnit
+      t.string   :whodunnit
+
+      # Known issue in MySQL: fractional second precision
+      # -------------------------------------------------
+      #
+      # MySQL timestamp columns do not support fractional seconds unless
+      # defined with "fractional seconds precision". MySQL users should manually
+      # add fractional seconds precision to this migration, specifically, to
+      # the `created_at` column.
+      # (https://dev.mysql.com/doc/refman/5.6/en/fractional-seconds.html)
+      #
+      t.datetime :created_at
+
+      t.bigint   :item_id,   null: false
+      t.string   :item_type, null: false, limit: 191
+      t.string   :event,     null: false
+      t.text     :object, limit: TEXT_BYTES
+    end
+    add_index :versions, %i[item_type item_id]
+  end
+end
