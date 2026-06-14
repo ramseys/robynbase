@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_05_15_000001) do
+ActiveRecord::Schema[7.2].define(version: 2026_06_10_234243) do
   create_table "COMP", primary_key: "COMPID", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.string "Artist", limit: 64
     t.string "Title", limit: 64
@@ -254,6 +254,25 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_15_000001) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "audit_events", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.bigint "transaction_id", null: false
+    t.string "primary_item_type"
+    t.bigint "primary_item_id"
+    t.string "item_name"
+    t.string "event"
+    t.string "whodunnit"
+    t.boolean "primary_elevated", default: false, null: false
+    t.integer "version_count", default: 0, null: false
+    t.json "summary"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_audit_events_on_created_at"
+    t.index ["event"], name: "index_audit_events_on_event"
+    t.index ["primary_item_type"], name: "index_audit_events_on_primary_item_type"
+    t.index ["transaction_id"], name: "index_audit_events_on_transaction_id", unique: true
+    t.index ["whodunnit"], name: "index_audit_events_on_whodunnit"
+  end
+
   create_table "data_migrations", primary_key: "version", id: :string, charset: "latin1", force: :cascade do |t|
   end
 
@@ -285,6 +304,22 @@ ActiveRecord::Schema[7.2].define(version: 2026_05_15_000001) do
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
+  end
+
+  create_table "versions", charset: "utf8mb4", collation: "utf8mb4_general_ci", force: :cascade do |t|
+    t.string "whodunnit"
+    t.datetime "created_at"
+    t.bigint "item_id", null: false
+    t.string "item_type", limit: 191, null: false
+    t.string "event", null: false
+    t.text "object", size: :long
+    t.text "object_changes", size: :long
+    t.bigint "transaction_id"
+    t.string "item_name"
+    t.index ["created_at"], name: "index_versions_on_created_at"
+    t.index ["item_type", "item_id", "created_at"], name: "index_versions_on_item_type_and_item_id_and_created_at"
+    t.index ["transaction_id"], name: "index_versions_on_transaction_id"
+    t.index ["whodunnit"], name: "index_versions_on_whodunnit"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

@@ -21,6 +21,9 @@ class AdminController < ApplicationController
     end
 
     @sort_cookies.sort_by! { |cookie| cookie[:table_id] }
+
+    # Most recent audited changes, shown unfiltered/unpaginated on the admin page.
+    @recent_audit_events = AuditEvent.order(created_at: :desc).limit(10)
   end
 
   def clear_sort_cookies

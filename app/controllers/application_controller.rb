@@ -3,8 +3,14 @@ class ApplicationController < ActionController::Base
 
   protect_from_forgery
 
+  # Records who made each audited change. Uses current_user.id via PaperTrail's
+  # default user_for_paper_trail. Non-request writes (rake tasks, console, data
+  # migrations) bypass this and should set PaperTrail.request.whodunnit = "system:<task>"
+  # themselves so the audit history has no anonymous gaps.
+  before_action :set_paper_trail_whodunnit
+
   helper_method :current_user
-  
+
   def current_user
     if session[:user_id]
       @current_user ||= User.find(session[:user_id])
