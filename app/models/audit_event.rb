@@ -90,6 +90,14 @@ class AuditEvent < ApplicationRecord
       if owner
         set_primary(owner.class.name, owner.id, owner.audit_name, "update")
       else
+        # A child whose owner couldn't be resolved (an unresolvable destroy reify or
+        # an orphaned row with a null owner FK). Not expected from live writes, so log
+        # it for investigation; the headline degrades to the child's own type.
+        Rails.logger.warn(
+          "AuditEvent: child version #{version.item_type}##{version.item_id} " \
+          "(event: #{version.event}, transaction: #{version.transaction_id || version.id}) " \
+          "has no resolvable owner; headlining the child itself"
+        )
         set_primary(version.item_type, version.item_id, version.item_name, version.event)
       end
       self.primary_elevated = true

@@ -34,6 +34,27 @@ class AuditHierarchyTest < ActiveSupport::TestCase
     assert_equal Gig, AuditHierarchy.owner_reflection("Gigset").klass
   end
 
+  test "the audited registry matches the models PaperTrail actually tracks" do
+    # Auditable.audited_models is maintained by the `audited` concern, which also
+    # applies this app's PaperTrail conventions (on: events, the item_name meta,
+    # skip:). Calling has_paper_trail directly would track a model while bypassing
+    # those conventions and leaving it invisible to AuditHierarchy. PaperTrail keeps
+    # no global list of tracked models, so reconstruct it: has_paper_trail mixes
+    # PaperTrail::Model::InstanceMethods into the model (the gem itself uses this to
+    # detect a double-call). The superclass check keeps only the class that
+    # introduced auditing, not any inheriting STI subclass.
+    Rails.application.eager_load!
+    marker = PaperTrail::Model::InstanceMethods
+    paper_trailed = ApplicationRecord.descendants.select do |klass|
+      klass < marker && !(klass.superclass < marker)
+    end.map(&:name)
+
+    assert_equal Auditable.audited_models.sort, paper_trailed.sort,
+      "PaperTrail-tracked models and the audited registry have diverged. Use the " \
+      "`audited` concern instead of has_paper_trail directly so the app's auditing " \
+      "conventions are applied and AuditHierarchy stays aware of the model."
+  end
+
   test "no audited child is owned through a callback-skipping dependent" do
     # dependent: :delete_all/:delete remove children via raw SQL, skipping the
     # callbacks PaperTrail relies on, so their cascade deletes would never be
