@@ -61,7 +61,7 @@ active-storage-files/
 !/app/assets/builds/.keep
 
 # LLM
-.claude/settings.local.json
+.claude
 
 # internal documentation
 docs/
