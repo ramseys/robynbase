@@ -40,4 +40,20 @@
       <% end %>
     </div>
   </div>
+
+  <br> <hr> <br>
+
+  <div class="row">
+    <div class="col-sm-12">
+      <h3 class="section-header">Change Tracking</h3>
+
+      <% if @recent_audit_events.any? %>
+        <%= render "admin/audit_events/audit_table", audit_events: @recent_audit_events %>
+      <% else %>
+        <p>No changes have been recorded yet.</p>
+      <% end %>
+
+      <p><%= link_to "View Full Audit Trail", admin_audit_events_path, class: "btn btn-outline-primary" %></p>
+    </div>
+  </div>
 </div>

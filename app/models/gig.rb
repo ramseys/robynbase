@@ -8,6 +8,7 @@
 class Gig < ApplicationRecord
   include SanitizableText
   include OrderableImages
+  include Auditable
 
   self.table_name = "GIG"
 
@@ -21,8 +22,19 @@ class Gig < ApplicationRecord
 
   accepts_nested_attributes_for :gigsets, :gigmedia, allow_destroy: true
 
+  # Audit changes. ModifyDate auto-updates on every save, so skip it to avoid
+  # it appearing as a changed field in every version.
+  audited skip: [:ModifyDate]
+
   # Configure which fields to sanitize on save
   sanitize_fields :Reviews, :ShortNote
+
+  # Human-readable label for the audit trail: venue and date.
+  def audit_name
+    name = self.Venue.presence || venue&.Name || "Unknown venue"
+    date = self.GigDate&.strftime("%Y-%m-%d") || (self.GigYear.presence) || "no date"
+    "#{name} - #{date}"
+  end
 
   @@quick_queries = [
     QuickQuery.new('gigs', :with_setlists, [:without]),

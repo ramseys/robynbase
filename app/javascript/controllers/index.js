@@ -4,20 +4,29 @@
 
 import { application } from "./application"
 
-import TableController from "./table_controller"
-import InfiniteScrollController from "./infinite_scroll_controller"
-import MapController from "./map_controller"
-import GigController from "./gig_controller"
 import CompositionController from "./composition_controller"
-import VenueController from "./venue_controller"
-import SortableController from "./sortable_controller"
-import ImageTableController from "./image_table_controller"
-
-application.register("table", TableController)
-application.register("infinite-scroll", InfiniteScrollController)
-application.register("map", MapController)
-application.register("gig", GigController)
 application.register("composition", CompositionController)
-application.register("venue", VenueController)
-application.register("sortable", SortableController)
+
+import GigController from "./gig_controller"
+application.register("gig", GigController)
+
+import ImageTableController from "./image_table_controller"
 application.register("image-table", ImageTableController)
+
+import InfiniteScrollController from "./infinite_scroll_controller"
+application.register("infinite-scroll", InfiniteScrollController)
+
+import LocalTimeController from "./local_time_controller"
+application.register("local-time", LocalTimeController)
+
+import MapController from "./map_controller"
+application.register("map", MapController)
+
+import SortableController from "./sortable_controller"
+application.register("sortable", SortableController)
+
+import TableController from "./table_controller"
+application.register("table", TableController)
+
+import VenueController from "./venue_controller"
+application.register("venue", VenueController)

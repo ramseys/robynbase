@@ -49,6 +49,13 @@ gem 'uglifier', '>= 1.3.0'
 # used to handle data (as opposed to schema) migrations
 gem 'data_migrate'
 
+# Audit trail / versioning for core editable records.
+# paper_trail-association_tracking supplies the transaction_id column used to
+# group versions created in the same DB transaction (see
+# docs/plans/auditing/3-record-change-tracking-plan.md).
+gem 'paper_trail', '~> 17.0'
+gem 'paper_trail-association_tracking', '~> 2.2'
+
 gem 'jquery-rails'
 
 gem "jsbundling-rails", "~> 1.1"

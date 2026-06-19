@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
-  
+
   resources :sessions, only: [:new, :create, :destroy]
   get 'map/index'
   get "robyn/index"
@@ -21,14 +21,19 @@ Rails.application.routes.draw do
   get "robyn/search"
   get "robyn/search_gigs"
   get "robyn/search_compositions"
-  
+
   # get 'signup', to: 'users#new', as: 'signup'
   get 'login', to: 'sessions#new', as: 'login'
   get 'logout', to: 'sessions#destroy', as: 'logout'
 
   get 'admin', to: 'admin#index', as: 'admin'
   post 'admin/clear_sort_cookies', to: 'admin#clear_sort_cookies', as: 'clear_sort_cookies_admin'
-  
+
+  namespace :admin do
+    # Audit trail: grouped activity list and detail. :id is a transaction_id.
+    resources :audit_events, only: [:index, :show], path: 'audit'
+  end
+
   resources :songs do
     collection do
       get :infinite_scroll

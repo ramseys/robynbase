@@ -1,5 +1,6 @@
 class Composition < ApplicationRecord
   include OrderableImages
+  include Auditable
 
   self.table_name = "COMP"
 
@@ -7,6 +8,14 @@ class Composition < ApplicationRecord
   has_many :songs, through: :tracks, foreign_key: "TRAKID"
 
   accepts_nested_attributes_for :tracks, allow_destroy: true
+
+  audited
+
+  # Human-readable label for the audit trail: release title plus year when present.
+  def audit_name
+    title = self.Title.presence || "Untitled release"
+    self.Year.present? ? "#{title} (#{self.Year})" : title
+  end
 
   # types of releases, in the order in which they should appear
   RELEASE_TYPES = {

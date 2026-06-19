@@ -1,0 +1,37 @@
+<%# Shared audit activity table. Local: audit_events (a collection of AuditEvent). %>
+<table class="table table-striped table-sm align-middle">
+  <thead>
+    <tr>
+      <th>When</th>
+      <th>Type</th>
+      <th>Item</th>
+      <th>Action</th>
+      <th>User</th>
+      <th>Related changes</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% audit_events.each do |event| %>
+      <tr>
+        <td>
+          <% if event.created_at %>
+            <%# Rendered in UTC as a no-JS fallback; local_time_controller rewrites it to the browser timezone. %>
+            <time datetime="<%= event.created_at.utc.iso8601 %>" data-controller="local-time"><%= event.created_at.utc.strftime("%Y-%m-%d %H:%M") %></time>
+          <% end %>
+        </td>
+        <td><%= event.primary_item_type %></td>
+        <td><%= audit_item_link(event) %></td>
+        <td><%= audit_badge(event.event) %></td>
+        <td><small><%= event.actor_label %></small></td>
+        <td><small><%= event.summary_text.presence || "—" %></small></td>
+        <td>
+          <%# A destroy's detail is just the snapshot of what was deleted — not worth drilling into. %>
+          <% unless event.event == "destroy" %>
+            <%= link_to "Details", admin_audit_event_path(event.transaction_id), class: "btn btn-sm btn-outline-primary" %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

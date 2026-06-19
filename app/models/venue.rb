@@ -4,13 +4,23 @@
 class Venue < ApplicationRecord
   include SanitizableText
   include OrderableImages
+  include Auditable
 
   self.table_name = "VENUE"
 
   has_many :gigs, -> { order('GIG.GigDate ASC') }, foreign_key: "VENUEID"
 
+  audited
+
   # Configure which fields to sanitize on save
   sanitize_fields :Notes
+
+  # Human-readable label for the audit trail: venue name plus location.
+  def audit_name
+    name = self.Name.presence || "Unnamed venue"
+    location = [self.City, self.Country].map(&:presence).compact.join(", ")
+    location.present? ? "#{name} (#{location})" : name
+  end
 
   def self.get_venues_with_location
     where.not(:latitude => nil)
