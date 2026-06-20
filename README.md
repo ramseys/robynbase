@@ -1,5 +1,13 @@
 # RobynBase
 
+## Setup
+
+Run `bin/setup` to set up a new development environment. It assumes that the following have already been installed on your system:
+
+1. Ruby (v3.4 or above)
+2. Node (v24 or above)
+3. yarn (v1.22 or above)
+
 ## Development Notes
 
 ### Auditing via PaperTrail
