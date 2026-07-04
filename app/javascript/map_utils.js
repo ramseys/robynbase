@@ -45,7 +45,7 @@ export function addMarker(venue, map, venuePath, gigsPath) {
         popperText += venue.State ? `, ${venue.State}` : '';
 
         if (gigsPath) {
-            popperText += `<br/><br/><a href="${gigsPath}?venue_id=${venue.VENUEID}">Show Gigs</a>`;
+            popperText += `<br/><br/><a href="${gigsPath}?search_type=venue_id&search_value=${venue.VENUEID}">Show Gigs</a>`;
         }
         
         marker.bindPopup(popperText);

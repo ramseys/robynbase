@@ -30,7 +30,7 @@
 
   <% if can? :manage, Gig %>
 
-    <div class="col-sm-2">
+    <div class="col-sm-2 d-none d-md-block">
       <%= form_tag(edit_gig_path, :method => 'GET') do %>
         <%= submit_tag "Edit Gig", :name => nil %>
       <% end %>
@@ -190,13 +190,15 @@
             </iframe>            
 
           <% when GigMedium::MEDIA_TYPE["Vimeo"]%>
-            <iframe src="https://player.vimeo.com/video/<%=gig_medium.mediaid%>" 
-                    width="640"
-                    height="360" 
-                    frameborder="0" 
-                    allow="autoplay; fullscreen; picture-in-picture" 
-                    allowfullscreen>
-            </iframe>
+            <div class="media-embed">
+              <iframe src="https://player.vimeo.com/video/<%=gig_medium.mediaid%>"
+                      width="640"
+                      height="360"
+                      frameborder="0"
+                      allow="autoplay; fullscreen; picture-in-picture"
+                      allowfullscreen>
+              </iframe>
+            </div>
 
           <% when GigMedium::MEDIA_TYPE["Soundcloud"]%>
             <iframe src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/<%=gig_medium.mediaid%>&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"

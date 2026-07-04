@@ -19,7 +19,7 @@ class GigsController < ApplicationController
   def index
     if params[:search_type].present?
 
-      search_type = params[:search_type].to_sym
+      search_type = params[:search_type] == "all" ? nil : params[:search_type].to_sym
 
       date_criteria = build_date_criteria_from_params(params)
 
@@ -27,14 +27,7 @@ class GigsController < ApplicationController
       gigs_collection = Gig.search_by(search_type, params[:search_value], date_criteria, params[:gig_type])
       @pagy, @gigs = apply_sorting_and_pagination(gigs_collection, table_id: TABLE_ID, default_sort_params: DEFAULT_SORT_PARAMS)
 
-    # if we're looking for gigs for a given venue
-    elsif params[:venue_id].present?
-
-      gigs_collection = Gig.get_gigs_by_venueid(params[:venue_id])
-      @pagy, @gigs = apply_sorting_and_pagination(gigs_collection, table_id: TABLE_ID, default_sort_params: DEFAULT_SORT_PARAMS)
-
     else
-      params[:search_type] = "venue"
       @gigs = nil
       @pagy = nil
     end

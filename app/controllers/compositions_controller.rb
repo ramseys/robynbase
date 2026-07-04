@@ -14,15 +14,15 @@ class CompositionsController < ApplicationController
     search_type_param  = params[:search_type]
     release_type_param = params[:release_type]
 
-    if search_type_param.nil?
-      params[:search_type] = "title"
-    end
-
     # if the user entered any search terms at all
     if search_type_param.present? || release_type_param.present?
 
-      # textual search
-      search_type = search_type_param.present? ? search_type_param.to_sym : nil
+      # ensure a concrete search_type is echoed back to the view/infinite-scroll JS,
+      # even when entering search mode via release_type alone (e.g. a bookmarked filter link)
+      params[:search_type] = "all" if search_type_param.blank?
+
+      # textual search ("all" searches across all fields)
+      search_type = (search_type_param.present? && search_type_param != "all") ? search_type_param.to_sym : nil
 
       # release types
       release_types = build_release_types_from_params(params)

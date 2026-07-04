@@ -11,10 +11,10 @@ class VenuesController < ApplicationController
 
   def index
     if params[:search_type].present?
-      venues_collection = Venue.search_by(params[:search_type].to_sym, params[:search_value])
+      kind = params[:search_type] == "all" ? nil : params[:search_type].to_sym
+      venues_collection = Venue.search_by(kind, params[:search_value])
       @pagy, @venues = apply_sorting_and_pagination(venues_collection, table_id: TABLE_ID, default_sort_params: DEFAULT_SORT_PARAMS)
-    else 
-      params[:search_type] = "name"
+    else
       @venues = nil
       @pagy = nil
     end

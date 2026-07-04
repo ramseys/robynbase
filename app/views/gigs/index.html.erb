@@ -4,21 +4,9 @@
 
     <div class="row">
 
-      <div class="<%= (can? :manage, Gig) ? 'col-sm-10' : 'col-sm-12' %>">
+      <div class="<%= (can? :manage, Gig) ? 'col-md-10' : 'col-md-12' %>">
 
-          <%= form_tag('/gigs/index', :method => 'GET', data: { turbo_frame: "table_frame" }) do %>
-
-          <%= text_field_tag :search_value, params['search_value'], :class=> 'search-field', :placeholder => 'Search gigs' %>
-
-          <%= submit_tag "Search", :name => nil %>
-
-          <span class="criteria search-type-criteria">
-            <%= radio_button_tag 'search_type', 'venue', params['search_type'] =='venue' %>                  <span class="radio-label">Venue</span>
-            <%= radio_button_tag 'search_type', 'venue_city', params['search_type'] == 'venue_city' %>       <span class="radio-label">City</span>
-            <%= radio_button_tag 'search_type', 'venue_state', params['search_type'] == 'venue_state' %>     <span class="radio-label">State</span>
-            <%= radio_button_tag 'search_type', 'venue_country', params['search_type'] == 'venue_country' %> <span class="radio-label">Country</span>
-            <%= radio_button_tag 'search_type', 'gig_year', params['search_type'] == 'gig_year' %>           <span class="radio-label">Gig Year</span>
-          </span>
+          <%= render layout: 'shared/search_box', locals: { categories: [['Venue', 'venue'], ['City', 'venue_city'], ['State', 'venue_state'], ['Country', 'venue_country'], ['Gig Year', 'gig_year']], path: '/gigs/index', placeholder: 'Search gigs' } do %>
 
           <div>
 
@@ -81,7 +69,7 @@
 
       <% if can? :manage, Gig %>
 
-        <div class="col-sm-1">
+        <div class="col-sm-1 d-none d-md-block">
           <%= form_tag(new_gig_path, :method => 'GET') do %>
             <%= submit_tag "New Gig", :name => nil %>
           <% end %>

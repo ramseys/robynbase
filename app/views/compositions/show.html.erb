@@ -13,7 +13,7 @@
 
     <% if can? :manage, Composition %>
 
-      <div class="col-sm-2">
+      <div class="col-sm-2 d-none d-md-block">
         <%= form_tag(edit_composition_path, :method => 'GET') do %>
           <%= submit_tag "Edit Release", :name => nil %>
         <%end%>
@@ -28,7 +28,9 @@
 
   <% if @comp.images.attached? %>
 
-    <%= render :partial => 'robyn/image_section', :locals => { object: @comp } %>
+    <div class="side-content">
+      <%= render :partial => 'robyn/image_section', :locals => { object: @comp } %>
+    </div>
 
   <% elsif @associated_images.length > 0 %>
 

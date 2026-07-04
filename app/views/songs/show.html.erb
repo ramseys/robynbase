@@ -36,7 +36,7 @@
 
   <% if can? :manage, Song %>
 
-    <div class="col-sm-2">
+    <div class="col-sm-2 d-none d-md-block">
       <%= form_tag(edit_song_path, :method => 'GET') do %>
         <%= submit_tag "Edit Song", :name => nil %>
       <%end%>

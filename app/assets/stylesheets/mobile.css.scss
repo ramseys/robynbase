@@ -1,0 +1,336 @@
+// Mobile / responsive rules for the public (non-admin) pages.
+// See docs/plans/mobile-responsiveness.md for the rationale behind each block.
+
+$mobile-max: 767.98px;
+
+/* ===== Search box (category dropdown + field) — all screen sizes ===== */
+.search-criteria {
+    .input-group {
+        flex-wrap: nowrap;
+    }
+
+    // size the category select to its content rather than letting it flex
+    .search-category {
+        flex: 0 0 auto;
+        width: auto;
+    }
+
+    // match the Search button border (#6c757d) on the field and category
+    // dropdown; on focus keep the gray border and show a tight, solid focus
+    // ring (smaller spread + higher opacity than Bootstrap's soft default)
+    .search-input-group .form-control,
+    .search-input-group .form-select,
+    .search-input-group .btn {
+        border-color: #6c757d;
+
+        &:focus,
+        &:focus-visible {
+            border-color: #6c757d;
+            box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.4);
+        }
+    }
+}
+
+/* ===== Responsive media embeds (all screen sizes) ===== */
+.media-embed {
+    width: 100%;
+    max-width: 640px;
+    aspect-ratio: 16 / 9;
+
+    iframe,
+    lite-youtube {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+/* ===== Venue map ===== */
+.venue-map {
+    max-width: 100%;
+}
+
+/* ===== Gallery image + caption =====
+   Shrink the box to its content so the "click to see N images" caption
+   centers under the image instead of across the whole page. */
+.image-section {
+    display: inline-block;
+    text-align: center;
+}
+
+/* ===== Mobile sort bar (hidden on desktop via .d-md-none) ===== */
+.mobile-sort-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* the compact metadata line is desktop-hidden; the media query reveals it */
+.main-search-list td.secondary-data {
+    display: none;
+}
+
+/* the in-header date (gig cards) is desktop-hidden; the media query reveals it */
+.main-search-list .card-date {
+    display: none;
+}
+
+@media (max-width: $mobile-max) {
+    .navbar-brand {
+        // keep it in the a11y tree/focus order instead of `d-none`,
+        // which removed it from screen readers entirely
+        @include visually-hidden();
+    }
+
+    /* ----- sort dropdown, centered count, and asc/desc toggle share one row -----
+       .mobile-sort-bar is unwrapped via display:contents so its dropdown and
+       btn-group land in the outer columns, with the count pinned to the middle
+       one; that keeps long "quick query label | N found" text from overlapping
+       the controls on either side — it truncates instead. */
+    .list-controls {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        column-gap: 8px;
+        margin-bottom: 8px;
+
+        .mobile-sort-bar {
+            display: contents;
+        }
+
+        .mobile-sort-bar .dropdown {
+            grid-column: 1;
+            grid-row: 1;
+        }
+
+        .mobile-sort-bar .btn-group {
+            grid-column: 3;
+            grid-row: 1;
+        }
+
+        .result-count-display {
+            grid-column: 2;
+            grid-row: 1;
+            justify-self: center;
+            min-width: 0;
+            max-width: 100%;
+            // .mb-2 in the markup is a Bootstrap utility, which compiles
+            // with !important — has to be beaten the same way to actually
+            // center this vertically against the sort bar next to it
+            margin: 0 !important;
+
+            // the actual text lives in the <p> the partial renders, not this
+            // wrapping div; lay it out as a flex row so only the quick-query
+            // label (variable-length, less important) truncates, while the
+            // "N found" count — and the separator — always stay fully visible
+            p {
+                display: flex;
+                align-items: baseline;
+                min-width: 0;
+
+                > * {
+                    flex: 0 0 auto;
+                }
+
+                .quick-query-label {
+                    flex: 1 1 auto;
+                    min-width: 0;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+            }
+        }
+    }
+
+    /* ----- list tables become compact cards ----- */
+    .main-search-list {
+        // no zebra striping in card view — every card gets the same background
+        --bs-table-striped-bg: transparent;
+
+        thead {
+            display: none;
+        }
+
+        tr.clickable-row {
+            display: block;
+            border: 1px solid var(--bs-border-color);
+            // border: 1px solid var(--bs-secondary-color);
+            border-radius: 6px;
+            padding: 6px 12px;
+            margin-bottom: 6px;
+        }
+
+        // show only the name and the compact secondary-data line; hide everything else
+        // (individual secondary cells and the edit/delete actions column)
+        td:not(.main-column):not(.secondary-data) {
+            display: none;
+        }
+
+        td.main-column {
+            display: block;
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+
+        // date shown to the right of the venue name, in gray
+        .card-date {
+            display: inline;
+            float: right;
+            font-weight: 400;
+            font-size: 0.85rem;
+            color: var(--bs-secondary-color);
+        }
+
+        td.secondary-data {
+            display: block;
+            color: var(--bs-secondary-color);
+            font-size: 0.85rem;
+        }
+
+        // paint hover on the whole card (incl. its padding), not just the cells
+        &.table-hover > tbody > tr.clickable-row:hover {
+            background-color: var(--bs-table-hover-bg);
+
+            > * {
+                background-color: transparent;
+                --bs-table-bg-state: transparent;
+            }
+        }
+    }
+
+    // strip the Bootstrap cell padding and the divider border inside cards.
+    // `table.` prefix is needed to out-specify robyn.css.scss's td:first-child rule.
+    table.main-search-list td.main-column,
+    table.main-search-list td.secondary-data {
+        padding: 0;
+        border: 0;
+    }
+
+    /* ----- search form ----- */
+    .search-criteria {
+        .input-group {
+            width: 100%;
+        }
+
+        .search-field {
+            min-width: 0;
+        }
+
+        // iOS Safari auto-zooms when a focused field's font-size is < 16px
+        .form-control,
+        .form-select {
+            font-size: 16px;
+        }
+    }
+
+    // same anti-zoom fix for the navbar "Search Everything" typeahead
+    .navbar .typeahead {
+        font-size: 16px;
+    }
+
+    // align the hamburger icon with the brand's edge inset (the navbar's 20px
+    // padding). Shift the whole button left rather than stripping its left
+    // padding, so the focus ring stays a symmetric rounded rectangle.
+    .navbar-toggler {
+        margin-left: -1rem;
+    }
+
+    // hide the page title as soon as the menu starts opening (collapsing = animating, show = open)
+    .navbar-collapse.collapsing ~ .navbar-page-title,
+    .navbar-collapse.show ~ .navbar-page-title {
+        display: none;
+    }
+
+    // hide the "Search Everything" typeahead from the mobile nav menu
+    .navbar .search-block {
+        display: none;
+    }
+
+    // combined "The Asking Tree – Section" label, centered in the bar on mobile
+    .navbar-page-title {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        max-width: 70%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        color: #fff;
+        font-weight: 500;
+        font-size: 1.1rem;
+        pointer-events: none;
+    }
+
+    /* ----- advanced search criteria ----- */
+    .criteria-options {
+        columns: 1;
+    }
+
+    .advanced-options {
+        .criteria-body {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+        }
+
+        input[type="date"],
+        input[type="text"] {
+            max-width: 100%;
+        }
+    }
+
+    /* ----- detail-page media / images ----- */
+    .gig-media {
+        width: 100%;
+    }
+
+    .gig-media-content iframe,
+    .gig-media-content lite-youtube {
+        max-width: 100%;
+    }
+
+    .robyn-page .images img,
+    .side-content img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* ----- homepage containers ----- */
+    .quick-queries {
+        width: auto;
+        min-width: 0;
+        max-width: 100%;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+
+    .homepage-heading {
+        width: auto;
+    }
+
+    // the home "Search Everything" field has a fixed 396px width (typeahead.css)
+    // that overflows phones — make it fill the container instead
+    .main-page {
+        .twitter-typeahead {
+            width: 100%;
+        }
+
+        .typeahead,
+        .tt-hint {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .tt-dropdown-menu,
+        .tt-menu {
+            width: 100%;
+            box-sizing: border-box;
+        }
+    }
+}

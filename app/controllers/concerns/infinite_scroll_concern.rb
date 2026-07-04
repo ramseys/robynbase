@@ -62,8 +62,9 @@ module InfiniteScrollConcern
       end
     else
       if params[:search_type].present?
-        # Get additional search arguments from the config
-        search_args = [params[:search_type].to_sym, params[:search_value]]
+        # Get additional search arguments from the config ("all" → nil = cross-field search)
+        kind = params[:search_type] == "all" ? nil : params[:search_type].to_sym
+        search_args = [kind, params[:search_value]]
         
         if config[:additional_search_params]
           additional_params = config[:additional_search_params].call(params)

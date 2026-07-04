@@ -57,10 +57,6 @@ class Gig < ApplicationRecord
     self.gigsets.includes(:song).where(encore: true)
   end
 
-  def self.get_gigs_by_venueid(venueid)
-    where(:venueid => venueid)
-  end
-
   # returns the reviews for this gig (if any)
   def get_reviews
     add_linebreaks(self.Reviews)
@@ -75,37 +71,44 @@ class Gig < ApplicationRecord
 
     logger.info ("::::::::::: gigs: #{search}")
 
-    kind = [:venue, :gig_year, :venue_city] if kind.nil? or kind.length == 0
-
-    # add conditions for the gig table columns
-    conditions = Array(kind).map do |term|
-
-      case term
-        when :venue
-          column = "Venue"
-        when :gig_year
-          column = "GigYear"
-        when :venue_city
-          column = "VENUE.City"
-        when :venue_state
-          column = "VENUE.State"
-        when :venue_country
-          column = "VENUE.Country"
-        else
-          return false
-      end
-
-      "#{column} LIKE ?"
-
-    end
-
-    if search.present?
-
-      gigs = left_outer_joins(:venue).where(conditions.join(" OR "), *Array.new(conditions.length, "%#{search}%"))
+    if kind == :venue_id
+      # exact-match lookup by venue id (e.g., from the map's "Show Gigs" link) -
+      # distinct from the text-based venue name/city/etc. searches below
+      gigs = where(:venueid => search)
 
     else
-      gigs = all.includes(:venue)
+      kind = [:venue, :venue_city, :venue_state, :venue_country, :gig_year] if kind.nil? or kind.length == 0
 
+      # add conditions for the gig table columns
+      conditions = Array(kind).map do |term|
+
+        case term
+          when :venue
+            column = "Venue"
+          when :gig_year
+            column = "GigYear"
+          when :venue_city
+            column = "VENUE.City"
+          when :venue_state
+            column = "VENUE.State"
+          when :venue_country
+            column = "VENUE.Country"
+          else
+            return false
+        end
+
+        "#{column} LIKE ?"
+
+      end
+
+      if search.present?
+
+        gigs = left_outer_joins(:venue).where(conditions.join(" OR "), *Array.new(conditions.length, "%#{search}%"))
+
+      else
+        gigs = all.includes(:venue)
+
+      end
     end
 
     # if advanced date criteria were provided, narrow the search to the requested data range

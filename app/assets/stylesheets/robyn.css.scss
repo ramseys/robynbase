@@ -161,22 +161,11 @@ table.main-search-list {
 }
 
 .search-criteria {
-    // input[name=search_value] {
-    .search-field {
-        width: 300px;
-        padding: 4px 12px;
-    }
-
     .search-type-criteria {
         padding-left: 15px;
     }
 
     padding: 10px 0 0;
-
-    input[type="submit"] {
-        margin-left: 5px;
-        padding: 6px;
-    }
 
     button {
         padding-left: 10px;

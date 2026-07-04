@@ -23,7 +23,7 @@ class Song < ApplicationRecord
     full_name.presence || self.Song
   end
 
-  @@quick_queries = [ 
+  @@quick_queries = [
     QuickQuery.new('songs', :not_written_by_robyn),
     QuickQuery.new('songs', :never_released, [:originals, :covers]),
     QuickQuery.new('songs', :has_guitar_tabs, [:no_tabs]),
@@ -36,7 +36,7 @@ class Song < ApplicationRecord
 
   def self.search_by(kind, search)
 
-    kind = [:title, :lyrics, :author, :song] if kind.nil? or kind.length == 0
+    kind = [:title, :originalband, :author] if kind.nil? or kind.length == 0
 
     conditions = Array(kind).map do |term|
 
@@ -56,7 +56,7 @@ class Song < ApplicationRecord
       "#{column} LIKE ?"
 
       # used for exact word search
-      # "#{column} regexp ?"   
+      # "#{column} regexp ?"
 
     end
 
@@ -79,7 +79,7 @@ class Song < ApplicationRecord
       .select('SONG.*, COUNT(GSET.SONGID) AS gig_count')
       .group('SONG.SONGID')
   end
-  
+
   def get_comments
     add_linebreaks(self.Comments)
   end
@@ -93,18 +93,18 @@ class Song < ApplicationRecord
   end
 
   def performance_info
-    
+
     sorted_gigs = self.gigs.distinct.order(:GigDate => "asc")
 
     duration_text = nil
 
-    # figure out the amount of time between the first and latest performances of 
+    # figure out the amount of time between the first and latest performances of
     # this song
-    if sorted_gigs.length > 1 
+    if sorted_gigs.length > 1
 
       duration = sorted_gigs.last.GigDate.to_date - sorted_gigs.first.GigDate.to_date
       duration_text = ""
-      
+
       ActiveSupport::Duration.build(duration.to_i * 86400).parts.each_pair do |key, value|
         if key == :years
           duration_text += "#{value} #{"year".pluralize(value)}"
@@ -131,7 +131,7 @@ class Song < ApplicationRecord
   end
 
   def self.parse_song_name(name)
-    
+
     words = name.split(/\s+/)
     article = nil
 
@@ -142,11 +142,11 @@ class Song < ApplicationRecord
     else
       song_name = name
     end
-    
+
     return [article, song_name]
-    
+
   end
-  
+
   def self.find_full_name(name)
 
     words = name.split(/\s+/)
@@ -161,7 +161,7 @@ class Song < ApplicationRecord
     else
       where (["SONG = ?", name])
     end
-    
+
   end
 
   # create a song record with the given name & author
@@ -178,7 +178,7 @@ class Song < ApplicationRecord
       song_name = name
     end
 
-    Song.new do |s| 
+    Song.new do |s|
       s.Prefix = article
       s.Song = song_name
       s.Author = author
@@ -188,7 +188,7 @@ class Song < ApplicationRecord
 
 
   # returns an array of all available quick queries
-  def self.get_quick_queries 
+  def self.get_quick_queries
     @@quick_queries
   end
 
@@ -198,7 +198,7 @@ class Song < ApplicationRecord
     case id
       when :not_written_by_robyn.to_s
         songs = get_songs_not_written_by_robyn()
-      when :never_released.to_s        
+      when :never_released.to_s
         songs = quick_query_never_released(secondary_attribute)
       when :has_guitar_tabs.to_s
         songs = quick_query_guitar_tabs(secondary_attribute)
@@ -217,7 +217,7 @@ class Song < ApplicationRecord
 
   ## ------ quick queries
 
-  def self.get_songs_not_written_by_robyn 
+  def self.get_songs_not_written_by_robyn
     songs = where("Author IS NOT NULL AND Author NOT LIKE '%Hitchcock%'")
     self.prepare_query(songs)
   end
@@ -258,4 +258,4 @@ class Song < ApplicationRecord
     self.prepare_query(songs)
   end
 
-end   
+end

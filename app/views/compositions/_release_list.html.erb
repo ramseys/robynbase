@@ -5,9 +5,17 @@
 <% table_id = "" unless local_assigns.has_key? :table_id %>
 <% frame_name = "table_frame" unless local_assigns.has_key? :frame_name %>
 
-<% unless use_paging %>
-  <%= render 'shared/result_count', pagy: @pagy, resource_label: "release", area: 'compositions' %>
-<% end %>
+<% columns = [['title', 'Title', '30%'], ['artist', 'Artist', '20%'], ['type', 'Type', '10%'], ['year', 'Year', '10%']] %>
+
+<div class="list-controls">
+  <% unless use_paging %>
+    <%= render 'shared/result_count', pagy: @pagy, resource_label: "release", area: 'compositions' %>
+  <% end %>
+
+  <% unless suppress_header %>
+    <%= render 'shared/mobile_sort', columns: columns, frame_name: frame_name %>
+  <% end %>
+</div>
 
 <table class="table table-striped table-hover main-search-list"
        data-id="<%= table_id %>"
@@ -31,10 +39,9 @@
   <% if not suppress_header %>
     <thead>
     <tr>
-      <th style="width: 30%;"><%= sortable_column_header('title', 'Title', params[:sort], params[:direction], frame_name) %></th>
-      <th style="width: 20%;"><%= sortable_column_header('artist', 'Artist', params[:sort], params[:direction], frame_name) %></th>
-      <th style="width: 10%;"><%= sortable_column_header('type', 'Type', params[:sort], params[:direction], frame_name) %></th>
-      <th style="width: 10%;"><%= sortable_column_header('year', 'Year', params[:sort], params[:direction], frame_name) %></th>
+      <% columns.each do |key, label, width| %>
+        <th style="width: <%= width %>;"><%= sortable_column_header(key, label, params[:sort], params[:direction], frame_name) %></th>
+      <% end %>
       <% if can? :manage, Composition %>
         <th style="width: 10%;">Actions</th>
       <% end %>

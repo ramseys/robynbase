@@ -27,6 +27,11 @@
 
     <td> <%= song.gig_count %> </td>
 
+    <% secondaryData = [song.OrigBand.presence, (song.Author.nil? ? "Robyn Hitchcock" : song.Author)].compact_blank %>
+    <td class="secondary-data">
+      <%= secondaryData.join(', ') %><%= raw(' &middot; ') if secondaryData.any? %><%= pluralize(song.gig_count, 'performance') %>
+    </td>
+
     <% if can? :manage, Song %>
       <td class="actions">
         <a href="<%=song_path(song)%>/edit" data-turbo-frame="_top">Edit</a> &nbsp; &nbsp;

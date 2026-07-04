@@ -19,7 +19,7 @@
 
   <% if can? :manage, Venue %>
 
-    <div class="col-sm-2">
+    <div class="col-sm-2 d-none d-md-block">
       <%= form_tag(edit_venue_path, :method => 'GET') do %>
         <%= submit_tag "Edit Venue", :name => nil %>
       <%end%>

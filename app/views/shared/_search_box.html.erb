@@ -1,0 +1,25 @@
+<%# Scoped search: a category dropdown prepended to the search field. %>
+<%# Rendered as a layout so callers can pass an Advanced Options block. %>
+<%# locals: categories ([[label, value], …], no "All"), path, placeholder %>
+
+<% selected_category = params[:search_type].presence || 'all' %>
+
+<%= form_tag(path, :method => 'GET', data: { turbo_frame: 'table_frame' }) do %>
+
+  <div class="input-group search-input-group">
+
+    <%= select_tag :search_type,
+          options_for_select([['All', 'all']] + categories, selected_category),
+          :class => 'form-select search-category' %>
+
+    <%= text_field_tag :search_value, params['search_value'],
+          :class => 'form-control search-field',
+          :placeholder => placeholder %>
+
+    <%= submit_tag 'Search', :name => nil, :class => 'btn btn-outline-secondary' %>
+
+  </div>
+
+  <%= yield %>
+
+<% end %>

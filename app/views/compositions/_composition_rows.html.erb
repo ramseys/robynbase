@@ -7,6 +7,11 @@
     <td> <%= comp.Type %> </td>
     <td> <%= comp.Year.to_i %> </td>
 
+    <% secondaryData = [comp.Artist.presence, comp.Type.presence, (comp.Year.to_i if comp.Year.to_i > 0)].compact_blank %>
+    <td class="secondary-data">
+      <%= safe_join(secondaryData, raw(' &middot; ')) %>
+    </td>
+
     <% if can? :manage, Composition %>
       <td class="actions">
         <a href="<%=composition_path(comp)%>/edit" data-turbo-frame="_top">Edit</a> &nbsp;
