@@ -74,7 +74,7 @@ class Gig < ApplicationRecord
     if kind == :venue_id
       # exact-match lookup by venue id (e.g., from the map's "Show Gigs" link) -
       # distinct from the text-based venue name/city/etc. searches below
-      gigs = where(:venueid => search)
+      gigs = where(:venueid => search).includes(:venue)
 
     else
       kind = [:venue, :venue_city, :venue_state, :venue_country, :gig_year] if kind.nil? or kind.length == 0

@@ -3,6 +3,11 @@
 <%# locals: categories ([[label, value], …], no "All"), path, placeholder %>
 
 <% selected_category = params[:search_type].presence || 'all' %>
+<%# search_type values outside the visible categories (e.g. the map's venue_id deep link)
+    aren't editable here, so fall back the whole box to "All" / blank rather than
+    echoing back a raw id that would be resubmitted as literal search text %>
+<% selectable = (categories.map(&:last) + ['all']).include?(selected_category) %>
+<% selected_category = 'all' unless selectable %>
 
 <%= form_tag(path, :method => 'GET', data: { turbo_frame: 'table_frame' }) do %>
 
@@ -12,7 +17,7 @@
           options_for_select([['All', 'all']] + categories, selected_category),
           :class => 'form-select search-category' %>
 
-    <%= text_field_tag :search_value, params['search_value'],
+    <%= text_field_tag :search_value, (selectable ? params['search_value'] : nil),
           :class => 'form-control search-field',
           :placeholder => placeholder %>
 

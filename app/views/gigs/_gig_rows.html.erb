@@ -17,7 +17,9 @@
       <%= gig.GigDate&.to_date&.strftime('%m/%d/%Y') %>
     </td>
 
-    <% secondaryData = [(gig.BilledAs.nil? ? 'Robyn Hitchcock' : gig.BilledAs), (gig.venue.nil? ? nil : gig.venue.City), (gig.venue.nil? ? nil : gig.venue.State), (gig.venue.nil? ? nil : gig.venue.Country)].compact_blank %>
+    <%# hand-maintained, not derived from the `columns` array in _gig_list.html.erb -
+        a field added there (headers + mobile sort) won't automatically show up here %>
+    <% secondaryData = [(gig.BilledAs.present? ? gig.BilledAs : 'Robyn Hitchcock'), (gig.venue.nil? ? nil : gig.venue.City), (gig.venue.nil? ? nil : gig.venue.State), (gig.venue.nil? ? nil : gig.venue.Country)].compact_blank %>
     <td class="secondary-data">
       <%= secondaryData.join(', ') %>
     </td>

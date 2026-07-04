@@ -27,6 +27,8 @@
 
     <td> <%= song.gig_count %> </td>
 
+    <%# hand-maintained, not derived from the `columns` array in _song_list.html.erb -
+        a field added there (headers + mobile sort) won't automatically show up here %>
     <% secondaryData = [song.OrigBand.presence, (song.Author.nil? ? "Robyn Hitchcock" : song.Author)].compact_blank %>
     <td class="secondary-data">
       <%= secondaryData.join(', ') %><%= raw(' &middot; ') if secondaryData.any? %><%= pluralize(song.gig_count, 'performance') %>
