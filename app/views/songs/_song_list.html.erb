@@ -10,7 +10,7 @@
 
 <div class="list-controls">
   <% unless use_paging %>
-    <%= render 'shared/result_count', pagy: @pagy, resource_label: "song", area: 'songs' %>
+    <%= render 'shared/result_count', pagy: @pagy, resource_label: "song", area: 'songs', variant: :mobile %>
   <% end %>
 
   <% unless suppress_header %>

@@ -2,11 +2,13 @@
 
   <div class="search-criteria">
 
+  <%= turbo_frame_tag "table_frame" do %>
+
   <div class="row">
 
     <div class="<%= (can? :manage, Venue) ? 'col-md-10' : 'col-md-12' %>">
 
-      <%= render layout: 'shared/search_box', locals: { categories: [['Name', 'name'], ['City', 'city'], ['State', 'state'], ['Country', 'country']], path: '/venues/index', placeholder: 'Search venues' } do %>
+      <%= render layout: 'shared/search_box', locals: { categories: [['Name', 'name'], ['City', 'city'], ['State', 'state'], ['Country', 'country']], path: '/venues/index', pagy: @pagy, resource_label: 'venue', area: 'venues' } do %>
       <% end %>
 
     </div>
@@ -26,22 +28,24 @@
 
   <div class="search-results">
 
-    <%= turbo_frame_tag "table_frame" do %>
       <% if not @venues.nil? %>
-        <% if @venues.empty? %> 
+        <% if @venues.empty? %>
           <%= render partial: '/robyn/nothing_found' %>
         <% else %>
           <%= render partial: '/venues/venue_list', locals: {venues: @venues, table_id: VenuesController::TABLE_ID} %>
         <% end %>
 
       <% else %>
-      
+
         <% quick_queries = get_all_quick_queries(Venue) %>
 
         <%= render partial: '/robyn/quick_queries', locals: {quick_queries: quick_queries} %>
 
       <% end %>
-    <% end %>
+
+  </div>
+
+  <% end %>
 
   </div>
 

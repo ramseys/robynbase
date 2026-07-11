@@ -16,7 +16,7 @@
 
 <div class="list-controls">
   <% unless use_paging %>
-    <%= render 'shared/result_count', pagy: @pagy, resource_label: "gig", area: 'gigs' %>
+    <%= render 'shared/result_count', pagy: @pagy, resource_label: "gig", area: 'gigs', variant: :mobile %>
   <% end %>
 
   <% unless suppress_header %>

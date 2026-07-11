@@ -200,6 +200,34 @@ table.main-search-list {
     }
 }
 
+/* ===== Search box — desktop/tablet only =====
+   On phones the bar stays full-width (stacked layout below, handled in
+   mobile.css.scss); above that, cap its width so it doesn't stretch
+   edge-to-edge, and put the result count beside it instead of on its own
+   line under Advanced Options. */
+@media (min-width: 768px) {
+    .search-criteria {
+        .search-bar-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .search-input-group {
+            max-width: 60%;
+        }
+
+        .search-bar-result-count {
+            // .mb-2 in the markup is a Bootstrap utility, which compiles
+            // with !important — has to be beaten the same way, or the
+            // leftover bottom margin throws off align-items: center
+            margin: 0 !important;
+            white-space: nowrap;
+        }
+    }
+}
+
 .search-results {
     padding-top: 10px;
 }

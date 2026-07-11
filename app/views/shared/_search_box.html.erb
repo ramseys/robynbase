@@ -1,6 +1,8 @@
 <%# Scoped search: a category dropdown prepended to the search field. %>
 <%# Rendered as a layout so callers can pass an Advanced Options block. %>
-<%# locals: categories ([[label, value], …], no "All"), path, placeholder %>
+<%# locals: categories ([[label, value], …], no "All"), path, pagy, resource_label, area %>
+
+<% placeholder = "Search #{resource_label.pluralize}" %>
 
 <% selected_category = params[:search_type].presence || 'all' %>
 <%# search_type values outside the visible categories (e.g. the map's venue_id deep link)
@@ -11,17 +13,23 @@
 
 <%= form_tag(path, :method => 'GET', data: { turbo_frame: 'table_frame' }) do %>
 
-  <div class="input-group search-input-group">
+  <div class="search-bar-row">
 
-    <%= select_tag :search_type,
-          options_for_select([['All', 'all']] + categories, selected_category),
-          :class => 'form-select search-category' %>
+    <div class="input-group search-input-group">
 
-    <%= text_field_tag :search_value, (selectable ? params['search_value'] : nil),
-          :class => 'form-control search-field',
-          :placeholder => placeholder %>
+      <%= select_tag :search_type,
+            options_for_select([['All', 'all']] + categories, selected_category),
+            :class => 'form-select search-category' %>
 
-    <%= submit_tag 'Search', :name => nil, :class => 'btn btn-outline-secondary' %>
+      <%= text_field_tag :search_value, (selectable ? params['search_value'] : nil),
+            :class => 'form-control search-field',
+            :placeholder => placeholder %>
+
+      <%= submit_tag 'Search', :name => nil, :class => 'btn btn-outline-secondary' %>
+
+    </div>
+
+    <%= render 'shared/result_count', pagy: local_assigns[:pagy], resource_label: local_assigns[:resource_label], area: local_assigns[:area] %>
 
   </div>
 

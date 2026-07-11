@@ -2,11 +2,13 @@
 
   <div class="search-criteria">
 
+  <%= turbo_frame_tag "table_frame" do %>
+
   <div class="row">
 
     <div class="<%= (can? :manage, Song) ? 'col-md-10' : 'col-md-12' %>">
 
-      <%= render layout: 'shared/search_box', locals: { categories: [['Title', 'title'], ['Original Band', 'originalband'], ['Lyrics', 'lyrics'], ['Author', 'author']], path: '/songs/index', placeholder: 'Search songs' } do %>
+      <%= render layout: 'shared/search_box', locals: { categories: [['Title', 'title'], ['Original Band', 'originalband'], ['Lyrics', 'lyrics'], ['Author', 'author']], path: '/songs/index', pagy: @pagy, resource_label: 'song', area: 'songs' } do %>
       <% end %>
 
     </div>
@@ -26,22 +28,24 @@
 
   <div class="search-results">
 
-    <%= turbo_frame_tag "table_frame" do %>
       <% if not @songs.nil? %>
-        <% if @songs.empty? %> 
+        <% if @songs.empty? %>
           <%= render partial: '/robyn/nothing_found' %>
         <% else %>
           <%= render partial: '/songs/song_list', locals: {songs: @songs, table_id: SongsController::TABLE_ID, show_lyrics_snippet: @show_lyrics ? params[:search_value] : nil} %>
         <% end %>
 
       <% else %>
-      
+
         <% quick_queries = get_all_quick_queries(Song) %>
 
         <%= render partial: '/robyn/quick_queries', locals: {quick_queries: quick_queries} %>
 
       <% end %>
-    <% end %>
+
+  </div>
+
+  <% end %>
 
   </div>
 

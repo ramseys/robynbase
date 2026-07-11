@@ -2,15 +2,17 @@
 
   <div class="container search-criteria">
 
+    <%= turbo_frame_tag "table_frame" do %>
+
     <div class="row">
 
       <div class="<%= (can? :manage, Gig) ? 'col-md-10' : 'col-md-12' %>">
 
-          <%= render layout: 'shared/search_box', locals: { categories: [['Venue', 'venue'], ['City', 'venue_city'], ['State', 'venue_state'], ['Country', 'venue_country'], ['Gig Year', 'gig_year']], path: '/gigs/index', placeholder: 'Search gigs' } do %>
+          <%= render layout: 'shared/search_box', locals: { categories: [['Venue', 'venue'], ['City', 'venue_city'], ['State', 'venue_state'], ['Country', 'venue_country'], ['Gig Year', 'gig_year']], path: '/gigs/index', placeholder: 'Search gigs', pagy: @pagy, resource_label: 'gig', area: 'gigs' } do %>
 
           <div>
 
-            <% expand_advanced = ( params["gig_date"].present? ) %>
+            <% expand_advanced = ( params["gig_date"].present? or params["gig_type"].present? ) %>
 
             <div class="advanced-options-header" data-action="click->gig#toggleAdvancedOptions">
               <span class="advanced-options-disclosure <%= expand_advanced ? "bi-caret-down-fill" : "bi-caret-right-fill" %>" aria-hidden="true"></span>
@@ -79,12 +81,8 @@
 
     </div>
 
-  </div>
+    <div class="search-results">
 
-
-  <div class="search-results">
-
-    <%= turbo_frame_tag "table_frame" do %>
       <% if not @gigs.nil? %>
         <% if @gigs.empty? %>
           <%= render partial: '/robyn/nothing_found' %>
@@ -99,7 +97,11 @@
         <%= render partial: '/robyn/quick_queries', locals: {quick_queries: quick_queries} %>
 
       <% end %>
+
+    </div>
+
     <% end %>
+
   </div>
 
 </div>
