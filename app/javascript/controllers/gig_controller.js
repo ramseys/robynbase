@@ -8,20 +8,6 @@ export default class extends Controller {
     this.mediaIndex = 100
   }
 
-  toggleAdvancedOptions(event) {
-    const header = event.target.closest(".advanced-options-header")
-    const criteriaBlock = header.nextElementSibling
-    if (criteriaBlock && criteriaBlock.classList.contains("advanced-options")) {
-      criteriaBlock.classList.toggle("expanded")
-      
-      const disclosure = header.querySelector(".advanced-options-disclosure")
-      if (disclosure) {
-        disclosure.classList.toggle("bi-caret-right-fill")
-        disclosure.classList.toggle("bi-caret-down-fill")
-      }
-    }
-  }
-
   addSongRow(event) {
     const tableId = event.params.tableId
     const encore = event.params.encore || false

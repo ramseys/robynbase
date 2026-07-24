@@ -5,16 +5,16 @@
     <td class="main-column">
       <a href="<%= song_path(song) %>" class="row-link" data-turbo-frame="_top"><%= song.full_name %></a>
      <% if show_lyrics(song) %>
-        <a href="<%= song_path(song) %>#lyrics">
+        <a href="<%= song_path(song) %>#lyrics" data-turbo-frame="_top">
           <span title="Lyrics provided" class="bi-file-text" aria-hidden="true"></span>
         </a>
       <% end %>
       <% if song.Tab.present? %>
-      <a href="<%= song_path(song) %>#tabs">
+      <a href="<%= song_path(song) %>#tabs" data-turbo-frame="_top">
         <span title="Tablature provided" class="bi-music-note-beamed" aria-hidden="true"></span>
       </a>
       <% end %>
-            
+
       <% if show_lyrics_snippet.present? and song.Lyrics.present? %>
         <div class="lyrics-snippet"> <%= highlight_search_lyrics(show_lyrics_snippet, song.Lyrics) %></div>
       <% end %>

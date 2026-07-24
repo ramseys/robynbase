@@ -6,16 +6,15 @@
 
   <div class="row">
 
-    <div class="<%= (can? :manage, Venue) ? 'col-md-10' : 'col-md-12' %>">
+    <div class="flex-grow-1 w-auto">
 
-      <%= render layout: 'shared/search_box', locals: { categories: [['Name', 'name'], ['City', 'city'], ['State', 'state'], ['Country', 'country']], path: '/venues/index', pagy: @pagy, resource_label: 'venue', area: 'venues' } do %>
-      <% end %>
+      <%= render 'shared/search_box', categories: [['Name', 'name'], ['City', 'city'], ['State', 'state'], ['Country', 'country']], path: '/venues/index', pagy: @pagy, resource_label: 'venue', area: 'venues' %>
 
     </div>
 
     <% if can? :manage, Venue %>
 
-      <div class="col-sm-1 d-none d-md-block">
+      <div class="d-none d-md-block ms-3 w-auto">
         <%= form_tag(new_venue_path, :method => 'GET') do %>
           <%= submit_tag "New Venue", :name => nil %>
         <%end%>

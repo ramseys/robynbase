@@ -265,13 +265,21 @@ $mobile-max: 767.98px;
         pointer-events: none;
     }
 
-    /* ----- advanced search criteria ----- */
-    .criteria-options {
-        columns: 1;
+    /* ----- advanced search criteria -----
+       matches robyn.css.scss's .search-criteria .criteria .criteria-options
+       selector exactly — a flat .criteria-options here has lower specificity
+       (1 class vs. 3) and silently loses to that rule's columns: 3, no
+       matter that this one is scoped to the narrower media query. */
+    .search-criteria .criteria .criteria-options {
+        columns: 2;
     }
 
     .advanced-options {
-        .criteria-body {
+        // excludes .criteria-options (e.g. Release Type's checkbox grid),
+        // which wants the 2-column layout from .criteria-options above —
+        // display: flex here would silence that (columns doesn't apply to
+        // flex containers) and wrap items into a row instead
+        .criteria-body:not(.criteria-options) {
             display: flex;
             flex-wrap: wrap;
             align-items: center;

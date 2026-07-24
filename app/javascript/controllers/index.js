@@ -4,6 +4,9 @@
 
 import { application } from "./application"
 
+import AdvancedOptionsController from "./advanced_options_controller"
+application.register("advanced-options", AdvancedOptionsController)
+
 import CompositionController from "./composition_controller"
 application.register("composition", CompositionController)
 

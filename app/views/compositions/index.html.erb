@@ -1,43 +1,33 @@
 
 <div class="album-list" data-controller="composition">
 
-  <div class="container search-criteria">
+  <div class="search-criteria">
 
     <%= turbo_frame_tag "table_frame" do %>
 
     <div class="row">
 
-      <div class="<%= (can? :manage, Composition) ? 'col-md-10' : 'col-md-12' %>">
+      <div class="flex-grow-1 w-auto">
 
-        <%= render layout: 'shared/search_box', locals: { categories: [['Title', 'title'], ['Label', 'label'], ['Artist', 'artist'], ['Year', 'year']], path: '/compositions/index', pagy: @pagy, resource_label: 'release', area: 'compositions' } do %>
+        <% expand_advanced = ( params["media_type"].present? or params["release_type"].present? ) %>
 
-          <div>
+        <% advanced_options_panel = capture do %>
+          <!-- advanced option block -->
+          <div class="row advanced-options <%= expand_advanced ? 'expanded' : '' %>">
 
-            <% expand_advanced = ( params["media_type"].present? or params["release_type"].present? ) %>
+            <!-- release types -->
+            <div class="col-sm-12">
 
-            <div class="advanced-options-header" data-action="click->composition#toggleAdvancedOptions">
-              <span class="advanced-options-disclosure <%= expand_advanced ? "bi-caret-down-fill" : "bi-caret-right-fill" %>" aria-hidden="true"></span>
-              <span class="header-name">Advanced Options</span>
-            </div>
+              <div class="criteria">
 
-            <!-- advanced option block -->
-            <div class="row advanced-options <%= expand_advanced ? 'expanded' : '' %>">
+                <div class="header-name">Release Type</div>
 
-              <!-- release types -->
-              <div class="col-sm-6">
+                <div class="criteria-body criteria-options">
 
-                <div class="criteria">
-
-                  <div class="header-name">Release Type</div>
-
-                  <div class="criteria-body criteria-options">
-
-                    <% Composition::RELEASE_TYPES.each do |name, key| %>
-                      <%= check_box_tag 'release_type[]', key, Array(params['release_type']).include?(key.to_s) %>
-                      <span class="radio-label"> <%= name %> </span> <br/>
-                    <% end %>
-
-                  </div>
+                  <% Composition::RELEASE_TYPES.each do |name, key| %>
+                    <%= check_box_tag 'release_type[]', key, Array(params['release_type']).include?(key.to_s) %>
+                    <span class="radio-label"> <%= name %> </span> <br/>
+                  <% end %>
 
                 </div>
 
@@ -46,14 +36,15 @@
             </div>
 
           </div>
-
         <% end %>
+
+        <%= render 'shared/search_box', categories: [['Title', 'title'], ['Label', 'label'], ['Artist', 'artist'], ['Year', 'year']], path: '/compositions/index', pagy: @pagy, resource_label: 'release', area: 'compositions', expand_advanced: expand_advanced, advanced_options_panel: advanced_options_panel %>
 
       </div>
 
       <% if can? :manage, Composition %>
 
-        <div class="col-sm-1 d-none d-md-block">
+        <div class="d-none d-md-block ms-3 w-auto">
           <%= form_tag(new_composition_path, :method => 'GET') do %>
             <%= submit_tag "New Release", :name => nil %>
           <%end%>
