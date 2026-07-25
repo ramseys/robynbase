@@ -15,7 +15,7 @@
     <% if can? :manage, Venue %>
 
       <div class="d-none d-md-block ms-3 w-auto">
-        <%= form_tag(new_venue_path, :method => 'GET') do %>
+        <%= form_tag(new_venue_path, :method => 'GET', data: { turbo_frame: "_top" }) do %>
           <%= submit_tag "New Venue", :name => nil %>
         <%end%>
       </div>
