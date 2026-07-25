@@ -45,7 +45,7 @@
       <% if can? :manage, Composition %>
 
         <div class="d-none d-md-block ms-3 w-auto">
-          <%= form_tag(new_composition_path, :method => 'GET') do %>
+          <%= form_tag(new_composition_path, :method => 'GET', data: { turbo_frame: "_top" }) do %>
             <%= submit_tag "New Release", :name => nil %>
           <%end%>
         </div>

@@ -63,7 +63,7 @@
       <% if can? :manage, Gig %>
 
         <div class="d-none d-md-block ms-3 w-auto">
-          <%= form_tag(new_gig_path, :method => 'GET') do %>
+          <%= form_tag(new_gig_path, :method => 'GET', data: { turbo_frame: "_top" }) do %>
             <%= submit_tag "New Gig", :name => nil %>
           <% end %>
         </div>
