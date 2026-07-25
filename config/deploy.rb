@@ -13,7 +13,8 @@ set :repo_url, 'https://github.com/ramseys/robynbase.git'
 set :deploy_to, '/var/www/robynbase'
 
 # Pull app out of the master branch on github
-set :branch, "master"
+# set :branch, "master"
+ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
 # User on the server-side under which deployments should be handled
 set :user, "ramseys"

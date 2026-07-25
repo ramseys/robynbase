@@ -7,18 +7,26 @@
           <span title="Favorite" class="bi-star-fill" aria-hidden="true" style="color: gold; text-shadow: 0 0 3px #000, 0 0 3px #000;"></span>
         </a>
       <% end %>
+      <span class="card-date"><%= gig.GigDate&.to_date&.strftime('%m/%d/%Y') %></span>
     </td>
     <td> <%= gig.BilledAs.present? ? gig.BilledAs : 'Robyn Hitchcock' %> </td>
     <td> <%= gig.venue.nil? ? nil : gig.venue.City %> </td>
     <td> <%= gig.venue.nil? || gig.venue.State.nil? ? nil : gig.venue.State %> </td>
     <td> <%= gig.venue.nil? ? nil : gig.venue.Country %> </td>
-    <td data-sort="<%= gig.GigDate.to_date.to_formatted_s(:number)%>">
-      <%= gig.GigDate.to_date.strftime('%m/%d/%Y') %>
+    <td data-sort="<%= gig.GigDate&.to_date&.to_formatted_s(:number) %>">
+      <%= gig.GigDate&.to_date&.strftime('%m/%d/%Y') %>
+    </td>
+
+    <%# hand-maintained, not derived from the `columns` array in _gig_list.html.erb -
+        a field added there (headers + mobile sort) won't automatically show up here %>
+    <% secondaryData = [(gig.BilledAs.present? ? gig.BilledAs : 'Robyn Hitchcock'), (gig.venue.nil? ? nil : gig.venue.City), (gig.venue.nil? ? nil : gig.venue.State), (gig.venue.nil? ? nil : gig.venue.Country)].compact_blank %>
+    <td class="secondary-data">
+      <%= secondaryData.join(', ') %>
     </td>
 
     <% if can? :manage, Gig %>
       <td class="actions">
-        <a href="<%=gig_path(gig)%>/edit" data-turbo-frame="_top">Edit</a> &nbsp;
+        <a href="<%= gig_path(gig) %>/edit" data-turbo-frame="_top">Edit</a> &nbsp;
         <%= link_to("Delete", gig_path(gig), method: :delete, data: { confirm: "Are you sure you want to delete the gig for #{gig.Venue}?" }) %>
       </td>
     <% end %>

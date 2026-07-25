@@ -4,7 +4,7 @@
 <div class="robyn-page">
 
 <div class="row">
-  <div class="col-sm-10">
+  <div class="flex-grow-1 w-auto">
 
     <% performance_info = @song.performance_info %>
 
@@ -36,7 +36,7 @@
 
   <% if can? :manage, Song %>
 
-    <div class="col-sm-2">
+    <div class="d-none d-md-block ms-3 w-auto">
       <%= form_tag(edit_song_path, :method => 'GET') do %>
         <%= submit_tag "Edit Song", :name => nil %>
       <%end%>

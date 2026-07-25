@@ -17,6 +17,11 @@ a {
 .top-container {
     padding-top: 60px;
     padding-bottom: 30px;
+    margin: 0 5px;
+
+    @media (min-width: 768px) {
+        margin: 0 30px;
+    }
 }
 
 /* navbar customizations */
@@ -161,22 +166,11 @@ table.main-search-list {
 }
 
 .search-criteria {
-    // input[name=search_value] {
-    .search-field {
-        width: 300px;
-        padding: 4px 12px;
-    }
-
     .search-type-criteria {
         padding-left: 15px;
     }
 
     padding: 10px 0 0;
-
-    input[type="submit"] {
-        margin-left: 5px;
-        padding: 6px;
-    }
 
     button {
         padding-left: 10px;
@@ -207,6 +201,66 @@ table.main-search-list {
         // override bootstrap date styles
         input[type="date"] {
             line-height: initial;
+        }
+    }
+}
+
+/* ===== Search box — desktop/tablet only =====
+   On phones the bar stays full-width (stacked layout below, handled in
+   mobile.css.scss); above that, cap its width so it doesn't stretch
+   edge-to-edge, and center it. The result count moves to its own row below,
+   right-aligned; the Advanced Options toggle, when present, shares that row
+   on the left (it's rendered before the result count in the DOM, not just
+   positioned there visually, so tab/reading order matches what's on screen),
+   with its expanded panel — rendered after both, as a sibling of the subrow
+   rather than a child of it — capped to the same width and centered the
+   same way the search box and subrow are, independently of either. */
+@media (min-width: 768px) {
+    .search-criteria {
+        .search-bar-row {
+            display: flex;
+            justify-content: center;
+        }
+
+        .search-input-group {
+            max-width: 80%;
+        }
+
+        .search-bar-subrow {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            column-gap: 16px;
+            max-width: 80%;
+            // intentionally tighter than the 10px gap used at mobile widths
+            // (.advanced-options-header's padding-top, zeroed out below)
+            margin: 2px auto 0;
+        }
+
+        .advanced-options-header {
+            // only relevant at mobile widths, where this row isn't a flex
+            // container and .search-bar-subrow's margin-top doesn't apply
+            padding-top: 0;
+        }
+
+        .search-bar-result-count {
+            // .mb-2 in the markup is a Bootstrap utility, which compiles
+            // with !important — has to be beaten the same way; auto on the
+            // left (instead of a plain 0) is what pushes it to the right
+            margin: 0 0 0 auto !important;
+            white-space: nowrap;
+        }
+
+        .row.advanced-options {
+            // it's a plain block sibling here, not a flex item of
+            // .search-bar-subrow, so left/right need setting explicitly —
+            // matching .search-input-group's left edge (its 80% max-width is
+            // centered, so 10% is what's left over on each side) keeps the
+            // panel lined up with the search box without also capping its
+            // width to match, which left too little room for its content
+            // (checkbox labels wrapping) than it had before this box existed
+            margin-left: 10%;
+            margin-right: 0;
         }
     }
 }

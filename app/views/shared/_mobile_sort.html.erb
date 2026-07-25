@@ -1,0 +1,37 @@
+<%# Mobile-only sort bar: a column dropdown + an ascending/descending toggle. %>
+<%# Reuses the same sort URLs as sortable_column_header, scoped to frame_name. %>
+<%# locals: columns (array of [key, label, width]), frame_name %>
+
+<% current_sort = params[:sort].presence %>
+<% current_direction = params[:direction].presence || 'asc' %>
+<% default_key = columns.first[0] %>
+<% active = columns.find { |key, _label, _width| key == current_sort } %>
+
+<div class="mobile-sort-bar d-md-none">
+
+  <div class="dropdown">
+    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <%= active ? "Sort: #{active[1]}" : "Sort" %>
+    </button>
+    <ul class="dropdown-menu">
+      <% columns.each do |key, label, _width| %>
+        <li>
+          <%= link_to label,
+                url_for(request.query_parameters.merge(sort: key, direction: current_direction, only_path: true)),
+                class: "dropdown-item#{' active' if key == current_sort}",
+                data: { turbo_frame: frame_name, turbo_prefetch: false } %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+
+  <div class="btn-group btn-group-sm" role="group" aria-label="Sort direction">
+    <% [['asc', 'Asc'], ['desc', 'Desc']].each do |dir, dir_label| %>
+      <% dir_url = url_for(request.query_parameters.merge(sort: (current_sort || default_key), direction: dir, only_path: true)) %>
+      <%= link_to dir_label, dir_url,
+            class: "btn btn-outline-secondary#{' active' if current_direction == dir}",
+            data: { turbo_frame: frame_name, turbo_prefetch: false } %>
+    <% end %>
+  </div>
+
+</div>

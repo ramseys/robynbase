@@ -33,7 +33,7 @@ class Venue < ApplicationRecord
 
   def self.search_by(kind, search)
 
-    kind = [:name, :city, :country] if kind.nil? or kind.length == 0
+    kind = [:name, :city, :state, :country] if kind.nil? or kind.length == 0
 
     conditions = Array(kind).map do |term|
 

@@ -1,0 +1,59 @@
+<%# Scoped search: a category dropdown prepended to the search field. %>
+<%# locals: categories ([[label, value], …], no "All"), path, pagy, resource_label, area,
+    advanced_options_panel (optional, captured HTML for the caller-specific filter fields —
+    rendered full-width below the search box), expand_advanced (optional, whether the panel
+    and its disclosure toggle — rendered here, wired to the shared advanced-options
+    controller — start expanded; only relevant when advanced_options_panel is given) %>
+
+<% placeholder = "Search #{resource_label.pluralize}" %>
+
+<% selected_category = params[:search_type].presence || 'all' %>
+<%# search_type values outside the visible categories (e.g. the map's venue_id deep link)
+    aren't editable here, so fall back the whole box to "All" / blank rather than
+    echoing back a raw id that would be resubmitted as literal search text %>
+<% selectable = (categories.map(&:last) + ['all']).include?(selected_category) %>
+<% selected_category = 'all' unless selectable %>
+
+<%= form_tag(path, :method => 'GET', data: { turbo_frame: 'table_frame', controller: 'advanced-options' }) do %>
+
+  <div class="search-bar-row">
+
+    <div class="input-group search-input-group">
+
+      <%= select_tag :search_type,
+            options_for_select([['All', 'all']] + categories, selected_category),
+            :class => 'form-select search-category' %>
+
+      <%= text_field_tag :search_value, (selectable ? params['search_value'] : nil),
+            :class => 'form-control search-field',
+            :placeholder => placeholder %>
+
+      <%= submit_tag 'Search', :name => nil, :class => 'btn btn-outline-secondary' %>
+
+    </div>
+
+  </div>
+
+  <% has_panel = local_assigns[:advanced_options_panel].present? %>
+  <% has_result_count = local_assigns[:pagy] && local_assigns[:pagy].count > 0 %>
+  <% if has_panel || has_result_count %>
+    <%# The toggle renders before the result count in the DOM (not just visually),
+        so reading/tab order matches what's on screen; the panel comes after both,
+        as its own full-width row (CSS just gives it that width, no reordering). %>
+    <div class="search-bar-subrow">
+
+      <% if has_panel %>
+        <div class="advanced-options-header" data-action="click->advanced-options#toggle">
+          <span class="advanced-options-disclosure <%= local_assigns[:expand_advanced] ? "bi-caret-down-fill" : "bi-caret-right-fill" %>" aria-hidden="true"></span>
+          <span class="header-name">Advanced Options</span>
+        </div>
+      <% end %>
+
+      <%= render 'shared/result_count', pagy: local_assigns[:pagy], resource_label: local_assigns[:resource_label], area: local_assigns[:area] %>
+
+    </div>
+  <% end %>
+
+  <%= local_assigns[:advanced_options_panel] %>
+
+<% end %>

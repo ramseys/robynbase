@@ -9,10 +9,10 @@ class SongsController < ApplicationController
 
   def index
     if params[:search_type].present?
-      songs_collection = Song.search_by(params[:search_type] ? params[:search_type].to_sym : nil, params[:search_value])
+      kind = params[:search_type] == "all" ? nil : params[:search_type].to_sym
+      songs_collection = Song.search_by(kind, params[:search_value])
       @pagy, @songs = apply_sorting_and_pagination(songs_collection, table_id: TABLE_ID, default_sort_params: DEFAULT_SORT_PARAMS)
-    else 
-      params[:search_type] = "title"
+    else
       @songs = nil
       @pagy = nil
     end

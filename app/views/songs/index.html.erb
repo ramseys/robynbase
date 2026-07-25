@@ -2,30 +2,19 @@
 
   <div class="search-criteria">
 
+  <%= turbo_frame_tag "table_frame" do %>
+
   <div class="row">
 
-    <div class="<%= (can? :manage, Song) ? 'col-sm-10' : 'col-sm-12' %>">
+    <div class="flex-grow-1 w-auto">
 
-      <%= form_tag('/songs/index', :method => 'GET', data: { turbo_frame: "table_frame" }) do %>
-
-        <%= text_field_tag :search_value, params['search_value'], :class=> 'search-field', :placeholder => 'Search songs' %>
-
-        <%= submit_tag "Search", :name => nil %>
-
-        <span class="criteria search-type-criteria">
-          <%= radio_button_tag 'search_type', 'title', params['search_type'] == 'title'   %> <span class="radio-label">Title</span>
-          <%= radio_button_tag 'search_type', 'originalband', params['search_type'] == 'originalband' %> <span class="radio-label">Original Band</span>
-          <%= radio_button_tag 'search_type', 'lyrics', params['search_type'] == 'lyrics' %> <span class="radio-label">Lyrics</span>
-          <%= radio_button_tag 'search_type', 'author', params['search_type'] == 'author' %> <span class="radio-label">Author</span>
-        </span>
-
-      <% end %>
+      <%= render 'shared/search_box', categories: [['Title', 'title'], ['Original Band', 'originalband'], ['Lyrics', 'lyrics'], ['Author', 'author']], path: '/songs/index', pagy: @pagy, resource_label: 'song', area: 'songs' %>
 
     </div>
 
     <% if can? :manage, Song %>
 
-      <div class="col-sm-1">
+      <div class="d-none d-md-block ms-3 w-auto">
         <%= form_tag(new_song_path, :method => 'GET') do %>
           <%= submit_tag "New Song", :name => nil %>
         <%end%>
@@ -38,22 +27,24 @@
 
   <div class="search-results">
 
-    <%= turbo_frame_tag "table_frame" do %>
       <% if not @songs.nil? %>
-        <% if @songs.empty? %> 
+        <% if @songs.empty? %>
           <%= render partial: '/robyn/nothing_found' %>
         <% else %>
           <%= render partial: '/songs/song_list', locals: {songs: @songs, table_id: SongsController::TABLE_ID, show_lyrics_snippet: @show_lyrics ? params[:search_value] : nil} %>
         <% end %>
 
       <% else %>
-      
+
         <% quick_queries = get_all_quick_queries(Song) %>
 
         <%= render partial: '/robyn/quick_queries', locals: {quick_queries: quick_queries} %>
 
       <% end %>
-    <% end %>
+
+  </div>
+
+  <% end %>
 
   </div>
 

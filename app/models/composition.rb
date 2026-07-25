@@ -48,7 +48,7 @@ class Composition < ApplicationRecord
   
   def self.search_by(kind, search, release_types = nil)
 
-    kind = [:title, :year, :label] if kind.nil? or kind.length == 0
+    kind = [:title, :artist, :year, :label] if kind.nil? or kind.length == 0
 
     conditions = Array(kind).map do |term|
 

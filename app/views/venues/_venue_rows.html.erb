@@ -19,6 +19,13 @@
       <%= venue.gig_count%>
     </td>
 
+    <%# hand-maintained, not derived from the `columns` array in _venue_list.html.erb -
+        a field added there (headers + mobile sort) won't automatically show up here %>
+    <% secondaryData = [venue.City, venue.SubCity, venue.State, venue.Country].compact_blank %>
+    <td class="secondary-data">
+      <%= secondaryData.join(', ') %><%= raw(' &middot; ') if secondaryData.any? %><%= pluralize(venue.gig_count, 'performance') %>
+    </td>
+
     <% if can? :manage, Venue %>
       <td> 
         <a href="<%=venue_path(venue)%>/edit" data-turbo-frame="_top">Edit</a> &nbsp; &nbsp;
