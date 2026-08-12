@@ -13,4 +13,4 @@ mysql -u $USER -e "create database $DEV_DB;"
 
 # hydrate the db
 echo "Hydrating db $DEV_DB using $1"
-mysql -u $USER $DEV_DB < $1
+mysql -u $USER $DEV_DB --init-command="SET SESSION sql_mode='NO_ENGINE_SUBSTITUTION';" < $1

@@ -12,6 +12,56 @@ class AuditEvent < ApplicationRecord
   scope :of_event,     ->(event)     { where(event: event)                 if event.present? }
   scope :by_actor,     ->(whodunnit) { where(whodunnit: whodunnit)         if whodunnit.present? }
 
+  # How far back the homepage feed looks. Bounds the grouped scan below: ungrouped and
+  # unbounded, every audit_event ever written is grouped into a temp table and every
+  # resulting id is sent back to MySQL in an IN list, all to render 20 rows — work that
+  # grows with the whole audit history rather than with what's displayed.
+  # index_audit_events_on_created_at makes the window a range scan.
+  RECENT_UPDATES_WINDOW = 1.year
+
+  # Excludes an event whose item was deleted afterwards. The destroy row itself is
+  # filtered out by `where.not(event: "destroy")`, but that leaves the item's earlier
+  # create/update rows in the feed, and audit_item_link links those — pointing the
+  # homepage at a record that no longer exists (a 404 in production). Matched on a
+  # *later* destroy rather than any destroy so that a legacy table which reissues a
+  # primary key can't have its new record hidden by the old one's deletion; id is
+  # monotonic with created_at, as the collapse below also relies on.
+  NOT_SUBSEQUENTLY_DESTROYED = <<~SQL.squish.freeze
+    NOT EXISTS (
+      SELECT 1 FROM audit_events AS later_destroy
+      WHERE later_destroy.event             = 'destroy'
+        AND later_destroy.primary_item_type = audit_events.primary_item_type
+        AND later_destroy.primary_item_id   = audit_events.primary_item_id
+        AND later_destroy.id                > audit_events.id
+    )
+  SQL
+
+  # Homepage "Recent Updates" feed: top-level category records only (Gig, Song,
+  # Composition, Venue), excluding destroys and items since deleted.
+  def self.for_recent_updates
+    # Referencing these constants (rather than trusting they're already autoloaded)
+    # guarantees AuditHierarchy sees the full audited registry even on a fresh dev
+    # boot, since Auditable.audited_models is only populated when each model's
+    # `audited` class method actually runs.
+    [Gig, Song, Composition, Venue]
+
+    base = where(primary_item_type: AuditHierarchy.top_level_types)
+             .where.not(event: "destroy")
+             .where(created_at: RECENT_UPDATES_WINDOW.ago..)
+             .where(NOT_SUBSEQUENTLY_DESTROYED)
+
+    # Several edits to the same item on the same day (e.g. a couple of quick fixes
+    # to one gig) would otherwise show up as separate rows; collapse them to the
+    # latest one per (item, event, day). id is used as the "latest" tiebreaker
+    # since it's monotonically increasing with created_at.
+    latest_ids = base
+      .group(:primary_item_type, :primary_item_id, :event, Arel.sql("DATE(created_at)"))
+      .maximum(:id)
+      .values
+
+    where(id: latest_ids).order(created_at: :desc)
+  end
+
   # Date-range filters. Written as class methods rather than `scope` because they
   # parse their string argument (and need a private helper); each returns `all`
   # when the date is blank/invalid so it stays chainable. The end bound is

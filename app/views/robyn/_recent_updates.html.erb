@@ -1,0 +1,25 @@
+<% if recent_updates.present? %>
+
+  <div class="quick-queries recent-updates" data-controller="recent-updates">
+
+    <p class="header text-muted recent-updates-header">
+      <span>Recent Updates</span>
+      <button type="button" class="btn btn-link btn-link-inline"
+              aria-expanded="false" aria-controls="recent-updates-list"
+              data-recent-updates-target="toggle"
+              data-action="click->recent-updates#toggle">Show</button>
+    </p>
+
+    <ul id="recent-updates-list" class="list-unstyled recent-updates-list d-none"
+        data-recent-updates-target="list">
+      <% recent_updates.each do |event| %>
+        <li>
+          <span class="recent-updates-date"><%= event.created_at.to_date.strftime("%b %-d, %Y") %></span>
+          <span class="recent-updates-entry"><%= recent_update_item(event) %></span>
+        </li>
+      <% end %>
+    </ul>
+
+  </div>
+
+<% end %>

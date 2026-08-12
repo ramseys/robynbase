@@ -24,6 +24,8 @@
 
 # Plans
 
-Put all plan files in the `./docs/plans` directory.
+Whenever you're asked to evaluate something in plan mode, create a local plan file for it. Put all plan files in the `./docs/plans` directory.
 
 If there are multiple files involved in the plan (eg, scripts to run as part of it), create a subdirectory under that directory and place them there.
+
+

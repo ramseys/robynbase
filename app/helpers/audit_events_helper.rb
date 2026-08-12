@@ -1,5 +1,22 @@
 module AuditEventsHelper
 
+  # Category-page name for a top-level audited type, where it differs from the
+  # class name (Composition's public-facing name is "Release").
+  RECENT_UPDATE_TYPE_NAMES = {
+    "Composition" => "Release"
+  }.freeze
+
+  # A homepage "Recent Updates" row, e.g. "Release <link> added". Built with
+  # safe_join rather than interpolation + html_safe so that an unlinkable
+  # item_name is escaped instead of riding along inside a safe string.
+  def recent_update_item(event)
+    item_type = event.primary_item_type
+    item_category = RECENT_UPDATE_TYPE_NAMES.fetch(item_type, item_type)
+    action = event.event == "create" ? "added" : "updated"
+
+    safe_join([item_category, audit_item_link(event), action], " ")
+  end
+  
   # Bootstrap badge class for a primary event / child-row kind.
   AUDIT_BADGE_CLASS = {
     "create"    => "bg-success",

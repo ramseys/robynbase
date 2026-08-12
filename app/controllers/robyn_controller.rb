@@ -14,6 +14,8 @@ class RobynController < ApplicationController
       @has_songs = Song.search_by([:title], search).exists?
       @has_compositions = Composition.search_by([:title], search).exists?
       @has_venues = Venue.search_by([:name], search).exists?
+    else
+      @recent_updates = AuditEvent.for_recent_updates.limit(20)
     end
   end
 
