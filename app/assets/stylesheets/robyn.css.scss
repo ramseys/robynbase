@@ -541,9 +541,10 @@ dl {
         text-align: left;
     }
 
+    // Set a fixed width for the date column, to accommodat ethe widest possible date
+    // the "%b %-d, %Y" format can produce, in both Helvetica Neue and the Arial fallback.
     .recent-updates-date {
-        flex: 0 0 auto;
-        min-width: 80px;
+        flex: 0 0 90px;
         color: #999;
     }
 
