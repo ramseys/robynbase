@@ -1,0 +1,14 @@
+<%= turbo_frame_tag "recent_updates_frame" do %>
+  <% if recent_updates.any? %>
+    <ul class="list-unstyled recent-updates-list">
+      <% recent_updates.each do |event| %>
+        <li>
+          <span class="recent-updates-date"><%= event.created_at.to_date.strftime("%b %-d, %Y") %></span>
+          <span class="recent-updates-entry"><%= recent_update_item(event) %></span>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="recent-updates-placeholder text-muted">No recent activity.</p>
+  <% end %>
+<% end %>

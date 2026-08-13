@@ -14,9 +14,15 @@ class RobynController < ApplicationController
       @has_songs = Song.search_by([:title], search).exists?
       @has_compositions = Composition.search_by([:title], search).exists?
       @has_venues = Venue.search_by([:name], search).exists?
-    else
-      @recent_updates = AuditEvent.for_recent_updates.limit(20)
     end
+  end
+
+  # The "Recent Updates" box on the homepage. Loaded into its turbo frame only when the
+  # box is first expanded (see recent_updates_controller.js), so the collapsing query
+  # never runs for the majority of visitors who leave the box closed.
+  def recent_updates
+    render partial: '/robyn/recent_updates_list',
+           locals: { recent_updates: AuditEvent.for_recent_updates.limit(20) }
   end
 
   # Lazy-loaded Turbo frame endpoints for omnisearch results

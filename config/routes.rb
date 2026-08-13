@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   get "robyn/omnisearch_songs"
   get "robyn/omnisearch_compositions"
   get "robyn/omnisearch_venues"
+  get "robyn/recent_updates"
   get "songs/index"
   get "songs/quick_query"
   get "gigs/index"

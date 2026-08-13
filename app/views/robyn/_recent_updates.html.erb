@@ -1,25 +1,24 @@
-<% if recent_updates.present? %>
+<div class="quick-queries recent-updates" data-controller="recent-updates"
+     data-recent-updates-url-value="<%= robyn_recent_updates_path %>">
 
-  <div class="quick-queries recent-updates" data-controller="recent-updates">
+  <p class="header text-muted recent-updates-header">
+    <span>Recent Updates</span>
+    <button type="button" class="btn btn-link btn-link-inline"
+            aria-expanded="false"
+            aria-controls="recent-updates-body"
+            data-recent-updates-target="toggle"
+            data-action="click->recent-updates#toggle">Show</button>
+  </p>
 
-    <p class="header text-muted recent-updates-header">
-      <span>Recent Updates</span>
-      <button type="button" class="btn btn-link btn-link-inline"
-              aria-expanded="false" aria-controls="recent-updates-list"
-              data-recent-updates-target="toggle"
-              data-action="click->recent-updates#toggle">Show</button>
-    </p>
-
-    <ul id="recent-updates-list" class="list-unstyled recent-updates-list d-none"
-        data-recent-updates-target="list">
-      <% recent_updates.each do |event| %>
-        <li>
-          <span class="recent-updates-date"><%= event.created_at.to_date.strftime("%b %-d, %Y") %></span>
-          <span class="recent-updates-entry"><%= recent_update_item(event) %></span>
-        </li>
-      <% end %>
-    </ul>
-
+  <%# The frame is deliberately left without a src: the feed query is expensive, so the
+      Stimulus controller only points it at robyn/recent_updates the first time the box
+      is opened. Rendered unconditionally — an always-present box that can say "no
+      recent activity" makes a broken feed visible, where hiding the box on an empty
+      result would make it look identical to no activity at all. %>
+  <div id="recent-updates-body" class="d-none" data-recent-updates-target="list">
+    <%= turbo_frame_tag "recent_updates_frame", data: { recent_updates_target: "frame" } do %>
+      <p class="recent-updates-placeholder text-muted">Loading&hellip;</p>
+    <% end %>
   </div>
 
-<% end %>
+</div>

@@ -528,6 +528,12 @@ dl {
         margin-top: 16px;
     }
 
+    // The frame's "Loading…" / "No recent activity." states, sized to sit where the
+    // first list row would.
+    .recent-updates-placeholder {
+        margin: 16px 0 0;
+    }
+
     .recent-updates-list li {
         display: flex;
         align-items: baseline;
