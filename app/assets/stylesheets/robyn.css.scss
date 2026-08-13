@@ -165,8 +165,7 @@ table.main-search-list {
     }
 
     // Reserve room for .homepage-blurb (fixed to the viewport bottom whenever it's
-    // shown) so it never overlays page content, e.g. the recent-updates box's
-    // rounded bottom corner, once scrolled to the end of the page.
+    // shown) so it never overlays page content
     @media only screen and (min-height: 680px) {
         padding-bottom: 90px;
     }
@@ -541,7 +540,7 @@ dl {
         text-align: left;
     }
 
-    // Set a fixed width for the date column, to accommodat ethe widest possible date
+    // Set a fixed width for the date column, to accommodate the widest possible date
     // the "%b %-d, %Y" format can produce, in both Helvetica Neue and the Arial fallback.
     .recent-updates-date {
         flex: 0 0 90px;
