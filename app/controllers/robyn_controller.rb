@@ -17,6 +17,13 @@ class RobynController < ApplicationController
     end
   end
 
+  # The "Recent Updates" box on the homepage. Loaded into its turbo frame only when the
+  # box is first expanded (see recent_updates_controller.js)
+  def recent_updates
+    render partial: '/robyn/recent_updates_list',
+           locals: { recent_updates: AuditEvent.for_recent_updates.limit(20) }
+  end
+
   # Lazy-loaded Turbo frame endpoints for omnisearch results
   # These follow the same pattern as for_resource methods in other controllers
 
@@ -94,7 +101,7 @@ class RobynController < ApplicationController
 
   def search
 
-    search = params[:search_value] 
+    search = params[:search_value]
 
     logger.info "song search: #{search}"
 
@@ -110,7 +117,7 @@ class RobynController < ApplicationController
 
   def search_gigs
 
-    search = params[:search_value] 
+    search = params[:search_value]
 
     logger.info "gig search: #{search}"
 
@@ -126,7 +133,7 @@ class RobynController < ApplicationController
 
   def search_venues
 
-    search = params[:search_value] 
+    search = params[:search_value]
 
     logger.info "venue search: #{search}"
 
@@ -138,7 +145,7 @@ class RobynController < ApplicationController
 
     render json: @venues
 
-  end 
+  end
 
   def search_compositions
 

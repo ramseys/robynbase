@@ -25,6 +25,9 @@ application.register("local-time", LocalTimeController)
 import MapController from "./map_controller"
 application.register("map", MapController)
 
+import RecentUpdatesController from "./recent_updates_controller"
+application.register("recent-updates", RecentUpdatesController)
+
 import SortableController from "./sortable_controller"
 application.register("sortable", SortableController)
 

@@ -1,5 +1,27 @@
 
 
+/* ====== Link-styled buttons
+
+   Styling override for a button control that looks like a link.
+
+   .btn-link-inline additionally strips the .btn box off, for a link-button that sits
+   in running text or a flex header, where .btn's padding and fixed 1rem font-size
+   would break alignment with the text beside it. Link-buttons in a table cell should
+   NOT use it: there the box is what lines them up with the .form-control inputs in the
+   neighbouring cells.
+*/
+
+.btn-link {
+  text-decoration: none;
+}
+
+.btn-link-inline {
+  padding: 0;
+  border: 0;
+  vertical-align: baseline;
+}
+
+
 /* ====== Table styling */
 
 .required {

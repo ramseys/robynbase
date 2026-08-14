@@ -163,6 +163,12 @@ table.main-search-list {
         outline: none;
         border-radius: 0;
     }
+
+    // Reserve room for .homepage-blurb (fixed to the viewport bottom whenever it's
+    // shown) so it never overlays page content
+    @media only screen and (min-height: 680px) {
+        padding-bottom: 90px;
+    }
 }
 
 .search-criteria {
@@ -507,6 +513,45 @@ dl {
     }
 }
 
+.recent-updates {
+    margin-top: 20px;
+
+    .recent-updates-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 0;
+    }
+
+    .recent-updates-list {
+        margin-top: 16px;
+    }
+
+    // The frame's "Loading…" / "No recent activity." states, sized to sit where the
+    // first list row would.
+    .recent-updates-placeholder {
+        margin: 16px 0 0;
+    }
+
+    .recent-updates-list li {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        text-align: left;
+    }
+
+    // Set a fixed width for the date column, to accommodate the widest possible date
+    // the "%b %-d, %Y" format can produce, in both Helvetica Neue and the Arial fallback.
+    .recent-updates-date {
+        flex: 0 0 90px;
+        color: #999;
+    }
+
+    .recent-updates-entry {
+        text-align: left;
+    }
+}
+
 .homepage-heading {
     margin: auto;
     width: 50%;
@@ -548,7 +593,9 @@ dl {
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 0 20px;
+    z-index: 10;
+    background-color: #fff;
+    padding: 10px 20px;
 
     margin: auto;
 

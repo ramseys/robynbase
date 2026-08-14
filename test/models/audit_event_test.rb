@@ -132,4 +132,101 @@ class AuditEventTest < ActiveSupport::TestCase
       assert_equal "1 track", event.summary_text
     end
   end
+
+  test "for_recent_updates excludes destroys and non-top-level types, newest first" do
+    Rails.application.eager_load! # ensure every `audited` model has registered
+
+    older = AuditEvent.create!(transaction_id: 900_001, primary_item_type: "Gig", primary_item_id: 1,
+              item_name: "Old Gig", event: "create", created_at: 2.days.ago)
+    newer = AuditEvent.create!(transaction_id: 900_002, primary_item_type: "Venue", primary_item_id: 2,
+              item_name: "New Venue", event: "update", created_at: 1.day.ago)
+    AuditEvent.create!(transaction_id: 900_003, primary_item_type: "Song", primary_item_id: 3,
+      item_name: "Deleted Song", event: "destroy", created_at: 1.hour.ago)
+    AuditEvent.create!(transaction_id: 900_004, primary_item_type: "Gigset", primary_item_id: 4,
+      item_name: "Some Setlist Row", event: "update", created_at: 1.hour.ago)
+
+    ids = AuditEvent.for_recent_updates.pluck(:transaction_id)
+    assert_equal [newer.transaction_id, older.transaction_id],
+                 ids & [900_001, 900_002, 900_003, 900_004]
+  end
+
+  test "for_recent_updates drops earlier events for an item that was later destroyed" do
+    Rails.application.eager_load!
+
+    # A gig created, edited, then deleted: the destroy row is filtered out, and these
+    # two must go too or the feed links to a record that no longer exists.
+    AuditEvent.create!(transaction_id: 900_201, primary_item_type: "Gig", primary_item_id: 77,
+      item_name: "Doomed Gig", event: "create", created_at: 3.days.ago)
+    AuditEvent.create!(transaction_id: 900_202, primary_item_type: "Gig", primary_item_id: 77,
+      item_name: "Doomed Gig", event: "update", created_at: 2.days.ago)
+    AuditEvent.create!(transaction_id: 900_203, primary_item_type: "Gig", primary_item_id: 77,
+      item_name: "Doomed Gig", event: "destroy", created_at: 1.day.ago)
+
+    # A different gig that is still alive, to prove the filter is not just excluding
+    # everything, and that one item's deletion doesn't affect another's rows.
+    survivor = AuditEvent.create!(transaction_id: 900_204, primary_item_type: "Gig", primary_item_id: 78,
+      item_name: "Live Gig", event: "create", created_at: 2.days.ago)
+
+    ids = AuditEvent.for_recent_updates.pluck(:transaction_id)
+    assert_empty ids & [900_201, 900_202, 900_203],
+                 "no event for a since-deleted item should reach the feed"
+    assert_includes ids, survivor.transaction_id
+  end
+
+  test "for_recent_updates keeps events recorded after a destroy of the same id" do
+    Rails.application.eager_load!
+
+    # The legacy tables carry their own primary keys, so an id can be reissued. Only a
+    # destroy *later* than the event should suppress it.
+    AuditEvent.create!(transaction_id: 900_211, primary_item_type: "Venue", primary_item_id: 88,
+      item_name: "Old Venue", event: "create", created_at: 5.days.ago)
+    AuditEvent.create!(transaction_id: 900_212, primary_item_type: "Venue", primary_item_id: 88,
+      item_name: "Old Venue", event: "destroy", created_at: 4.days.ago)
+    reissued = AuditEvent.create!(transaction_id: 900_213, primary_item_type: "Venue", primary_item_id: 88,
+      item_name: "New Venue On Reused Id", event: "create", created_at: 3.days.ago)
+
+    ids = AuditEvent.for_recent_updates.pluck(:transaction_id)
+    assert_not_includes ids, 900_211, "the pre-destroy event is suppressed"
+    assert_includes ids, reissued.transaction_id, "the post-destroy event survives"
+  end
+
+  test "for_recent_updates ignores events older than RECENT_UPDATES_WINDOW" do
+    Rails.application.eager_load!
+
+    inside = AuditEvent.create!(transaction_id: 900_221, primary_item_type: "Song", primary_item_id: 91,
+      item_name: "Recent Song", event: "update",
+      created_at: AuditEvent::RECENT_UPDATES_WINDOW.ago + 1.day)
+    AuditEvent.create!(transaction_id: 900_222, primary_item_type: "Song", primary_item_id: 92,
+      item_name: "Ancient Song", event: "update",
+      created_at: AuditEvent::RECENT_UPDATES_WINDOW.ago - 1.day)
+
+    ids = AuditEvent.for_recent_updates.pluck(:transaction_id)
+    assert_includes ids, inside.transaction_id, "an event inside the window is kept"
+    assert_not_includes ids, 900_222, "an event older than the window is dropped"
+  end
+
+  test "for_recent_updates collapses same-day duplicate events for the same item" do
+    Rails.application.eager_load!
+
+    earlier_same_day = AuditEvent.create!(transaction_id: 900_005, primary_item_type: "Gig", primary_item_id: 42,
+      item_name: "Dup Gig", event: "update", created_at: Time.zone.parse("2026-01-05 09:00"))
+    later_same_day = AuditEvent.create!(transaction_id: 900_006, primary_item_type: "Gig", primary_item_id: 42,
+      item_name: "Dup Gig", event: "update", created_at: Time.zone.parse("2026-01-05 17:00"))
+    different_day = AuditEvent.create!(transaction_id: 900_007, primary_item_type: "Gig", primary_item_id: 42,
+      item_name: "Dup Gig", event: "update", created_at: Time.zone.parse("2026-01-06 09:00"))
+    different_event_same_day = AuditEvent.create!(transaction_id: 900_008, primary_item_type: "Gig", primary_item_id: 42,
+      item_name: "Dup Gig", event: "create", created_at: Time.zone.parse("2026-01-05 09:30"))
+
+    ids = AuditEvent.for_recent_updates.pluck(:transaction_id) &
+          [900_005, 900_006, 900_007, 900_008]
+
+    assert_not_includes ids, earlier_same_day.transaction_id,
+                         "earlier same-day duplicate should be collapsed away"
+    assert_includes ids, later_same_day.transaction_id,
+                     "later same-day duplicate should be kept"
+    assert_includes ids, different_day.transaction_id,
+                     "a different day is not a duplicate"
+    assert_includes ids, different_event_same_day.transaction_id,
+                     "a different event type is not a duplicate"
+  end
 end
