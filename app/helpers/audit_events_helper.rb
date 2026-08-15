@@ -16,7 +16,7 @@ module AuditEventsHelper
 
     safe_join([item_category, audit_item_link(event), action], " ")
   end
-  
+
   # Bootstrap badge class for a primary event / child-row kind.
   AUDIT_BADGE_CLASS = {
     "create"    => "bg-success",
@@ -47,7 +47,9 @@ module AuditEventsHelper
   def audit_item_link(event)
     path_helper = "#{event.primary_item_type.to_s.underscore}_path" if event.primary_item_type.present?
     if event.event != "destroy" && event.primary_item_id.present? && path_helper && respond_to?(path_helper)
-      link_to event.item_name, public_send(path_helper, event.primary_item_id)
+      # use turbo_frame: top to ensure that the link breaks out of its frame and
+      # shows the item in a full page load
+      link_to event.item_name, public_send(path_helper, event.primary_item_id), data: { turbo_frame: "_top" }
     else
       event.item_name
     end
