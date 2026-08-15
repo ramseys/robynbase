@@ -13,6 +13,16 @@ class AuditEventsHelperTest < ActionView::TestCase
     assert_includes audit_item_link(comp), %(href="#{composition_path(7)}")
   end
 
+  # The homepage feed renders these links inside the recent_updates_frame, and the
+  # target page has no such frame — without the breakout Turbo replaces the feed with
+  # a "content missing" message instead of navigating. Asserted explicitly so that
+  # dropping the attribute fails here rather than only in the browser.
+  test "links break out of the enclosing turbo frame" do
+    event = AuditEvent.new(primary_item_type: "Gig", primary_item_id: 11,
+                           item_name: "The Ritz - 1990-01-01", event: "update")
+    assert_includes audit_item_link(event), %(data-turbo-frame="_top")
+  end
+
   test "does not link a destroy" do
     event = AuditEvent.new(primary_item_type: "Gig", primary_item_id: 11,
                            item_name: "The Ritz - 1990-01-01", event: "destroy")
@@ -42,15 +52,15 @@ class AuditEventsHelperTest < ActionView::TestCase
   test "recent_update_item uses the category-page name for the item type" do
     event = AuditEvent.new(primary_item_type: "Composition", primary_item_id: 7,
                            item_name: "Album (2000)", event: "create")
-    assert_equal %(Release <a href="#{composition_path(7)}">Album (2000)</a> added),
-                 recent_update_item(event)
+    assert_recent_update_row "Release", composition_path(7), "Album (2000)", "added",
+                             recent_update_item(event)
   end
 
   test "recent_update_item falls back to the class name for unmapped types" do
     event = AuditEvent.new(primary_item_type: "Gig", primary_item_id: 11,
                            item_name: "The Ritz - 1990-01-01", event: "update")
-    assert_equal %(Gig <a href="#{gig_path(11)}">The Ritz - 1990-01-01</a> updated),
-                 recent_update_item(event)
+    assert_recent_update_row "Gig", gig_path(11), "The Ritz - 1990-01-01", "updated",
+                             recent_update_item(event)
   end
 
   test "recent_update_item renders an unlinkable item as plain text" do
@@ -81,6 +91,16 @@ class AuditEventsHelperTest < ActionView::TestCase
     event = AuditEvent.new(primary_item_type: "Gig", primary_item_id: 11,
                            item_name: "The Ritz - 1990-01-01", event: "update")
     assert_predicate recent_update_item(event), :html_safe?
+  end
+
+  private
+
+  # Asserts a feed row's whole wording and structure — "<category> <link> <action>" —
+  # without pinning the anchor's attribute list, so adding a data attribute to the link
+  # doesn't break tests that are really about the row's assembly.
+  def assert_recent_update_row(category, path, name, action, html)
+    assert_match %r{\A#{category} <a [^>]*href="#{Regexp.escape(path)}"[^>]*>#{Regexp.escape(name)}</a> #{action}\z},
+                 html
   end
 
 end
