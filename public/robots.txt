@@ -1,27 +1,74 @@
+# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+#
 # Search engines and link-preview agents are deliberately NOT listed here:
 #   Googlebot, bingbot, Applebot, DuckDuckBot, facebookexternalhit
-# Applebot-Extended / Google-Extended below opt out of AI training only;
-# Applebot and Googlebot continue to index normally.
+
+# --- Commercial data harvesting -------------------------------------------
 
 User-agent: Amazonbot
-User-agent: AhrefsBot
-User-agent: SemrushBot
-User-agent: MJ12bot
-User-agent: DotBot
-User-agent: AwarioBot
-User-agent: SERankingBacklinksBot
-User-agent: serpstatbot
-User-agent: PetalBot
-User-agent: Baiduspider
-User-agent: Sogou web spider
-User-agent: Bytespider
-User-agent: TikTokSpider
-User-agent: GPTBot
-User-agent: ClaudeBot
-User-agent: meta-externalagent
-User-agent: CCBot
-User-agent: PerplexityBot
-User-agent: panscient.com
-User-agent: Applebot-Extended
-User-agent: Google-Extended
 Disallow: /
+
+User-agent: panscient.com
+Disallow: /
+
+
+# --- SEO / backlink crawlers ----------------------------------------------
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: AwarioBot
+Disallow: /
+
+User-agent: SERankingBacklinksBot
+Disallow: /
+
+User-agent: serpstatbot
+Disallow: /
+
+
+# --- Search engines ---------------
+
+User-agent: PetalBot
+Disallow: /
+
+User-agent: Baiduspider
+Disallow: /
+
+User-agent: Baiduspider-render
+Disallow: /
+
+User-agent: Sogou web spider
+Disallow: /
+
+
+# --- ByteDance (both widely reported to ignore robots.txt) -----------------
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: TikTokSpider
+Disallow: /
+
+
+# --- AI training crawlers --------------------------------------------------
+#
+# Allowed by decision. Provisional — may be revisited.
+#
+# Not blocked: GPTBot, ClaudeBot, meta-externalagent, CCBot, PerplexityBot,
+# Applebot-Extended, Google-Extended.
+
+
+# --- Everything else is welcome -------------------------------------------
+
+User-agent: *
+Disallow:
