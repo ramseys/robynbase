@@ -51,4 +51,52 @@ class RobynControllerTest < ActionController::TestCase
     assert_response :success
     assert_includes response.body, "No recent activity."
   end
+
+  # --- omnisearch ---
+  #
+  # Omnisearch renders one lazy turbo frame per resource, and each frame sorts through
+  # Paginated#apply_ordering. RobynController is the one host that cannot use a
+  # RESOURCE_TYPE constant - it serves all four resources - so it overrides
+  # #resource_type per action; these cover that the override reaches the sorter.
+
+  test "omnisearch frames render for every resource" do
+    {
+      omnisearch_gigs: "Roundhouse",
+      omnisearch_songs: "Wasps",
+      omnisearch_compositions: "Robyn",
+      omnisearch_venues: "Roundhouse"
+    }.each do |action, search|
+      get action, params: { search_value: search }
+
+      assert_response :success, "#{action} did not render"
+    end
+  end
+
+  # Every SONG fixture title contains an "a", so all three come back and the sort is
+  # the only thing deciding their order
+  test "omnisearch honours an explicit sort in both directions" do
+    assert_equal ["Driving Aloud", "Madonna of the Wasps", "The Cheese Alarm"],
+                 omnisearch_song_order("asc")
+
+    assert_equal ["The Cheese Alarm", "Madonna of the Wasps", "Driving Aloud"],
+                 omnisearch_song_order("desc")
+  end
+
+  test "omnisearch without a search value is a bad request" do
+    get :omnisearch_gigs
+
+    assert_response :bad_request
+  end
+
+  private
+
+    # The song titles in the order the rendered frame lists them
+    def omnisearch_song_order(direction)
+      get :omnisearch_songs, params: { search_value: "a", sort: "name", direction: direction }
+      assert_response :success
+
+      titles = Song.pluck(:Song)
+
+      titles.sort_by { |title| response.body.index(title) || titles.size }
+    end
 end

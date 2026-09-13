@@ -31,6 +31,13 @@ module ApplicationHelper
     
     end
 
+    # Tags a link to a show page with the search that produced it, so the show page
+    # can offer Prev/Next/Back through that result set. A blank search_back (the
+    # `for_resource` embedded tables, which are not searches) leaves the path alone.
+    def with_search_back(path, search_back)
+        search_back.present? ? "#{path}?search_back=#{CGI.escape(search_back)}" : path
+    end
+
     # Renders a sortable column header.
     
     #  1. Up/down icons to indicate sort direction

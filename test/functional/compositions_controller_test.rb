@@ -125,6 +125,68 @@ class CompositionsControllerTest < ActionController::TestCase
     assert_equal original_year, Composition.find(1).Year
   end
 
+  # --- search-result navigation ---
+
+  SEARCH_BACK = "/compositions/index?direction=asc&search_type=title&sort=year".freeze
+
+  test "index search results link to show pages carrying the search" do
+    other = Composition.create!(Title: "Element of Light", Artist: "Robyn Hitchcock", Year: 1986, Type: "Album")
+
+    get :index, params: { search_type: "title", search_value: "" }
+
+    assert_equal [SEARCH_BACK], search_backs_in_rows.uniq
+
+    # sorted by year asc: Element of Light (1986), then Perspex Island (1994)
+    get :show, params: { id: other.id, search_back: SEARCH_BACK }
+    nav = rendered_search_nav
+
+    assert_nil nav[:prev]
+    assert_equal SEARCH_BACK, nav[:back]
+    assert_equal "/compositions/1?search_back=#{CGI.escape(SEARCH_BACK)}", nav[:next]
+
+    get :show, params: { id: 1, search_back: SEARCH_BACK }
+    nav = rendered_search_nav
+
+    assert_equal "/compositions/#{other.id}?search_back=#{CGI.escape(SEARCH_BACK)}", nav[:prev]
+    assert_nil nav[:next]
+  end
+
+  test "a release-type-only search normalizes search_type and round-trips through replay" do
+    other = Composition.create!(Title: "Element of Light", Artist: "Robyn Hitchcock", Year: 1986, Type: "Album")
+
+    get :index, params: { release_type: ["0"] }
+    search_back = search_backs_in_rows.first
+
+    # the "all" that index substitutes for a blank search_type has to be captured, so
+    # replay builds the same collection
+    assert_equal "/compositions/index?direction=asc&release_type%5B%5D=0&search_type=all&sort=year", search_back
+
+    get :show, params: { id: other.id, search_back: search_back }
+    nav = rendered_search_nav
+
+    assert_nil nav[:prev]
+    assert_equal "/compositions/1?search_back=#{CGI.escape(search_back)}", nav[:next]
+  end
+
+  test "show reached without a search renders no navigation bar" do
+    get :show, params: { id: 1 }
+
+    assert_nil rendered_search_nav
+  end
+
+  test "for_resource rows never carry a search context" do
+    get :for_resource, params: { resource_type: "song", resource_id: 1 }
+
+    assert_includes @response.body, "row-link"
+    assert_not_includes @response.body, "search_back"
+  end
+
+  test "a search_back for another controller is ignored" do
+    get :show, params: { id: 1, search_back: "/songs/index?search_type=all&search_value=&sort=name&direction=asc" }
+
+    assert_nil rendered_search_nav
+  end
+
   private
 
   def comp_create_params(tracks: nil, overrides: {})

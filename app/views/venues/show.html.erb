@@ -1,33 +1,16 @@
 <div class="robyn-page" data-controller="venue" data-venue-venue-value="<%= @venue.to_json %>">
 
-<div class="row" style="margin-bottom: 0px">
-  <div class="flex-grow-1 w-auto">
-    <h2 class="main-header">
+<% venue_links = capture do %>
+  <% if @venue.get_notes.present? %> <span><a href="#notes">Notes</a></span> <% end %>
+  <% if @venue.gigs.present? %> <span><a href="#gigs">Gigs</a></span> <% end %>
+<% end %>
 
-      <%= @venue.Name %>
-
-      <small>
-        <span class="inpage-navigation">
-          <% if @venue.get_notes.present? %> <span><a href="#notes">Notes</a></span> <% end %>
-          <% if @venue.gigs.present? %> <span><a href="#gigs">Gigs</a></span> <% end %>
-        </span>
-      </small>
-
-    </h2>
-
-  </div>
-
-  <% if can? :manage, Venue %>
-
-    <div class="d-none d-md-block ms-3 w-auto">
-      <%= form_tag(edit_venue_path, :method => 'GET') do %>
-        <%= submit_tag "Edit Venue", :name => nil %>
-      <%end%>
-    </div>
-
-  <% end %>
-
-</div>
+<%= render 'shared/show_header',
+           title: @venue.Name,
+           inpage_links: venue_links,
+           edit_path: (edit_venue_path(@venue) if can? :manage, Venue),
+           edit_label: "Edit Venue",
+           search_nav: @search_nav %>
 
 <% has_map = @venue.latitude.present? %>
 <% has_images = @venue.images.attached? %>
@@ -108,12 +91,6 @@
 
   </div>
 
-</div>
-
 <% end %>
-
-</div>
-
-</div>
 
 </div>

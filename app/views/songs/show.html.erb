@@ -3,48 +3,35 @@
 
 <div class="robyn-page">
 
-<div class="row">
-  <div class="flex-grow-1 w-auto">
+<% performance_info = @song.performance_info %>
 
-    <% performance_info = @song.performance_info %>
-
-    <h2><%= @song.full_name %>
-
-      <small>
-        <span class="inpage-navigation">
-          <% if @albums_present %> <span><a href="#albums">Releases</a></span> <% end %>
-          <% if @gigs_present %> <span><a href="#gigs">Gigs</a></span> <% end %>
-          <% if @song.lyrics_ref %>
-            <span>
-              <a href="<%= @song.lyrics_ref %>" target="_blank">Lyrics</a>
-            </span>
-          <% elsif show_lyrics(@song) %>
-            <span><a href="#lyrics">Lyrics</a></span>
-          <% end %>
-          <% if @song.Comments.present? %> <span><a href="#comments">Comments</a></span> <% end %>
-          <% if @song.Tab %> <span><a href="#tabs">Tablature</a></span> <% end %>
-        </span>
-      </small>
-
-    </h2>
-
-    <% if @song.Improvised? %>
-      <div class="subheader">Improvised</div>
-    <% end %>
-
-  </div>
-
-  <% if can? :manage, Song %>
-
-    <div class="d-none d-md-block ms-3 w-auto">
-      <%= form_tag(edit_song_path, :method => 'GET') do %>
-        <%= submit_tag "Edit Song", :name => nil %>
-      <%end%>
-    </div>
-
+<% song_links = capture do %>
+  <% if @albums_present %> <span><a href="#albums">Releases</a></span> <% end %>
+  <% if @gigs_present %> <span><a href="#gigs">Gigs</a></span> <% end %>
+  <% if @song.lyrics_ref %>
+    <span>
+      <a href="<%= @song.lyrics_ref %>" target="_blank">Lyrics</a>
+    </span>
+  <% elsif show_lyrics(@song) %>
+    <span><a href="#lyrics">Lyrics</a></span>
   <% end %>
+  <% if @song.Comments.present? %> <span><a href="#comments">Comments</a></span> <% end %>
+  <% if @song.Tab %> <span><a href="#tabs">Tablature</a></span> <% end %>
+<% end %>
 
-</div>
+<% song_subheader = capture do %>
+  <% if @song.Improvised? %>
+    <div class="subheader">Improvised</div>
+  <% end %>
+<% end %>
+
+<%= render 'shared/show_header',
+           title: @song.full_name,
+           inpage_links: song_links,
+           subheader: song_subheader,
+           edit_path: (edit_song_path(@song) if can? :manage, Song),
+           edit_label: "Edit Song",
+           search_nav: @search_nav %>
 
 <div class="row">
 

@@ -23,6 +23,11 @@ module InfiniteScrollConcern
     # Build locals hash for the partial
     locals = { config[:records_name] => records }
     locals.merge!(config[:additional_locals]) if config[:additional_locals]
+
+    # Rows appended by infinite scroll are part of the same result set as the ones
+    # rendered by index/quick_query, so they carry the same search context (see
+    # SearchNavigable) - without it only the first batch would offer Prev/Next.
+    locals[:search_back] = build_infinite_scroll_search_back_url(config[:index_path], config[:quick_query_path])
     
     render json: {
       html: render_to_string(partial: config[:partial], 
@@ -89,6 +94,8 @@ module InfiniteScrollConcern
   #   :records_name - Symbol for the collection variable name (e.g., :songs, :venues)
   #   :partial - String path to the table rows partial (e.g., 'song_rows', 'venue_rows')
   #   :default_sort_params - Hash with :sort and :direction for UI state (e.g., { sort: 'name', direction: 'asc' })
+  #   :index_path - Path of the resource's index action, for the search_back link on appended rows
+  #   :quick_query_path - Path of the resource's quick_query action, same purpose
   #
   # Optional keys:
   #   :additional_locals - Hash of extra local variables to pass to the partial
@@ -101,6 +108,8 @@ module InfiniteScrollConcern
   #       records_name: :songs,
   #       partial: 'song_rows',
   #       default_sort_params: { sort: 'name', direction: 'asc' },
+  #       index_path: songs_index_path,
+  #       quick_query_path: songs_quick_query_path,
   #       additional_locals: { show_lyrics: (params[:search_type] == "lyrics") },
   #       additional_search_params: ->(params) { [build_date_criteria(params), params[:gig_type]] }
   #     }

@@ -60,7 +60,7 @@
         <% if @compositions.empty? %>
           <%= render partial: '/robyn/nothing_found' %>
         <% else %>
-          <%= render partial: '/compositions/release_list', locals: {albums: @compositions, table_id: CompositionsController::TABLE_ID} %>
+          <%= render partial: '/compositions/release_list', locals: {albums: @compositions, table_id: CompositionsController::TABLE_ID, search_back: @search_back} %>
         <% end %>
 
       <% else %>

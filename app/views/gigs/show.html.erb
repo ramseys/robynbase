@@ -5,41 +5,26 @@
 
 <div class="gig-page robyn-page">
 
-<div class="row">
-  <div class="flex-grow-1 w-auto">
-
-    <h2>
-
-      <%= "#{@gig.Venue} #{ '(Cancelled)' if @gig.cancelled}" %>
-      <% if @gig.Favorite %>
-        <span title="Favorite" class="bi-star-fill" aria-hidden="true" style="color: gold; text-shadow: 0 0 3px #000, 0 0 3px #000;"></span>
-      <% end %>
-
-      <small>
-        <span class="inpage-navigation">
-          <% if @gig.get_set.present? %> <span><a href="#setlist">Set List</a></span> <% end %>
-          <% if @gig.ShortNote.present? %> <span><a href="#notes">Notes</a></span> <% end %>
-          <% if @gig.get_reviews.present? %> <span><a href="#reviews">Reviews</a></span> <% end %>
-          <% if @gig.gigmedia.present? %> <span><a href="#media">Media</a></span> <% end %>
-        </span>
-      </small>
-
-    </h2>
-
-  </div>
-
-  <% if can? :manage, Gig %>
-
-    <div class="d-none d-md-block ms-3 w-auto">
-      <%= form_tag(edit_gig_path, :method => 'GET') do %>
-        <%= submit_tag "Edit Gig", :name => nil %>
-      <% end %>
-
-    </div>
-
+<% gig_title = capture do %>
+  <%= "#{@gig.Venue} #{ '(Cancelled)' if @gig.cancelled}" %>
+  <% if @gig.Favorite %>
+    <span title="Favorite" class="bi-star-fill" aria-hidden="true" style="color: gold; text-shadow: 0 0 3px #000, 0 0 3px #000;"></span>
   <% end %>
+<% end %>
 
-</div>
+<% gig_links = capture do %>
+  <% if @gig.get_set.present? %> <span><a href="#setlist">Set List</a></span> <% end %>
+  <% if @gig.ShortNote.present? %> <span><a href="#notes">Notes</a></span> <% end %>
+  <% if @gig.get_reviews.present? %> <span><a href="#reviews">Reviews</a></span> <% end %>
+  <% if @gig.gigmedia.present? %> <span><a href="#media">Media</a></span> <% end %>
+<% end %>
+
+<%= render 'shared/show_header',
+           title: gig_title,
+           inpage_links: gig_links,
+           edit_path: (edit_gig_path(@gig) if can? :manage, Gig),
+           edit_label: "Edit Gig",
+           search_nav: @search_nav %>
 
 <% if @gig.images.attached? %>
 
@@ -216,6 +201,8 @@
     </div>
 
   <% end %>
+
+  </div>
 
 <% end %>
 

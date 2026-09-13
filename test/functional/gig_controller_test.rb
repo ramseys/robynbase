@@ -141,6 +141,131 @@ class GigControllerTest < ActionController::TestCase
     assert_equal original_billed_as, Gig.find(1).BilledAs
   end
 
+  # --- search-result navigation ---
+
+  SEARCH_BACK = "/gigs/index?direction=desc&search_type=venue&search_value=roundhouse&sort=date".freeze
+
+  test "index search results link to show pages carrying the search" do
+    get :index, params: { search_type: "venue", search_value: "roundhouse" }
+
+    backs = search_backs_in_rows
+    assert_equal 2, backs.size
+    assert_equal [SEARCH_BACK], backs.uniq
+  end
+
+  test "show walks prev and next through the search result set" do
+    # sorted by date desc the two Roundhouse gigs are gig 2 (2023-07-20), then gig 1 (2023-06-15)
+    get :show, params: { id: 2, search_back: SEARCH_BACK }
+    nav = rendered_search_nav
+
+    assert_nil nav[:prev]
+    assert_equal SEARCH_BACK, nav[:back]
+    assert_equal "/gigs/1?search_back=#{CGI.escape(SEARCH_BACK)}", nav[:next]
+
+    get :show, params: { id: 1, search_back: SEARCH_BACK }
+    nav = rendered_search_nav
+
+    assert_equal "/gigs/2?search_back=#{CGI.escape(SEARCH_BACK)}", nav[:prev]
+    assert_equal SEARCH_BACK, nav[:back]
+    assert_nil nav[:next]
+  end
+
+  test "show reached without a search renders no navigation bar" do
+    get :show, params: { id: 1 }
+
+    assert_nil rendered_search_nav
+  end
+
+  test "for_resource rows never carry a search context" do
+    get :for_resource, params: { resource_type: "venue", resource_id: 1 }
+
+    assert_includes @response.body, "row-link"
+    assert_not_includes @response.body, "search_back"
+  end
+
+  test "on_this_day results round-trip through replay" do
+    # a second gig sharing gig 1's month and day, so the replayed set has an order to walk
+    other = Gig.create!(VENUEID: 1, Venue: "The Roundhouse", GigDate: "2019-06-15 20:00:00",
+                        GigYear: "2019", BilledAs: "Robyn Hitchcock", GigType: "Concert")
+
+    get :on_this_day, params: { date: { month: "6", day: "15" } }
+    search_back = search_backs_in_rows.first
+
+    assert_equal "/gigs/on_this_day?date%5Bday%5D=15&date%5Bmonth%5D=6&direction=desc&sort=date", search_back
+
+    # date desc puts the 2023 gig first, the one just created second
+    get :show, params: { id: 1, search_back: search_back }
+    nav = rendered_search_nav
+
+    assert_nil nav[:prev]
+    assert_equal "/gigs/#{other.id}?search_back=#{CGI.escape(search_back)}", nav[:next]
+  end
+
+  test "a search_back for another controller is ignored" do
+    get :show, params: { id: 1, search_back: "/songs/index?search_type=all&search_value=&sort=name&direction=asc" }
+
+    assert_nil rendered_search_nav
+  end
+
+  # --- show-page header layout ---
+
+  test "back to search sits left of prev and next, split off by a pipe" do
+    get :show, params: { id: 1, search_back: SEARCH_BACK }
+    steps = rendered_search_steps
+
+    assert_match(/title="Back to Search"/, steps)
+    assert_match(/<i class="bi-chevron-double-left"/, steps)
+    assert steps.index("Back to Search") < steps.index("show-header-steps-divider"),
+           "back should come before the divider"
+    assert steps.index("show-header-steps-divider") < steps.index("Previous result"),
+           "the divider should separate back from the stepping buttons"
+    assert_not_includes rendered_header_links.to_s, "Back to Search",
+                        "the in-page links line should not carry it as well"
+  end
+
+  test "the divider is dropped when there is nothing to step to" do
+    # nothing matches this search, so the record has no siblings to step between
+    stale = "/gigs/index?direction=desc&search_type=venue&search_value=nonexistent&sort=date"
+
+    get :show, params: { id: 1, search_back: stale }
+    steps = rendered_search_steps
+
+    assert_match(/title="Back to Search"/, steps)
+    assert_not_includes steps, "Previous result"
+    assert_not_includes steps, "Next result"
+    assert_not_includes steps, "show-header-steps-divider"
+  end
+
+  test "prev and next sit on the title line, above the in-page links" do
+    get :show, params: { id: 1, search_back: SEARCH_BACK }
+    header = rendered_show_header
+
+    assert header.index('class="show-header-title-row"') < header.index('<div class="show-header-steps">'),
+           "the inline steps should sit inside the title row"
+    assert header.index('<div class="show-header-steps">') < header.index('class="inpage-navigation"'),
+           "in-page links should come after the title row"
+  end
+
+  test "edit renders as a link after the in-page links for an admin" do
+    # this test case is signed in as an admin (see setup)
+    get :show, params: { id: 1 }
+    links = rendered_header_links
+
+    assert_match %r{<span class="show-header-edit d-none d-md-inline"><a href="/gigs/1/edit">Edit Gig</a></span>}, links,
+                 "Edit stays desktop-only, like the other admin actions"
+
+    assert links.index("#setlist") < links.index("Edit Gig"), "Edit should follow the in-page links"
+    assert_no_match(/input[^>]*Edit Gig/, links, "Edit should be a link, not a submit button")
+  end
+
+  test "edit is not offered to anonymous visitors" do
+    session.delete(:user_id)
+
+    get :show, params: { id: 1 }
+
+    assert_not_includes rendered_header_links.to_s, "Edit Gig"
+  end
+
   private
 
   def gig_create_params(gigsets: nil, gigmedia: nil, overrides: {})

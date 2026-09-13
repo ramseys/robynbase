@@ -4,6 +4,7 @@
 <% page_length = 10 unless local_assigns.has_key? :page_length %>
 <% table_id = "" unless local_assigns.has_key? :table_id %>
 <% frame_name = "table_frame" unless local_assigns.has_key? :frame_name %>
+<% search_back = nil unless local_assigns.has_key? :search_back %>
 
 <% columns = [
   ['venue', 'Venue', '25%'],
@@ -60,7 +61,7 @@
     </thead>
   <% end %>
   <tbody data-infinite-scroll-target="tbody">
-  <%= render '/gigs/gig_rows', gigs: gigs %>
+  <%= render '/gigs/gig_rows', gigs: gigs, search_back: search_back %>
   </tbody>
 </table>
 

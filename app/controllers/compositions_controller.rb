@@ -4,37 +4,29 @@ class CompositionsController < ApplicationController
   include ImageOrderingConcern
   include Paginated
   include InfiniteScrollConcern
+  include SearchNavigable
 
+  RESOURCE_TYPE = :composition
   TABLE_ID = 'album-main'.freeze
   DEFAULT_SORT_PARAMS = { sort: 'year', direction: 'asc' }.freeze
+
+  # Params that define a release search, for replaying it from a show page
+  SEARCH_BACK_INDEX_PARAMS = [:search_type, :search_value, { release_type: [] }].freeze
 
   authorize_resource :only => [:new, :edit, :update, :create, :destroy]
 
   def index
-    search_type_param  = params[:search_type]
-    release_type_param = params[:release_type]
-
     # if the user entered any search terms at all
-    if search_type_param.present? || release_type_param.present?
+    if params[:search_type].present? || params[:release_type].present?
 
-      # ensure a concrete search_type is echoed back to the view/infinite-scroll JS,
-      # even when entering search mode via release_type alone (e.g. a bookmarked filter link)
-      params[:search_type] = "all" if search_type_param.blank?
-
-      # textual search ("all" searches across all fields)
-      search_type = (search_type_param.present? && search_type_param != "all") ? search_type_param.to_sym : nil
-
-      # release types
-      release_types = build_release_types_from_params(params)
-      #release_type_param.map {|type| type.to_i} if release_type_param.present?
-
-      # grab the albums, based on the given search criteria
-      compositions_collection = Composition.search_by(search_type, params[:search_value], release_types)
+      compositions_collection = build_composition_search_collection(params)
       @pagy, @compositions = apply_sorting_and_pagination(
         compositions_collection,
         table_id: TABLE_ID,
         default_sort_params: DEFAULT_SORT_PARAMS
       )
+
+      @search_back = build_search_back_url(compositions_index_path, SEARCH_BACK_INDEX_PARAMS)
 
     else
       @compositions = nil
@@ -49,6 +41,10 @@ class CompositionsController < ApplicationController
 
     # get album art (if any)
     @associated_images = get_associated_images(@comp.Title)
+
+    @search_nav = build_search_nav(@comp.id,
+                                   collection_builders: composition_collection_builders,
+                                   default_sort_params: DEFAULT_SORT_PARAMS)
   end
 
   def get_associated_images(title)
@@ -224,7 +220,6 @@ class CompositionsController < ApplicationController
 
   end
 
-
   def comp_params
 
     # permit attributes we're saving
@@ -287,37 +282,52 @@ class CompositionsController < ApplicationController
 
     compositions_collection = Composition.quick_query(params[:query_id], params[:query_attribute])
     @pagy, @compositions = apply_sorting_and_pagination(compositions_collection, table_id: TABLE_ID, default_sort_params: DEFAULT_SORT_PARAMS)
+    @search_back = build_search_back_url(compositions_quick_query_path, SEARCH_BACK_QUICK_QUERY_PARAMS)
     render "index"
 
   end
 
   private
 
-  def apply_sorting(collection)
-    # Clear any existing ordering before applying new sort
-    collection = collection.reorder('')
+  # Builds the release search collection from either the live params or a search_back
+  # hash replayed on a show page, so both go through one code path. The search_type
+  # normalization has to live here too, so replay treats a release-type-only search
+  # identically to the way index does.
+  def build_composition_search_collection(source_params)
+    # ensure a concrete search_type is echoed back to the view/infinite-scroll JS,
+    # even when entering search mode via release_type alone (e.g. a bookmarked filter link)
+    source_params[:search_type] = "all" if source_params[:search_type].blank?
 
-    ResourceSorter.sort(collection,
-                       resource_type: :composition,
-                       sort_column: params[:sort],
-                       direction: params[:direction])
+    # grab the albums, based on the given search criteria ("all" searches across all fields)
+    Composition.search_by(search_kind(source_params), source_params[:search_value], build_release_types_from_params(source_params))
+  end
+
+  # Replay branches for search-result navigation, keyed by the action that produced
+  # the result set.
+  def composition_collection_builders
+    {
+      "index" => ->(source) { build_composition_search_collection(source) },
+      "quick_query" => ->(source) { replayable_quick_query(Composition, source) }
+    }
   end
 
   def build_release_types_from_params(params)
     release_type_param = params[:release_type]
-    
+
     if release_type_param.present?
       release_type_param.map {|type| type.to_i} if release_type_param.present?
     end
-    
+
   end
-  
+
   def infinite_scroll_config
     {
       model: Composition,
       records_name: :albums,
       partial: 'composition_rows',
       default_sort_params: DEFAULT_SORT_PARAMS,
+      index_path: compositions_index_path,
+      quick_query_path: compositions_quick_query_path,
       additional_search_params: ->(params) { [build_release_types_from_params(params)] }
     }
   end

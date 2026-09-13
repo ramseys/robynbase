@@ -1,7 +1,9 @@
+<% search_back = nil unless local_assigns.has_key? :search_back %>
+
 <% for comp in albums %>
   <tr class="clickable-row">
     <td class="main-column">
-      <a href="<%= composition_path(comp) %>" class="row-link" data-turbo-frame="_top"><%= comp.Title %></a>
+      <a href="<%= with_search_back(composition_path(comp), search_back) %>" class="row-link" data-turbo-frame="_top"><%= comp.Title %></a>
     </td>
     <td> <%= comp.Artist %> </td>
     <td> <%= comp.Type %> </td>

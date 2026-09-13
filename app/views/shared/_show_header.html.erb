@@ -1,0 +1,71 @@
+<%# The title block every category show page shares.
+
+    Title line: the title, with the search controls right-aligned - Back to Search,
+    then a pipe, then Prev/Next. Line below: the in-page anchor links, then the Edit
+    link for users who can manage the resource.
+
+    The search controls drop their text labels below the md breakpoint so they stay
+    on the title line at every width; Edit is hidden there entirely, matching the way
+    the other admin actions behave on mobile.
+
+    locals:
+      title        - html for the h2's contents (title text plus any adornments)
+      inpage_links - html for the in-page anchor links, each wrapped in its own <span>
+      edit_path    - edit page path, or nil when the user can't manage this resource
+      edit_label   - text for the edit link (e.g. "Edit Gig")
+      search_nav   - a SearchNavigable::SearchNav, or nil when there's no search context
+      subheader    - optional html rendered beneath the links
+%>
+<% search_nav = nil unless local_assigns.has_key? :search_nav %>
+<% inpage_links = nil unless local_assigns.has_key? :inpage_links %>
+<% edit_path = nil unless local_assigns.has_key? :edit_path %>
+<% subheader = nil unless local_assigns.has_key? :subheader %>
+
+<div class="show-header">
+
+  <div class="show-header-title-row">
+
+    <h2 class="show-header-title"><%= title %></h2>
+
+    <% if search_nav %>
+      <div class="show-header-steps">
+
+        <a href="<%= search_nav.back_path %>" class="btn btn-sm btn-outline-secondary" title="Back to Search" aria-label="Back to Search">
+          <i class="bi-chevron-double-left" aria-hidden="true"></i><span class="d-none d-md-inline">Back to Search</span>
+        </a>
+
+        <% if search_nav.prev_path.present? || search_nav.next_path.present? %>
+
+          <span class="show-header-steps-divider" aria-hidden="true">|</span>
+
+          <% if search_nav.prev_path.present? %>
+            <a href="<%= search_nav.prev_path %>" class="btn btn-sm btn-outline-secondary" title="Previous result" aria-label="Previous result">
+              <i class="bi-chevron-left" aria-hidden="true"></i><span class="d-none d-md-inline">Prev</span>
+            </a>
+          <% end %>
+
+          <% if search_nav.next_path.present? %>
+            <a href="<%= search_nav.next_path %>" class="btn btn-sm btn-outline-secondary" title="Next result" aria-label="Next result">
+              <span class="d-none d-md-inline">Next</span><i class="bi-chevron-right" aria-hidden="true"></i>
+            </a>
+          <% end %>
+
+        <% end %>
+
+      </div>
+    <% end %>
+
+  </div>
+
+  <% if inpage_links.present? || edit_path.present? %>
+    <div class="inpage-navigation">
+      <%= inpage_links %>
+      <% if edit_path.present? %>
+        <span class="show-header-edit d-none d-md-inline"><%= link_to edit_label, edit_path %></span>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= subheader %>
+
+</div>

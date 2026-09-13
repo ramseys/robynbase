@@ -1,7 +1,9 @@
+<% search_back = nil unless local_assigns.has_key? :search_back %>
+
 <% for venue in venues %>
   <tr class="clickable-row">
     <td class="main-column">
-      <a href="<%= venue_path(venue) %>" class="row-link" data-turbo-frame="_top"><%= venue.Name %></a>
+      <a href="<%= with_search_back(venue_path(venue), search_back) %>" class="row-link" data-turbo-frame="_top"><%= venue.Name %></a>
     </td>
     <td>
       <%= venue.City%>
