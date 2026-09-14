@@ -187,6 +187,14 @@ class CompositionsControllerTest < ActionController::TestCase
     assert_nil rendered_search_nav
   end
 
+  # release_type is the only array-valued search param on any of the four resources,
+  # and a release-type-only search is also the one case where index rewrites a blank
+  # search_type to "all" - both have to survive the round trip through the JS for the
+  # appended rows to describe the same search
+  test "appended rows carry the same release-type search as the listing" do
+    assert_appended_rows_carry_the_listing_search(:index, search_type: "", release_type: ["0"])
+  end
+
   private
 
   def comp_create_params(tracks: nil, overrides: {})

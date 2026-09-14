@@ -207,6 +207,24 @@ class GigControllerTest < ActionController::TestCase
     assert_nil rendered_search_nav
   end
 
+  # Gigs carry the largest set of search params, so this is where the listing and the
+  # infinite-scroll endpoint have the most to disagree about - the advanced date
+  # criteria reach the endpoint through the JS's advancedQueryParams rather than as
+  # ordinary search fields
+  test "appended rows carry the same search as the listing, advanced criteria included" do
+    assert_appended_rows_carry_the_listing_search(:index,
+                                                  search_type: "venue", search_value: "roundhouse",
+                                                  gig_date: "2023-06-15", gig_range: "24",
+                                                  gig_range_type: GigsController::RANGE_TYPE[:months].to_s,
+                                                  gig_type: "")
+  end
+
+  test "appended rows carry the same quick query as the listing" do
+    assert_appended_rows_carry_the_listing_search(:quick_query,
+                                                  { query_id: "with_setlists" },
+                                                  { query_type: "quick_query" })
+  end
+
   # --- show-page header layout ---
 
   test "back to search sits left of prev and next, split off by a pipe" do

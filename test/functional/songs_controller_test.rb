@@ -64,4 +64,8 @@ class SongsControllerTest < ActionController::TestCase
     assert_nil rendered_search_nav
   end
 
+  test "appended rows carry the same search as the listing" do
+    assert_appended_rows_carry_the_listing_search(:index, search_type: "all", search_value: "")
+  end
+
 end
