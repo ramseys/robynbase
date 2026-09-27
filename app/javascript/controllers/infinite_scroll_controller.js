@@ -188,6 +188,12 @@ export default class extends Controller {
 
   getEstimatedRowHeight() {
     const firstRow = this.tbodyTarget.querySelector('tr')
-    return firstRow ? firstRow.offsetHeight : 60 // fallback to 60px
+    // A row that's missing, hidden, or not yet laid out measures 0.
+    // ensureScreenFilled divides by this, so a 0 asks for an infinite number of
+    // rows and pages through the entire result set - fall back to 60px instead
+    // of trusting a measurement that can't be real.
+    const measured = firstRow ? firstRow.offsetHeight : 0
+
+    return measured > 0 ? measured : 60
   }
 }

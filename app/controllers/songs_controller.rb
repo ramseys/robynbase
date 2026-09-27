@@ -1,17 +1,22 @@
 class SongsController < ApplicationController
   include Paginated
   include InfiniteScrollConcern
+  include SearchNavigable
 
+  RESOURCE_TYPE = :song
   TABLE_ID = 'song-main'.freeze
   DEFAULT_SORT_PARAMS = { sort: 'name', direction: 'asc' }.freeze
+
+  # Params that define a song search, for replaying it from a show page
+  SEARCH_BACK_INDEX_PARAMS = [:search_type, :search_value].freeze
   
   authorize_resource :only => [:new, :edit, :update, :create, :destroy]
 
   def index
     if params[:search_type].present?
-      kind = params[:search_type] == "all" ? nil : params[:search_type].to_sym
-      songs_collection = Song.search_by(kind, params[:search_value])
+      songs_collection = build_song_search_collection(params)
       @pagy, @songs = apply_sorting_and_pagination(songs_collection, table_id: TABLE_ID, default_sort_params: DEFAULT_SORT_PARAMS)
+      @search_back = build_search_back_url(songs_index_path, SEARCH_BACK_INDEX_PARAMS)
     else
       @songs = nil
       @pagy = nil
@@ -24,6 +29,7 @@ class SongsController < ApplicationController
   def quick_query
     songs_collection = Song.quick_query(params[:query_id], params[:query_attribute])
     @pagy, @songs = apply_sorting_and_pagination(songs_collection, table_id: TABLE_ID, default_sort_params: DEFAULT_SORT_PARAMS)
+    @search_back = build_search_back_url(songs_quick_query_path, SEARCH_BACK_QUICK_QUERY_PARAMS)
     render "index"
   end
 
@@ -100,32 +106,44 @@ class SongsController < ApplicationController
 
     @gigs_present = @song.gigs.present?
     @albums_present = @song.compositions.present?
+
+    @search_nav = build_search_nav(@song.id,
+                                   collection_builders: song_collection_builders,
+                                   default_sort_params: DEFAULT_SORT_PARAMS)
   end
 
   
   private
-  
+
+    # Builds the song search collection from either the live params or a search_back
+    # hash replayed on a show page, so both go through one code path.
+    def build_song_search_collection(source_params)
+      Song.search_by(search_kind(source_params), source_params[:search_value])
+    end
+
+    # Replay branches for search-result navigation, keyed by the action that produced
+    # the result set.
+    def song_collection_builders
+      {
+        "index" => ->(source) { build_song_search_collection(source) },
+        "quick_query" => ->(source) { replayable_quick_query(Song, source) }
+      }
+    end
+
     def infinite_scroll_config
       {
         model: Song,
         records_name: :songs,
         partial: 'song_rows',
         default_sort_params: DEFAULT_SORT_PARAMS,
+        index_path: songs_index_path,
+        quick_query_path: songs_quick_query_path,
         additional_locals: {
           show_lyrics: (params[:search_type] == "lyrics"),
           show_lyrics_snippet: params[:search_type] == "lyrics" ? params[:search_value] : nil }
       }
     end
-    
-    def apply_sorting(collection)
-      ResourceSorter.sort(
-        collection,
-        resource_type: :song,
-        sort_column: params[:sort],
-        direction: params[:direction]
-      )
-    end
-    
+
     def return_to_previous_page(song)
       previous_page = session.delete(:return_to_song)
       if previous_page.present?

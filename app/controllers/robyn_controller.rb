@@ -165,9 +165,11 @@ class RobynController < ApplicationController
 
   private
 
-  def apply_sorting(collection)
-    # Determine which resource type we're sorting based on the action
-    resource_type = case action_name
+  # Omnisearch serves every resource, so the type comes from the action rather than
+  # the single RESOURCE_TYPE constant Paginated expects. nil for any other action,
+  # which ResourceSorter leaves unsorted.
+  def resource_type
+    case action_name
     when 'omnisearch_gigs'
       :gig
     when 'omnisearch_songs'
@@ -176,14 +178,7 @@ class RobynController < ApplicationController
       :composition
     when 'omnisearch_venues'
       :venue
-    else
-      return collection
     end
-
-    ResourceSorter.sort(collection,
-                       resource_type: resource_type,
-                       sort_column: params[:sort],
-                       direction: params[:direction])
   end
 
 end

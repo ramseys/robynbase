@@ -183,13 +183,13 @@ class Gig < ApplicationRecord
 
   ## quick queries
 
+  # EXISTS rather than a join, so the relation yields one row per gig without
+  # needing DISTINCT (search-result navigation cannot replay a DISTINCT relation -
+  # see SearchNavigable#ordered_search_ids)
   def self.quick_query_gigs_with_setlists(secondary_attribute)
-    query = joins("LEFT OUTER JOIN GSET on GIG.gigid = GSET.gigid")
-    if secondary_attribute.nil?
-      query.where("GSET.SETID IS NOT NULL").distinct
-    else
-      query.where("GSET.SETID IS NULL").distinct
-    end
+    has_setlist = "EXISTS (SELECT 1 FROM GSET WHERE GSET.GIGID = GIG.GIGID)"
+
+    secondary_attribute.nil? ? where(has_setlist) : where("NOT #{has_setlist}")
   end
 
   def self.quick_query_gigs_without_definite_dates
@@ -241,8 +241,10 @@ class Gig < ApplicationRecord
 
   end
 
+  # EXISTS rather than a join, so a gig with several attachments comes back once
+  # without needing DISTINCT (see quick_query_gigs_with_setlists)
   def self.quick_query_gigs_with_images
-    joins("JOIN active_storage_attachments asa").where("asa.record_type = 'Gig' and asa.record_id = GIG.GIGID").distinct
+    where("EXISTS (SELECT 1 FROM active_storage_attachments asa WHERE asa.record_type = 'Gig' AND asa.record_id = GIG.GIGID)")
   end
 
   # returns all gigs that occured on the given day (ie, the give day/month, ignoring year).

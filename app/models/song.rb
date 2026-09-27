@@ -225,7 +225,7 @@ class Song < ApplicationRecord
   def self.quick_query_never_released(secondary_attribute)
 
     # songs = joins(:compositions).distinct
-    songs = Song.joins("LEFT OUTER JOIN TRAK ON SONG.songid = TRAK.songid").where("TRAK.songid IS NULL").distinct
+    songs = Song.joins("LEFT OUTER JOIN TRAK ON SONG.songid = TRAK.songid").where("TRAK.songid IS NULL")
 
     case secondary_attribute
       when "originals"
@@ -249,7 +249,7 @@ class Song < ApplicationRecord
   end
 
   def self.quick_query_released_no_live_performances
-    songs = joins("INNER JOIN TRAK ON SONG.songid = TRAK.songid").joins("LEFT OUTER JOIN GSET ON SONG.songid = GSET.songid").where("GSET.songid IS NULL").distinct
+    songs = joins("INNER JOIN TRAK ON SONG.songid = TRAK.songid").joins("LEFT OUTER JOIN GSET ON SONG.songid = GSET.songid").where("GSET.songid IS NULL")
     self.prepare_query(songs)
   end
 

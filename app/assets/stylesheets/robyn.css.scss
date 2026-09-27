@@ -15,11 +15,14 @@ a {
 }
 
 .top-container {
-    padding-top: 60px;
+    // clears the fixed navbar. The navbar is shorter while its nav is collapsed, so
+    // the clearance has to shrink with it
+    padding-top: 46px;
     padding-bottom: 30px;
     margin: 0 5px;
 
     @media (min-width: 768px) {
+        padding-top: 60px;
         margin: 0 30px;
     }
 }
@@ -34,7 +37,7 @@ a {
     margin-bottom: 0 !important;
     border: solid;
     border-width: 0 0 1px;
-    border-color: #ce1515;
+    border-color: var(--robyn-red);
 
     .navbar-nav {
         li {
@@ -53,10 +56,10 @@ a {
                     background-image: none;
                     background-repeat: no-repeat;
                     color: white;
-                    background-color: #ce1515;
+                    background-color: var(--robyn-red);
 
                     &:hover {
-                        background-color: #ce1515;
+                        background-color: var(--robyn-red);
                     }
                 }
             }
@@ -100,22 +103,87 @@ table.main-search-list {
     }
 }
 
+/* Edit is an admin action sitting among ordinary navigation links, so it takes the
+   site red - the same accent as the navbar rule and the active nav item - to mark it
+   out as a different kind of thing. */
+.show-header-edit a {
+    color: var(--robyn-red);
+
+    &:hover,
+    &:focus {
+        color: var(--robyn-red-dark);
+    }
+}
+
 .inpage-navigation {
     font-size: 14px;
     font-weight: 400;
 
-    span {
-        padding-left: 7px;
-
-        &:after {
-            content: "|";
-            padding-left: 7px;
-        }
-
-        &:last-child:after {
-            content: "";
-        }
+    // separator sits before each item rather than after it, so hiding the trailing
+    // Edit link on mobile takes its divider with it instead of stranding one
+    span + span:before {
+        content: "|";
+        padding: 0 7px;
     }
+}
+
+/* Shared show-page title block: back chevron, title and search Prev/Next on one
+   line, in-page links (and Edit) on the line below. See shared/_show_header. */
+.show-header {
+    // no top margin: .top-container already clears the fixed navbar, and the index
+    // pages start their content at that same line - anything more is dead space
+    margin-bottom: 24px;
+}
+
+.show-header-title-row {
+    // shared by the title and the steps beside it, so the buttons can center
+    // themselves on the title's first line
+    --show-header-title-font-size: 2rem;
+    --show-header-title-line-height: 1.2;
+
+    display: flex;
+    // top, not center: a title that wraps to a second line grows downwards and
+    // would otherwise drag the steps down with it
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.show-header-title {
+    // min-width lets a long title wrap rather than shove the steps off the row
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+
+    // Fixed, not fluid. Bootstrap's responsive font sizing scales h2 as
+    // calc(1.325rem + 0.9vw) up to 1200px and then pins it to 2rem - two branches
+    // that only meet at a 16px root. This app's root is 14px, so the fluid side
+    // overshoots to ~29.3px and visibly snaps back to 28px at the breakpoint.
+    font-size: var(--show-header-title-font-size);
+    line-height: var(--show-header-title-line-height);
+}
+
+.show-header-steps {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+
+    // as tall as one line of the title, so the buttons sit centered against the
+    // title's first line whether or not the title wraps
+    min-height: calc(var(--show-header-title-font-size) * var(--show-header-title-line-height));
+
+    a {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+}
+
+/* Sets Back to Search apart from the two result-stepping buttons beside it */
+.show-header-steps-divider {
+    color: var(--bs-secondary-color);
+    padding: 0 2px;
 }
 
 .item-form {
@@ -139,17 +207,8 @@ table.main-search-list {
     margin-bottom: 10px;
 }
 
-.main-header {
-    margin-top: 20px;
-    margin-bottom: 30px;
-
-    small {
-        margin-left: 20px;
-    }
-}
-
 .subheader {
-    margin-top: -10px;
+    margin-top: 4px;
     font-size: 18px;
     color: #777;
     font-style: italic;
@@ -219,17 +278,24 @@ table.main-search-list {
    on the left (it's rendered before the result count in the DOM, not just
    positioned there visually, so tab/reading order matches what's on screen),
    with its expanded panel — rendered after both, as a sibling of the subrow
-   rather than a child of it — capped to the same width and centered the
-   same way the search box and subrow are, independently of either. */
+   rather than a child of it — capped and centered to match the box, so all
+   three line up on both edges. */
 @media (min-width: 768px) {
     .search-criteria {
+        // A fixed cap rather than a percentage: the box only needs to be wide
+        // enough for a search phrase, and a percentage kept growing it past
+        // that on wide screens. The subrow below it and the Advanced Options
+        // panel take the same cap, so the three stay lined up — change it here
+        // and they all follow.
+        --search-box-max-width: 600px;
+
         .search-bar-row {
             display: flex;
             justify-content: center;
         }
 
         .search-input-group {
-            max-width: 80%;
+            max-width: var(--search-box-max-width);
         }
 
         .search-bar-subrow {
@@ -237,7 +303,7 @@ table.main-search-list {
             flex-wrap: wrap;
             align-items: center;
             column-gap: 16px;
-            max-width: 80%;
+            max-width: var(--search-box-max-width);
             // intentionally tighter than the 10px gap used at mobile widths
             // (.advanced-options-header's padding-top, zeroed out below)
             margin: 2px auto 0;
@@ -259,14 +325,13 @@ table.main-search-list {
 
         .row.advanced-options {
             // it's a plain block sibling here, not a flex item of
-            // .search-bar-subrow, so left/right need setting explicitly —
-            // matching .search-input-group's left edge (its 80% max-width is
-            // centered, so 10% is what's left over on each side) keeps the
-            // panel lined up with the search box without also capping its
-            // width to match, which left too little room for its content
-            // (checkbox labels wrapping) than it had before this box existed
-            margin-left: 10%;
-            margin-right: 0;
+            // .search-bar-subrow, so it gets the cap and the centering
+            // directly rather than inheriting either. margin overrides
+            // Bootstrap's negative .row gutters, which would otherwise pull
+            // the panel a few px wider than the box on each side
+            max-width: var(--search-box-max-width);
+            margin-left: auto;
+            margin-right: auto;
         }
     }
 }

@@ -5,24 +5,11 @@
 
 <div class="albums-page robyn-page" data-controller="composition">
 
-  <div class="row">
-
-    <div class="flex-grow-1 w-auto">
-      <h2><%= @comp.Title %></h2>
-    </div>
-
-    <% if can? :manage, Composition %>
-
-      <div class="d-none d-md-block ms-3 w-auto">
-        <%= form_tag(edit_composition_path, :method => 'GET') do %>
-          <%= submit_tag "Edit Release", :name => nil %>
-        <%end%>
-
-      </div>
-
-    <% end %>
-
-  </div>
+  <%= render 'shared/show_header',
+             title: @comp.Title,
+             edit_path: (edit_composition_path(@comp) if can? :manage, Composition),
+             edit_label: "Edit Release",
+             search_nav: @search_nav %>
 
   <!-- images: <%= @associated_images.to_s =%> -->
 
@@ -107,8 +94,7 @@
 
     <% end %>
 
-  <div>
-
+  </div>
 
 </div>
 

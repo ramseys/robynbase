@@ -3,17 +3,22 @@ class VenuesController < ApplicationController
   include InfiniteScrollConcern
   include ImageUtils
   include ImageOrderingConcern
+  include SearchNavigable
 
+  RESOURCE_TYPE = :venue
   TABLE_ID = 'venue-main'.freeze
   DEFAULT_SORT_PARAMS = { sort: 'venue', direction: 'asc' }.freeze
+
+  # Params that define a venue search, for replaying it from a show page
+  SEARCH_BACK_INDEX_PARAMS = [:search_type, :search_value].freeze
 
   authorize_resource :only => [:new, :edit, :update, :create, :destroy]
 
   def index
     if params[:search_type].present?
-      kind = params[:search_type] == "all" ? nil : params[:search_type].to_sym
-      venues_collection = Venue.search_by(kind, params[:search_value])
+      venues_collection = build_venue_search_collection(params)
       @pagy, @venues = apply_sorting_and_pagination(venues_collection, table_id: TABLE_ID, default_sort_params: DEFAULT_SORT_PARAMS)
+      @search_back = build_search_back_url(venues_index_path, SEARCH_BACK_INDEX_PARAMS)
     else
       @venues = nil
       @pagy = nil
@@ -24,6 +29,10 @@ class VenuesController < ApplicationController
   def show
     # Eager load associations to avoid N+1 queries
     @venue = Venue.includes(:gigs).find(params[:id])
+
+    @search_nav = build_search_nav(@venue.id,
+                                   collection_builders: venue_collection_builders,
+                                   default_sort_params: DEFAULT_SORT_PARAMS)
   end
 
   # Prepare venue create page
@@ -89,30 +98,39 @@ class VenuesController < ApplicationController
   def quick_query
     venues_collection = Venue.quick_query(params[:query_id], params[:query_attribute])
     @pagy, @venues = apply_sorting_and_pagination(venues_collection, table_id: TABLE_ID, default_sort_params: DEFAULT_SORT_PARAMS)
+    @search_back = build_search_back_url(venues_quick_query_path, SEARCH_BACK_QUICK_QUERY_PARAMS)
     render "index"
   end
 
 
   private
 
+    # Builds the venue search collection from either the live params or a search_back
+    # hash replayed on a show page, so both go through one code path.
+    def build_venue_search_collection(source_params)
+      Venue.search_by(search_kind(source_params), source_params[:search_value])
+    end
+
+    # Replay branches for search-result navigation, keyed by the action that produced
+    # the result set.
+    def venue_collection_builders
+      {
+        "index" => ->(source) { build_venue_search_collection(source) },
+        "quick_query" => ->(source) { replayable_quick_query(Venue, source) }
+      }
+    end
+
     def infinite_scroll_config
       {
         model: Venue,
         records_name: :venues,
         partial: 'venue_rows',
-        default_sort_params: DEFAULT_SORT_PARAMS
+        default_sort_params: DEFAULT_SORT_PARAMS,
+        index_path: venues_index_path,
+        quick_query_path: venues_quick_query_path
       }
     end
-  
-    def apply_sorting(collection)
-      ResourceSorter.sort(
-        collection,
-        resource_type: :venue,
-        sort_column: params[:sort],
-        direction: params[:direction]
-      )
-    end
-    
+
     def save_referrer
       session[:return_to_venue] = request.referer
     end

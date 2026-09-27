@@ -4,9 +4,15 @@ class GigsController < ApplicationController
   include ImageOrderingConcern
   include Paginated
   include InfiniteScrollConcern
+  include SearchNavigable
 
+  RESOURCE_TYPE = :gig
   TABLE_ID = 'gig-main'.freeze
   DEFAULT_SORT_PARAMS = { sort: 'date', direction: 'desc' }.freeze
+
+  # Params that define a gig search, for replaying it from a show page
+  SEARCH_BACK_INDEX_PARAMS = [:search_type, :search_value, :gig_date, :gig_range, :gig_range_type, :gig_type].freeze
+  SEARCH_BACK_ON_THIS_DAY_PARAMS = [{ date: [:month, :day] }].freeze
 
   authorize_resource :only => [:new, :edit, :update, :create, :destroy]
 
@@ -19,13 +25,9 @@ class GigsController < ApplicationController
   def index
     if params[:search_type].present?
 
-      search_type = params[:search_type] == "all" ? nil : params[:search_type].to_sym
-
-      date_criteria = build_date_criteria_from_params(params)
-
-      # grab gigs that meet *all* the specified criteria
-      gigs_collection = Gig.search_by(search_type, params[:search_value], date_criteria, params[:gig_type])
+      gigs_collection = build_gig_search_collection(params)
       @pagy, @gigs = apply_sorting_and_pagination(gigs_collection, table_id: TABLE_ID, default_sort_params: DEFAULT_SORT_PARAMS)
+      @search_back = build_search_back_url(gigs_index_path, SEARCH_BACK_INDEX_PARAMS)
 
     else
       @gigs = nil
@@ -37,6 +39,10 @@ class GigsController < ApplicationController
   def show
     # Eager load associations to avoid N+1 queries
     @gig = Gig.includes(:venue, :gigmedia, gigsets: :song, images_attachments: :blob).find(params[:id])
+
+    @search_nav = build_search_nav(@gig.id,
+                                   collection_builders: gig_collection_builders,
+                                   default_sort_params: DEFAULT_SORT_PARAMS)
   end
 
   # prepare gig create page
@@ -170,26 +176,37 @@ class GigsController < ApplicationController
   def quick_query
     gigs_collection = Gig.quick_query(params[:query_id], params[:query_attribute])
     @pagy, @gigs = apply_sorting_and_pagination(gigs_collection, table_id: TABLE_ID, default_sort_params: DEFAULT_SORT_PARAMS)
+    @search_back = build_search_back_url(gigs_quick_query_path, SEARCH_BACK_QUICK_QUERY_PARAMS)
     render "index"
   end
 
   def on_this_day
     gigs_collection = Gig.quick_query_gigs_on_this_day(params['date']['month'], params['date']['day'])
     @pagy, @gigs = apply_sorting_and_pagination(gigs_collection, table_id: TABLE_ID, default_sort_params: DEFAULT_SORT_PARAMS)
+    @search_back = build_search_back_url(gigs_on_this_day_path, SEARCH_BACK_ON_THIS_DAY_PARAMS)
     render "index"
   end
 
   private
 
+  # Builds the gig search collection from either the live params or a search_back
+  # hash replayed on a show page, so both go through one code path.
+  def build_gig_search_collection(source_params)
+    date_criteria = build_date_criteria_from_params(source_params)
 
-  def apply_sorting(collection)
-    # Clear any existing ordering before applying new sort
-    collection = collection.reorder('')
+    # grab gigs that meet *all* the specified criteria
+    Gig.search_by(search_kind(source_params), source_params[:search_value], date_criteria, source_params[:gig_type])
+  end
 
-    ResourceSorter.sort(collection,
-                       resource_type: :gig,
-                       sort_column: params[:sort],
-                       direction: params[:direction])
+  # Replay branches for search-result navigation, keyed by the action that produced
+  # the result set. on_this_day gets its own branch because it takes nested
+  # date[month]/date[day] params rather than a query_id.
+  def gig_collection_builders
+    {
+      "index" => ->(source) { build_gig_search_collection(source) },
+      "quick_query" => ->(source) { replayable_quick_query(Gig, source) },
+      "on_this_day" => ->(source) { Gig.quick_query_gigs_on_this_day(source.dig(:date, :month), source.dig(:date, :day)) }
+    }
   end
 
   def return_to_previous_page(gig)
@@ -211,6 +228,8 @@ class GigsController < ApplicationController
       records_name: :gigs,
       partial: 'gig_rows',
       default_sort_params: DEFAULT_SORT_PARAMS,
+      index_path: gigs_index_path,
+      quick_query_path: gigs_quick_query_path,
       additional_search_params: ->(params) { [build_date_criteria_from_params(params), params[:gig_type]] }
     }
   end

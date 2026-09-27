@@ -4,6 +4,7 @@
 <% page_length = 10 unless local_assigns.has_key? :page_length %>
 <% table_id = "" unless local_assigns.has_key? :table_id %>
 <% frame_name = "table_frame" unless local_assigns.has_key? :frame_name %>
+<% search_back = nil unless local_assigns.has_key? :search_back %>
 
 <% columns = [['title', 'Title', '30%'], ['artist', 'Artist', '20%'], ['type', 'Type', '10%'], ['year', 'Year', '10%']] %>
 
@@ -49,7 +50,7 @@
     </thead>
   <% end %>
   <tbody data-infinite-scroll-target="tbody">
-  <%= render '/compositions/composition_rows', albums: albums %>
+  <%= render '/compositions/composition_rows', albums: albums, search_back: search_back %>
   </tbody>
 </table>
 
