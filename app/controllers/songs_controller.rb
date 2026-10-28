@@ -36,13 +36,11 @@ class SongsController < ApplicationController
   # Prepare song create page
   def new
     @song = Song.new
-    save_referrer
   end
 
   # Prepare song update page
   def edit 
     @song = Song.find(params[:id])
-    save_referrer
   end
     
   # Update existing song
@@ -62,7 +60,7 @@ class SongsController < ApplicationController
     
     song.update!(filtered_params)
     
-    return_to_previous_page(song)
+    redirect_to_updated(song)
     
   end
 
@@ -82,7 +80,7 @@ class SongsController < ApplicationController
     @song = Song.new(filtered_params)
 
     if @song.save
-      return_to_previous_page(@song)
+      redirect_to(@song)
     else
       # This line overrides the default rendering behavior, which
       # would have been to render the "create" view.
@@ -144,19 +142,6 @@ class SongsController < ApplicationController
       }
     end
 
-    def return_to_previous_page(song)
-      previous_page = session.delete(:return_to_song)
-      if previous_page.present?
-        redirect_to previous_page
-      else
-        redirect_to song
-      end
-    end
-
-    def save_referrer
-      session[:return_to_song] = request.referer
-    end
-    
     # Massage incoming params for saving
     def prepare_params
 

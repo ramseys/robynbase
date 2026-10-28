@@ -1,6 +1,6 @@
 <div class="gig-edit-page item-resource">
   
-  <%= link_to 'Back', gig_path(@gig) %>
+  <%= link_to 'Back', with_search_back(gig_path(@gig), params[:search_back]) %>
 
   <h1>Edit Gig</h1>
     

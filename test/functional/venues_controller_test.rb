@@ -50,7 +50,37 @@ class VenuesControllerTest < ActionController::TestCase
     assert_appended_rows_carry_the_listing_search(:index, search_type: "city", search_value: "london")
   end
 
+  # --- returning to the search after an edit ---
+
+  test "an edit from a search returns to the show page carrying it" do
+    session[:user_id] = users(:one).id
+
+    assert_edit_round_trip_carries_search("/venues/1", SEARCH_BACK, venue_update_params(1))
+  end
+
+  test "an edit without a search returns to the show page" do
+    session[:user_id] = users(:one).id
+
+    assert_edit_round_trip_without_search("/venues/1", venue_update_params(1))
+  end
+
+  # --- create ---
+
+  test "create goes to the new venue's show page" do
+    session[:user_id] = users(:one).id
+
+    post :create, params: { venue: { Name: "The Half Moon", City: "London", Country: "UK", SubCity: "", State: "" } }
+
+    assert_redirected_to venue_path(Venue.last)
+  end
+
   private
+
+    def venue_update_params(id)
+      venue = Venue.find(id)
+
+      { id: id, venue: { Name: venue.Name, City: venue.City, Country: venue.Country, SubCity: "", State: "" } }
+    end
 
     # A second London venue, so a city search has a result set with an order to walk.
     # Created per test rather than in setup: only two of these tests want it, and the

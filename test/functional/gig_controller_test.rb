@@ -284,6 +284,27 @@ class GigControllerTest < ActionController::TestCase
     assert_not_includes rendered_header_links.to_s, "Edit Gig"
   end
 
+  # --- returning to the search after an edit ---
+
+  test "an edit from a search returns to the show page carrying it" do
+    assert_edit_round_trip_carries_search("/gigs/1", SEARCH_BACK, gig_update_params(1))
+  end
+
+  test "an edit without a search returns to the show page" do
+    assert_edit_round_trip_without_search("/gigs/1", gig_update_params(1))
+  end
+
+  test "a failed update keeps the search in the re-rendered form" do
+    # pre-populated as in "failed parent update does not leave orphaned gigsets"
+    @controller.instance_variable_set(:@gig, Gig.find(1))
+    @controller.instance_variable_set(:@song_list, [])
+
+    patch :update, params: gig_update_params(1, overrides: { VENUEID: "9999", Venue: "Ghost Venue" }).merge(search_back: SEARCH_BACK)
+
+    assert_response :unprocessable_entity
+    assert_select "form input[type=hidden][name=search_back][value=?]", SEARCH_BACK
+  end
+
   private
 
   def gig_create_params(gigsets: nil, gigmedia: nil, overrides: {})

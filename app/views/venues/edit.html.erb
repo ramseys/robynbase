@@ -1,6 +1,6 @@
 <div class="venue-edit-page item-resource">
   
-  <%= link_to 'Back', venues_path %>
+  <%= link_to 'Back', with_search_back(venue_path(@venue), params[:search_back]) %>
 
   <h1>Edit Venue</h1>
     

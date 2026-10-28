@@ -1,6 +1,6 @@
 <div class="song-edit-page item-resource">
   
-  <%= link_to 'Back', songs_path %>
+  <%= link_to 'Back', with_search_back(song_path(@song), params[:search_back]) %>
 
   <h1>Edit Song</h1>
     

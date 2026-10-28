@@ -54,6 +54,37 @@ module SearchNavAssertions
                  "appended rows carry a different search than the listing they continue"
   end
 
+  # Asserts a search survives an edit made from a show page reached from it: Edit carries
+  # it to the edit page, whose form and Back link carry it on, and a successful update
+  # returns to the show page with it - so Back to Search still leads to that search.
+  # Expects a user who can manage the resource to be logged in.
+  def assert_edit_round_trip_carries_search(show_path, search_back, update_params)
+    id = update_params[:id]
+    escaped = CGI.escape(search_back)
+
+    get :show, params: { id: id, search_back: search_back }
+    assert_includes rendered_header_links.to_s, %(href="#{show_path}/edit?search_back=#{escaped}"),
+                    "the Edit link dropped the search"
+
+    get :edit, params: { id: id, search_back: search_back }
+    assert_select "form input[type=hidden][name=search_back][value=?]", search_back
+    assert_select "a[href=?]", "#{show_path}?search_back=#{escaped}", text: "Back"
+
+    patch :update, params: update_params.merge(search_back: search_back)
+    assert_redirected_to "#{show_path}?search_back=#{escaped}"
+  end
+
+  # Asserts an edit made without a search goes back to the plain show page at every step.
+  # Expects a user who can manage the resource to be logged in.
+  def assert_edit_round_trip_without_search(show_path, update_params)
+    get :edit, params: { id: update_params[:id] }
+    assert_select "input[name=search_back]", count: 0
+    assert_select "a[href=?]", show_path, text: "Back"
+
+    patch :update, params: update_params
+    assert_redirected_to show_path
+  end
+
   # The rendered show-page header block, delimited by balancing its <div> tags so it
   # doesn't depend on how the ERB happens to be indented
   def rendered_show_header

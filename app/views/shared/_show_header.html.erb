@@ -2,7 +2,8 @@
 
     Title line: the title, with the search controls right-aligned - Back to Search,
     then a pipe, then Prev/Next. Line below: the in-page anchor links, then the Edit
-    link for users who can manage the resource.
+    link for users who can manage the resource. Edit carries the search context along,
+    so saving returns to this page with Prev/Next/Back intact.
 
     The search controls drop their text labels below the md breakpoint so they stay
     on the title line at every width; Edit is hidden there entirely, matching the way
@@ -61,7 +62,7 @@
     <div class="inpage-navigation">
       <%= inpage_links %>
       <% if edit_path.present? %>
-        <span class="show-header-edit d-none d-md-inline"><%= link_to edit_label, edit_path %></span>
+        <span class="show-header-edit d-none d-md-inline"><%= link_to edit_label, with_search_back(edit_path, search_nav&.back_path) %></span>
       <% end %>
     </div>
   <% end %>

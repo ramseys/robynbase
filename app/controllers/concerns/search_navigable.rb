@@ -172,6 +172,18 @@ module SearchNavigable
     url_for(only_path: true, controller: controller_path, action: "show", id: id, search_back: search_back)
   end
 
+  # After a successful update, returns to the record's show page, carrying the search it
+  # was edited from (if any) so Prev/Next/Back pick up where the user left off. The edit
+  # form carries search_back through as a hidden field.
+  #
+  # search_back is not validated here: it only becomes a query param on this
+  # controller's own show path, never a redirect target, and show re-validates it.
+  def redirect_to_updated(record)
+    search_back = params[:search_back].presence
+
+    redirect_to search_back ? search_result_path(record.id, search_back) : record
+  end
+
   def safe_parse_uri(raw)
     URI.parse(raw)
   rescue URI::InvalidURIError
