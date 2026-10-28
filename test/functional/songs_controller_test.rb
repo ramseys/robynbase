@@ -68,4 +68,34 @@ class SongsControllerTest < ActionController::TestCase
     assert_appended_rows_carry_the_listing_search(:index, search_type: "all", search_value: "")
   end
 
+  # --- returning to the search after an edit ---
+
+  test "an edit from a search returns to the show page carrying it" do
+    session[:user_id] = users(:one).id
+
+    assert_edit_round_trip_carries_search("/songs/1", SEARCH_BACK, song_update_params(1))
+  end
+
+  test "an edit without a search returns to the show page" do
+    session[:user_id] = users(:one).id
+
+    assert_edit_round_trip_without_search("/songs/1", song_update_params(1))
+  end
+
+  # --- create ---
+
+  test "create goes to the new song's show page" do
+    session[:user_id] = users(:one).id
+
+    post :create, params: song_update_params(nil).except(:id)
+
+    assert_redirected_to song_path(Song.last)
+  end
+
+  private
+
+    def song_update_params(id)
+      { id: id, song: { full_name: "Madonna of the Wasps", Author: "", OrigBand: "", Lyrics: "", lyrics_ref: "", Comments: "" } }
+    end
+
 end

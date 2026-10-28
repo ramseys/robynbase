@@ -38,6 +38,13 @@ module ApplicationHelper
         search_back.present? ? "#{path}?search_back=#{CGI.escape(search_back)}" : path
     end
 
+    # Carries the search an edit page was reached from through the form submission,
+    # so update can return to the show page with its Prev/Next/Back intact. Renders
+    # nothing when the edit page wasn't reached from a search.
+    def search_back_field
+        hidden_field_tag(:search_back, params[:search_back]) if params[:search_back].present?
+    end
+
     # Renders a sortable column header.
     
     #  1. Up/down icons to indicate sort direction

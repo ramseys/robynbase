@@ -195,6 +195,16 @@ class CompositionsControllerTest < ActionController::TestCase
     assert_appended_rows_carry_the_listing_search(:index, search_type: "", release_type: ["0"])
   end
 
+  # --- returning to the search after an edit ---
+
+  test "an edit from a search returns to the show page carrying it" do
+    assert_edit_round_trip_carries_search("/compositions/1", SEARCH_BACK, comp_update_params(1))
+  end
+
+  test "an edit without a search returns to the show page" do
+    assert_edit_round_trip_without_search("/compositions/1", comp_update_params(1))
+  end
+
   private
 
   def comp_create_params(tracks: nil, overrides: {})

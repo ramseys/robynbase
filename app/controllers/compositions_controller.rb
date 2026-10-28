@@ -60,8 +60,6 @@ class CompositionsController < ApplicationController
     # get a list of all songs (for the songs selection dropdown)
     @song_list = Song.order(:Song).collect{|s| [s.full_name, s.SONGID]}
 
-    save_referrer
-
   end
 
 
@@ -72,8 +70,6 @@ class CompositionsController < ApplicationController
 
     # get a list of all songs (for the songs selection dropddown)
     @song_list = Song.order(:Song).collect{|s| [s.full_name, s.SONGID]}
-
-    save_referrer
 
   end
 
@@ -131,7 +127,7 @@ class CompositionsController < ApplicationController
         # update positions for reordered images
         update_image_positions
 
-        redirect_to(comp)
+        redirect_to_updated(comp)
       else
         render "edit"
       end
@@ -145,19 +141,6 @@ class CompositionsController < ApplicationController
 
     redirect_back fallback_location: gigs_url
 
-  end
-
-  def return_to_previous_page(composition)
-    previous_page = session.delete(:return_to_composition)
-    if previous_page.present?
-      redirect_to previous_page
-    else
-      redirect_to composition
-    end
-  end
-
-  def save_referrer
-    session[:return_to_composition] = request.referer
   end
 
   # Prepare the track list for save

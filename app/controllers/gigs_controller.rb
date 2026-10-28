@@ -53,8 +53,6 @@ class GigsController < ApplicationController
     # get a list of all songs (for the songs selection dropddown)
     @song_list = Song.order(:Song).collect{|s| [s.full_name, s.SONGID]}
 
-    save_referrer
-
   end
 
 
@@ -65,8 +63,6 @@ class GigsController < ApplicationController
 
     # get a list of all songs (for the songs selection dropddown)
     @song_list = Song.order(:Song).collect{|s| [s.full_name, s.SONGID]}
-
-    save_referrer
 
   end
 
@@ -123,9 +119,9 @@ class GigsController < ApplicationController
         # update positions for reordered images
         update_image_positions
 
-        redirect_to(gig)
+        redirect_to_updated(gig)
       else
-        render "edit"
+        render "edit", status: :unprocessable_entity
       end
     end
 
@@ -207,19 +203,6 @@ class GigsController < ApplicationController
       "quick_query" => ->(source) { replayable_quick_query(Gig, source) },
       "on_this_day" => ->(source) { Gig.quick_query_gigs_on_this_day(source.dig(:date, :month), source.dig(:date, :day)) }
     }
-  end
-
-  def return_to_previous_page(gig)
-    previous_page = session.delete(:return_to_gig)
-    if previous_page.present?
-      redirect_to previous_page
-    else
-      redirect_to gig
-    end
-  end
-
-  def save_referrer
-    session[:return_to_gig] = request.referer
   end
 
   def infinite_scroll_config

@@ -38,13 +38,11 @@ class VenuesController < ApplicationController
   # Prepare venue create page
   def new
     @venue = Venue.new
-    save_referrer
   end
 
   # Prepare venue update page
   def edit 
     @venue = Venue.find(params[:id])
-    save_referrer
   end
 
   # Update existing venue
@@ -63,7 +61,7 @@ class VenuesController < ApplicationController
       update_image_positions
     end
 
-    return_to_previous_page(venue)
+    redirect_to_updated(venue)
 
   end
 
@@ -79,7 +77,7 @@ class VenuesController < ApplicationController
     if @venue.save
       @venue.images.attach(images) if images.present?
       assign_positions_to_new_images(@venue)
-      return_to_previous_page(@venue)
+      redirect_to(@venue)
     else
       render "new"
     end
@@ -129,19 +127,6 @@ class VenuesController < ApplicationController
         index_path: venues_index_path,
         quick_query_path: venues_quick_query_path
       }
-    end
-
-    def save_referrer
-      session[:return_to_venue] = request.referer
-    end
-
-    def return_to_previous_page(song)
-      previous_page = session.delete(:return_to_venue)
-      if previous_page.present?
-        redirect_to previous_page
-      else
-        redirect_to venue
-      end
     end
 
     # Massage incoming params for saving; returns [filtered_params, images]
