@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 8.0.0'
+gem 'rails', '~> 8.1.4'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -78,6 +78,9 @@ group :development do
   gem 'capistrano', '3.19.2', require: false
   gem "puma"
   gem 'capistrano-rails', '1.7.0', require: false
+  # Capistrano dependency; patched for security advisories but held on 7.x until
+  # a deploy has been tested with net-ssh 8.
+  gem 'net-ssh', '~> 7.3', '>= 7.3.5', require: false
   gem 'rvm1-capistrano3', require: false
   gem 'web-console'
   gem 'pry-rails'

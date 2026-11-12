@@ -18,10 +18,6 @@ module Robyn2
     config.action_controller.forgery_protection_origin_check = false
     config.action_view.form_with_generates_remote_forms = false
 
-    # Opt in now to the to_time behavior that becomes mandatory in Rails 8.1
-    # (preserve the receiver's full timezone, not just its offset).
-    config.active_support.to_time_preserves_timezone = :zone
-
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
