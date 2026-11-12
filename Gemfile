@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 7.2.3'
+gem 'rails', '~> 8.0.0'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -15,7 +15,7 @@ gem "sprockets-rails"
 gem 'bcrypt', '~> 3.1.7'
 
 # Authorization
-gem 'cancancan', '~> 3.5.0'
+gem 'cancancan', '~> 3.7'
 
 # Pagination
 gem 'pagy', '~> 9.0'
@@ -84,4 +84,9 @@ group :development do
   gem 'pry-byebug'
   gem 'ruby-lsp-rails'
   gem 'bundler-audit'
+end
+
+group :test do
+  # Minitest 6 moved Minitest::Mock and Object#stub out into this gem.
+  gem 'minitest-mock'
 end

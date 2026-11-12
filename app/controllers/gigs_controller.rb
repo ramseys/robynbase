@@ -121,7 +121,7 @@ class GigsController < ApplicationController
 
         redirect_to_updated(gig)
       else
-        render "edit", status: :unprocessable_entity
+        render "edit", status: :unprocessable_content
       end
     end
 

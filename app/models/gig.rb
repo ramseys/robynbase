@@ -212,9 +212,9 @@ class Gig < ApplicationRecord
       sets_with_media = joins("LEFT JOIN GSET on GIG.gigid = GSET.gigid").where("GSET.MediaLink IS NOT NULL").distinct
       gigs_with_media = joins("RIGHT OUTER JOIN gigmedia on GIG.gigid = gigmedia.gigid")
 
-      sql = Gig.connection.unprepared_statement {
+      sql = Gig.with_connection { |connection| connection.unprepared_statement {
         "((#{sets_with_media.to_sql}) UNION (#{gigs_with_media.to_sql})) AS GIG"
-      }
+      } }
 
       Gig.from(sql)
 

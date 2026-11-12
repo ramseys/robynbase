@@ -301,7 +301,7 @@ class GigControllerTest < ActionController::TestCase
 
     patch :update, params: gig_update_params(1, overrides: { VENUEID: "9999", Venue: "Ghost Venue" }).merge(search_back: SEARCH_BACK)
 
-    assert_response :unprocessable_entity
+    assert_response :unprocessable_content
     assert_select "form input[type=hidden][name=search_back][value=?]", SEARCH_BACK
   end
 

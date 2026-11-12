@@ -11,6 +11,17 @@ module Robyn2
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 5.1
 
+    # Overrides of the 5.1 defaults, carried over from the old
+    # new_framework_defaults*.rb initializers. Revisit these when load_defaults is
+    # raised (see docs/plans/rails-8-upgrade.md, "Decision: load_defaults").
+    config.action_controller.per_form_csrf_tokens = false
+    config.action_controller.forgery_protection_origin_check = false
+    config.action_view.form_with_generates_remote_forms = false
+
+    # Opt in now to the to_time behavior that becomes mandatory in Rails 8.1
+    # (preserve the receiver's full timezone, not just its offset).
+    config.active_support.to_time_preserves_timezone = :zone
+
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
