@@ -1,7 +1,6 @@
 class GigsController < ApplicationController
 
-  include ImageUtils
-  include ImageOrderingConcern
+  include ImageFormHandling
   include Paginated
   include InfiniteScrollConcern
   include SearchNavigable
@@ -60,7 +59,8 @@ class GigsController < ApplicationController
    # prepare gig update page
   def edit
 
-    @gig = Gig.find(params[:id])
+    # preload the venue and setlist songs (the form compares their names to the overrides)
+    @gig = Gig.includes(:venue, gigsets: :song).find(params[:id])
 
     # get a list of all songs (for the songs selection dropdown)
     load_song_list
@@ -71,17 +71,15 @@ class GigsController < ApplicationController
   # create a new gig
   def create
 
-    filtered_params, _images = prepare_params()
-
-    optimize_images(filtered_params)
+    filtered_params, images = prepare_params()
 
     @gig = Gig.new(filtered_params)
 
     ActiveRecord::Base.transaction do
       if @gig.save
 
-        # assign positions to newly uploaded images
-        assign_positions_to_new_images(@gig)
+        # optimize and attach any uploaded images, and assign their positions
+        attach_new_images(@gig, images)
 
         redirect_to(@gig)
 
@@ -97,25 +95,18 @@ class GigsController < ApplicationController
 
     @gig = Gig.find(params[:id])
 
-    filtered_params, images = prepare_params(true)
-
-    # purge images marked for removal
-    purge_marked_images(params)
-
-    # optimize new images
-    optimize_images({ images: images }) if images.present?
+    filtered_params, images = prepare_params()
 
     ActiveRecord::Base.transaction do
       if @gig.update(filtered_params)
 
-        # if there are any image updates, attach them to the gig
-        # note: we can't rely on the model to do this for us, because rails
-        # will always replace existing images with the new ones; we need to
-        # append these to exiting images
-        @gig.images.attach(images) if images.present?
+        # purge images marked for removal (only once the save succeeds, so a failed
+        # save doesn't lose them)
+        purge_marked_images(@gig, params)
 
-        # assign positions to newly uploaded images
-        assign_positions_to_new_images(@gig)
+        # optimize and attach any new images (appended to the existing ones), and
+        # assign their positions
+        attach_new_images(@gig, images)
 
         # update positions for reordered images
         update_image_positions
@@ -291,6 +282,9 @@ class GigsController < ApplicationController
       # empty text fields should be null in the database
       b[:title] = nil if b[:title].strip.empty?
 
+      # a missing media id is treated as blank, so the GigMedium validation reports it
+      b[:mediaid] = b[:mediaid].to_s
+
       # if a full youtube link was provided, extract the id
       if b[:mediatype].to_i === GigMedium::MEDIA_TYPE["YouTube"]
         if b[:mediaid][/watch\?/].present?
@@ -329,8 +323,8 @@ class GigsController < ApplicationController
   # 1. Orders the songs in the setlists and encores
   # 2. Save denormalized vendor name in Gig table
   # 3. Save denormalized gig year in Gig table
-  # 4. Optionally extracts images into a separate return value
-  def prepare_params(extract_images = false)
+  # 4. Extracts images into a separate return value
+  def prepare_params
 
     new_params = gig_params()
 
@@ -356,11 +350,8 @@ class GigsController < ApplicationController
     # extract the year from the date (a missing date is reported by the gig's validation)
     new_params["GigYear"] = new_params["GigDate"].present? ? Date.strptime(new_params["GigDate"], '%Y-%m-%d').year : nil
 
-    # if requested, extract images into a separate variable
-    if extract_images then
-      images = new_params["images"]
-      new_params.delete("images") if images.present?
-    end
+    # extract images into a separate variable (they're attached after a successful save)
+    images = new_params.delete("images")
 
     [new_params, images]
 

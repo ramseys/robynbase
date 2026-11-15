@@ -10,7 +10,7 @@
         
         <div class="col-sm-6">
             <%= f.label :full_name, "Name" %> <span class="required">*</span>
-            <%= f.text_field :full_name, :size => 60, :class => ["form-control", invalid_class_for(@song, :Song)] %>
+            <%= f.text_field :full_name, :size => 60, :class => "form-control", :errors_from => :Song %>
         </div>
 
         <div class="col-sm-6">

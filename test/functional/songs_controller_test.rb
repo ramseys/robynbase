@@ -109,6 +109,17 @@ class SongsControllerTest < ActionController::TestCase
     assert_select "input[name='song[Author]'].is-invalid", 0
   end
 
+  test "create with no name field at all re-renders the form rather than raising" do
+    session[:user_id] = users(:one).id
+
+    assert_no_difference 'Song.count' do
+      post :create, params: { song: song_update_params(nil)[:song].except(:full_name) }
+    end
+
+    assert_response :unprocessable_content
+    assert_select ".alert-danger li", "Name can't be blank"
+  end
+
   test "update with a blank name re-renders the form instead of failing" do
     session[:user_id] = users(:one).id
     original_name = Song.find(1).full_name

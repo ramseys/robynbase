@@ -5,7 +5,7 @@ class AuditTrailTest < ActiveSupport::TestCase
 
   test "creating a venue records a create version with item_name and changes" do
     with_versioning do
-      venue = Venue.create!(Name: "Test Hall", City: "ZZ City", Country: "ZZ Country", City: "London", Country: "UK")
+      venue = Venue.create!(Name: "Test Hall", City: "London", Country: "UK")
       version = venue.versions.last
 
       assert_equal "create", version.event

@@ -1,8 +1,7 @@
 class VenuesController < ApplicationController
   include Paginated
   include InfiniteScrollConcern
-  include ImageUtils
-  include ImageOrderingConcern
+  include ImageFormHandling
   include SearchNavigable
   include FormRerendering
 
@@ -53,12 +52,11 @@ class VenuesController < ApplicationController
 
     filtered_params, images = prepare_params
 
-    purge_marked_images(params)
-    optimize_images({ images: images }) if images.present?
-
     if @venue.update(filtered_params)
-      @venue.images.attach(images) if images.present?
-      assign_positions_to_new_images(@venue)
+      # purge images marked for removal (only once the save succeeds, so a failed
+      # save doesn't lose them)
+      purge_marked_images(@venue, params)
+      attach_new_images(@venue, images)
       update_image_positions
       redirect_to_updated(@venue)
     else
@@ -72,13 +70,10 @@ class VenuesController < ApplicationController
 
     filtered_params, images = prepare_params
 
-    optimize_images({ images: images }) if images.present?
-
     @venue = Venue.new(filtered_params)
 
     if @venue.save
-      @venue.images.attach(images) if images.present?
-      assign_positions_to_new_images(@venue)
+      attach_new_images(@venue, images)
       redirect_to(@venue)
     else
       render_form_with_errors("new")

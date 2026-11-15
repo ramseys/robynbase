@@ -45,15 +45,6 @@ module ApplicationHelper
         hidden_field_tag(:search_back, params[:search_back]) if params[:search_back].present?
     end
 
-    # Bootstrap's is-invalid class for a form field whose validation error is recorded
-    # under a different attribute than the one the field edits, so field_error_proc
-    # (config/initializers/field_error_proc.rb) can't flag it: e.g. the gig's VENUEID
-    # select (error on the :venue association) or the song's full_name field (error on
-    # :Song). Fields whose names match their errors need nothing extra.
-    def invalid_class_for(record, attribute)
-        "is-invalid" if record.errors.include?(attribute)
-    end
-
     # Opening <tr> for a nested row (setlist, track or media) in the gig/release forms.
     # A row the user removed before a failed save comes back hidden and still marked
     # with _destroy, as the Stimulus removeTableRow leaves it, so the removal is kept
@@ -63,6 +54,13 @@ module ApplicationHelper
         content_tag(:tr, data: { row: sequence_index }, style: ("display: none" if removed)) do
             safe_join([(row_fields.hidden_field(:_destroy, value: "1") if removed), capture(&block)])
         end
+    end
+
+    # Value for a denormalized "override" text field (a gig's Venue, a setlist or track
+    # row's Song). Blank when it only repeats the name of the chosen venue/song, so
+    # picking a different one re-derives the name on save rather than keeping the old one.
+    def override_field_value(stored_name, derived_name)
+        stored_name == derived_name ? nil : stored_name
     end
 
     # Renders a sortable column header.

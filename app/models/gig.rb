@@ -64,6 +64,12 @@ class Gig < ApplicationRecord
     gigsets.select(&:Encore).sort_by { |gigset| gigset.Chrono.to_i }
   end
 
+  # returns the media rows in order (sorted in memory, so after a failed save the
+  # form shows them in the order the user submitted, not the saved order)
+  def get_media
+    gigmedia.sort_by { |medium| medium.Chrono.to_i }
+  end
+
   # returns the reviews for this gig (if any)
   def get_reviews
     add_linebreaks(self.Reviews)

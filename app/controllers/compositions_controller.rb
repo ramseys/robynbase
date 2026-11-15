@@ -1,7 +1,6 @@
 class CompositionsController < ApplicationController
 
-  include ImageUtils
-  include ImageOrderingConcern
+  include ImageFormHandling
   include Paginated
   include InfiniteScrollConcern
   include SearchNavigable
@@ -67,7 +66,8 @@ class CompositionsController < ApplicationController
   # prepare composition update page
   def edit
 
-    @comp = Composition.find(params[:id])
+    # preload the track songs (the form compares their names to the overrides)
+    @comp = Composition.includes(tracks: :song).find(params[:id])
 
     # get a list of all songs (for the songs selection dropdown)
     load_song_list
@@ -77,17 +77,15 @@ class CompositionsController < ApplicationController
   # create a new composition
   def create
 
-    filtered_params, _images = prepare_params()
-
-    optimize_images(filtered_params)
+    filtered_params, images = prepare_params()
 
     @comp = Composition.new(filtered_params)
 
     ActiveRecord::Base.transaction do
       if @comp.save
 
-        # assign positions to newly uploaded images
-        assign_positions_to_new_images(@comp)
+        # optimize and attach any uploaded images, and assign their positions
+        attach_new_images(@comp, images)
 
         redirect_to(@comp)
 
@@ -103,25 +101,18 @@ class CompositionsController < ApplicationController
 
     @comp = Composition.find(params[:id])
 
-    filtered_params, images = prepare_params(true)
-
-    # purge images marked for removal
-    purge_marked_images(params)
-
-    # optimize new images
-    optimize_images({ images: images }) if images.present?
+    filtered_params, images = prepare_params()
 
     ActiveRecord::Base.transaction do
       if @comp.update(filtered_params)
 
-        # if there are any image updates, attach them to the composition
-        # note: we can't rely on the model to do this for us, because rails
-        # will always replace existing images with the new ones; we need to
-        # append these to existing images
-        @comp.images.attach(images) if images.present?
+        # purge images marked for removal (only once the save succeeds, so a failed
+        # save doesn't lose them)
+        purge_marked_images(@comp, params)
 
-        # assign positions to newly uploaded images
-        assign_positions_to_new_images(@comp)
+        # optimize and attach any new images (appended to the existing ones), and
+        # assign their positions
+        attach_new_images(@comp, images)
 
         # update positions for reordered images
         update_image_positions
@@ -176,7 +167,7 @@ class CompositionsController < ApplicationController
 
   end
 
-  def prepare_params(extract_images = false)
+  def prepare_params
 
     new_params = comp_params()
 
@@ -192,11 +183,8 @@ class CompositionsController < ApplicationController
     # empty comments are stored as nil
     new_params[:Comments] = nil  if new_params[:Comments].strip.empty?
 
-    # if requested, extract images into a separate variable
-    if extract_images
-      images = new_params["images"]
-      new_params.delete("images") if images.present?
-    end
+    # extract images into a separate variable (they're attached after a successful save)
+    images = new_params.delete("images")
 
     [new_params, images]
 

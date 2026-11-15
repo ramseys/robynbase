@@ -32,7 +32,7 @@
                 <%= track_fields.hidden_field :Seq, value: sequenceIndex %>
             </td>
             <td> <%= track_fields.select(:SONGID, @song_list, {include_blank: true}, { class: "form-control song-selector" })%> </td>
-            <td> <%= track_fields.text_field :Song, :class => "form-control" %></td>
+            <td> <%= track_fields.text_field :Song, :value => override_field_value(track_fields.object.Song, track_fields.object.song&.full_name), :class => "form-control" %></td>
             <td>
                 <%= track_fields.text_field :VersionNotes, :class => "form-control" %>
                 <%= track_fields.hidden_field :bonus %>

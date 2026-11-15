@@ -54,6 +54,14 @@ class GigControllerTest < ActionController::TestCase
     assert_select ".alert-danger li", "Each gig media row needs a Media ID"
   end
 
+  test "create with a media row missing its Media ID field re-renders the form rather than raising" do
+    assert_no_difference 'Gig.count' do
+      post :create, params: gig_create_params(gigmedia: { "0" => { Chrono: "1", title: "", mediatype: "1" } })
+    end
+    assert_response :unprocessable_content
+    assert_select ".alert-danger li", "Each gig media row needs a Media ID"
+  end
+
   test "create with no venue or date re-renders the form with the entered values" do
     assert_no_difference 'Gig.count' do
       post :create, params: gig_create_params(overrides: { VENUEID: "", GigDate: "", BilledAs: "Robyn Hitchcock & the Egyptians" })
@@ -83,6 +91,53 @@ class GigControllerTest < ActionController::TestCase
     assert_response :unprocessable_content
     assert_select "#setlist input[name$='[Song]'][value=?]", "Unsaved Main Set Song"
     assert_select "#setlist-encore input[name$='[Song]'][value=?]", "Unsaved Encore Song"
+  end
+
+  test "a failed create leaves the venue and song overrides blank, not filled with the derived names" do
+    post :create, params: gig_create_params(
+      overrides: { GigDate: "" },
+      gigsets: { "0" => { Chrono: "10", SONGID: "1", Song: "", Encore: "false", VersionNotes: "", MediaLink: "" } }
+    )
+    assert_response :unprocessable_content
+    assert_select "input[name='gig[Venue]']"
+    assert_select "input[name='gig[Venue]'][value]", 0
+    assert_select "#setlist input[name$='[Song]']", 1
+    assert_select "#setlist input[name$='[Song]'][value]", 0
+  end
+
+  test "a failed create keeps a real venue or song override" do
+    post :create, params: gig_create_params(
+      overrides: { GigDate: "", Venue: "The Roundhouse Studio" },
+      gigsets: { "0" => { Chrono: "10", SONGID: "1", Song: "Madonna of the Wasps (acoustic)", Encore: "false", VersionNotes: "", MediaLink: "" } }
+    )
+    assert_response :unprocessable_content
+    assert_select "input[name='gig[Venue]'][value=?]", "The Roundhouse Studio"
+    assert_select "#setlist input[name$='[Song]'][value=?]", "Madonna of the Wasps (acoustic)"
+  end
+
+  test "a failed update shows the media rows in the order the user submitted" do
+    media_one = gig_media(:media_one)
+    media_two = gig_media(:media_two)
+
+    # the user drags the second row to the top and adds a new row with no Media ID
+    patch :update, params: gig_update_params(1,
+      gigmedia: {
+        "0" => { "id" => media_one.id.to_s, Chrono: "2", title: media_one.title, mediaid: media_one.mediaid, mediatype: "2" },
+        "1" => { "id" => media_two.id.to_s, Chrono: "1", title: media_two.title, mediaid: media_two.mediaid, mediatype: "2" },
+        "2" => { Chrono: "3", title: "", mediaid: "", mediatype: "3" }
+      }
+    )
+
+    assert_response :unprocessable_content
+    rendered_ids = css_select("#gig-media input[name$='[mediaid]']").map { |input| input["value"].to_s }
+    assert_equal [media_two.mediaid, media_one.mediaid, ""], rendered_ids
+  end
+
+  test "edit leaves overrides blank when they only repeat the venue and song names" do
+    get :edit, params: { id: 1 }
+    assert_response :success
+    assert_select "input[name='gig[Venue]'][value]", 0
+    assert_select "#setlist input[name$='[Song]'][value]", 0
   end
 
   test "a failed update keeps a removed setlist row hidden and marked for destruction" do

@@ -117,6 +117,22 @@ class CompositionsControllerTest < ActionController::TestCase
     assert_equal original_year, Composition.find(1).Year
   end
 
+  test "a failed create leaves a track's song override blank, not filled with the song name" do
+    post :create, params: comp_create_params(
+      overrides: { Title: "" },
+      tracks: { "0" => { Seq: "10", SONGID: "1", Song: "", VersionNotes: "", bonus: "false" } }
+    )
+    assert_response :unprocessable_content
+    assert_select "#comp-tracks input[name$='[Song]']", 1
+    assert_select "#comp-tracks input[name$='[Song]'][value]", 0
+  end
+
+  test "edit leaves track overrides blank when they only repeat the song names" do
+    get :edit, params: { id: 1 }
+    assert_response :success
+    assert_select "#comp-tracks input[name$='[Song]'][value]", 0
+  end
+
   test "a failed update re-renders the submitted values with the error" do
     patch :update, params: comp_update_params(1,
       overrides: { Year: "2099" },

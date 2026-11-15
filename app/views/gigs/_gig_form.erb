@@ -10,7 +10,7 @@
 
         <div class="col-sm-6">
             <%= f.label :VENUEID, "Venue" %> <span class="required">*</span>
-            <%= f.select(:VENUEID, Venue.order(:Name).collect{|v| [v.Name, v.VENUEID]}, { include_blank: true } , {class: ["form-control", invalid_class_for(@gig, :venue)]}) %>
+            <%= f.select(:VENUEID, Venue.order(:Name).collect{|v| [v.Name, v.VENUEID]}, { include_blank: true } , {class: "form-control", errors_from: :venue}) %>
         </div>
     
         <div class="col-sm-6">
@@ -43,7 +43,7 @@
 
         <div class="col-sm-6">
             <%= f.label :Venue, "Venue Override" %>
-            <%= f.text_field :Venue, :class => "form-control"  %>
+            <%= f.text_field :Venue, :value => override_field_value(@gig.Venue, @gig.venue&.Name), :class => "form-control"  %>
         </div>
 
     </div>
@@ -112,7 +112,7 @@
         <div class="col-sm-12">
 
             <h3>Gig Media</h3>
-            <%= render 'gig_media_table', {gigmedia: @gig.gigmedia, f: f, id: "gig-media"} %>
+            <%= render 'gig_media_table', {gigmedia: @gig.get_media, f: f, id: "gig-media"} %>
 
         </div>
 
