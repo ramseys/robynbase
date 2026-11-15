@@ -92,6 +92,35 @@ class SongsControllerTest < ActionController::TestCase
     assert_redirected_to song_path(Song.last)
   end
 
+  # --- failed saves re-render the form with the user's input ---
+
+  test "create with a blank name re-renders the form with the entered values" do
+    session[:user_id] = users(:one).id
+
+    assert_no_difference 'Song.count' do
+      post :create, params: { song: song_update_params(nil)[:song].merge(full_name: "", Author: "Robyn Hitchcock") }
+    end
+
+    assert_response :unprocessable_content
+    assert_select "input[name='song[Author]'][value=?]", "Robyn Hitchcock"
+    assert_select ".alert-danger li", "Name can't be blank"
+    # the error is on :Song, but the full_name field that edits it is flagged
+    assert_select "input[name='song[full_name]'].form-control.is-invalid"
+    assert_select "input[name='song[Author]'].is-invalid", 0
+  end
+
+  test "update with a blank name re-renders the form instead of failing" do
+    session[:user_id] = users(:one).id
+    original_name = Song.find(1).full_name
+
+    patch :update, params: song_update_params(1).deep_merge(song: { full_name: "", Author: "Changed Author" })
+
+    assert_response :unprocessable_content
+    assert_select "input[name='song[Author]'][value=?]", "Changed Author"
+    assert_select ".alert-danger li", "Name can't be blank"
+    assert_equal original_name, Song.find(1).full_name
+  end
+
   private
 
     def song_update_params(id)

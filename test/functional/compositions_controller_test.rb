@@ -30,20 +30,16 @@ class CompositionsControllerTest < ActionController::TestCase
   end
 
   test "create with a validation failure does not persist tracks" do
-    # Strong params require Title/Artist so we can't blank them to trigger model failure.
-    # Instead stub Composition.new to return a record whose save returns false, verifying
-    # the controller only creates tracks after a successful parent save.
-    @controller.instance_variable_set(:@song_list, [])
-    failing_comp = Composition.new(Title: "Stub", Artist: "Stub")
-    failing_comp.define_singleton_method(:save) { false }
-    Composition.stub(:new, failing_comp) do
-      assert_no_difference 'Track.count' do
-        post :create, params: comp_create_params(
-          tracks: { "0" => { Seq: "10", SONGID: "1", Song: "", VersionNotes: "", bonus: "false" } }
-        )
-      end
+    # A blank title fails the parent's validation; the (valid) track must not be saved either.
+    assert_no_difference ['Composition.count', 'Track.count'] do
+      post :create, params: comp_create_params(
+        overrides: { Title: "" },
+        tracks: { "0" => { Seq: "10", SONGID: "1", Song: "", VersionNotes: "", bonus: "false" } }
+      )
     end
-    assert_response :success
+    assert_response :unprocessable_content
+    assert_select "input[name='composition[Artist]'][value=?]", "Robyn Hitchcock"
+    assert_select ".alert-danger li", "Title can't be blank"
   end
 
   # --- update ---
@@ -93,8 +89,6 @@ class CompositionsControllerTest < ActionController::TestCase
   # --- transaction rollback ---
 
   test "failed parent update does not leave orphaned tracks" do
-    @controller.instance_variable_set(:@comp, Composition.find(1))
-    @controller.instance_variable_set(:@song_list, [])
     comp = Composition.find(1)
     comp.define_singleton_method(:valid?) { |*| false }
     Composition.stub(:find, comp) do
@@ -113,8 +107,6 @@ class CompositionsControllerTest < ActionController::TestCase
   end
 
   test "failed track save rolls back parent update" do
-    @controller.instance_variable_set(:@comp, Composition.find(1))
-    @controller.instance_variable_set(:@song_list, [])
     original_year = Composition.find(1).Year
     assert_no_difference 'Track.count' do
       patch :update, params: comp_update_params(1,
@@ -123,6 +115,16 @@ class CompositionsControllerTest < ActionController::TestCase
       )
     end
     assert_equal original_year, Composition.find(1).Year
+  end
+
+  test "a failed update re-renders the submitted values with the error" do
+    patch :update, params: comp_update_params(1,
+      overrides: { Year: "2099" },
+      tracks: { "0" => { Seq: "10", SONGID: "", Song: "", VersionNotes: "", bonus: "false" } }
+    )
+    assert_response :unprocessable_content
+    assert_select "input[name='composition[Year]'][value=?]", "2099"
+    assert_select ".alert-danger li", "Each track row needs a Song or a Song Name Override"
   end
 
   # --- search-result navigation ---

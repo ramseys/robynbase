@@ -74,6 +74,32 @@ class VenuesControllerTest < ActionController::TestCase
     assert_redirected_to venue_path(Venue.last)
   end
 
+  # --- failed saves re-render the form with the user's input ---
+
+  test "create with a blank required field re-renders the form with the entered values" do
+    session[:user_id] = users(:one).id
+
+    assert_no_difference 'Venue.count' do
+      post :create, params: { venue: { Name: "The Half Moon", City: "London", Country: "", SubCity: "", State: "" } }
+    end
+
+    assert_response :unprocessable_content
+    assert_select "input[name='venue[Name]'][value=?]", "The Half Moon"
+    assert_select ".alert-danger li", "Country can't be blank"
+  end
+
+  test "update with a blank required field re-renders the form instead of redirecting" do
+    session[:user_id] = users(:one).id
+    original_city = Venue.find(1).City
+
+    patch :update, params: venue_update_params(1).deep_merge(venue: { Name: "Renamed Venue", City: "" })
+
+    assert_response :unprocessable_content
+    assert_select "input[name='venue[Name]'][value=?]", "Renamed Venue"
+    assert_select ".alert-danger li", "City can't be blank"
+    assert_equal original_city, Venue.find(1).City
+  end
+
   private
 
     def venue_update_params(id)

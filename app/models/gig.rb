@@ -20,6 +20,9 @@ class Gig < ApplicationRecord
 
   belongs_to :venue, foreign_key: "VENUEID"
 
+  # (the venue is required too: belongs_to validates it)
+  validates :GigDate, presence: true
+
   accepts_nested_attributes_for :gigsets, :gigmedia, allow_destroy: true
 
   # Audit changes. ModifyDate auto-updates on every save, so skip it to avoid
@@ -48,13 +51,17 @@ class Gig < ApplicationRecord
   ]
 
   # returns the songs played in the gig (non-encore)
+  #
+  # Filtered in memory rather than queried, so that after a failed save the edit form
+  # still shows the rows the user submitted (they aren't in the database), and so the
+  # show page uses its preloaded gigsets.
   def get_set
-    self.gigsets.includes(:song).where(encore: false)
+    gigsets.reject(&:Encore).sort_by { |gigset| gigset.Chrono.to_i }
   end
 
   # returns the songs played in the encore
   def get_set_encore
-    self.gigsets.includes(:song).where(encore: true)
+    gigsets.select(&:Encore).sort_by { |gigset| gigset.Chrono.to_i }
   end
 
   # returns the reviews for this gig (if any)

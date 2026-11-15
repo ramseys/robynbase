@@ -13,6 +13,9 @@ class Song < ApplicationRecord
   has_many :tracks, foreign_key: "SONGID"
   has_many :compositions, through: :tracks, foreign_key: "SONGID"
 
+  # the name (without its leading article, which is stored in Prefix)
+  validates :Song, presence: true
+
   audited
 
   # Configure which fields to sanitize on save

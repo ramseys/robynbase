@@ -2,13 +2,15 @@
 
 <%= search_back_field %>
 
+<%= render "shared/form_errors", record: @song %>
+
 <div class="item-form">
         
     <div class="row">
         
         <div class="col-sm-6">
             <%= f.label :full_name, "Name" %> <span class="required">*</span>
-            <%= f.text_field :full_name, :size => 60, :class => "form-control" %>
+            <%= f.text_field :full_name, :size => 60, :class => ["form-control", invalid_class_for(@song, :Song)] %>
         </div>
 
         <div class="col-sm-6">

@@ -25,7 +25,7 @@
     </div>
 
     <%= f.fields_for :tracks, tracks do |track_fields| %>
-        <tr data-row=<%= sequenceIndex %>>
+        <%= nested_form_row_tag(track_fields, sequenceIndex) do %>
             <td class="drag-handle">
                 <i class="bi bi-grip-vertical"></i>
                 <%= track_fields.hidden_field :id %>
@@ -46,7 +46,7 @@
                 </Button>
             </td>
 
-        </tr>
+        <% end %>
 
         <% sequenceIndex+=1 %>
 

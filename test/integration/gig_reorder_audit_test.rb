@@ -5,7 +5,7 @@ class GigReorderAuditTest < ActionDispatch::IntegrationTest
   # and the headline is elevated to the gig. GigYear/Venue are pre-set so
   # prepare_params does not dirty the gig (which would create a real Gig version).
   test "reordering a setlist through the controller creates an elevated audit_event" do
-    venue = Venue.create!(Name: "ZZ Reorder Venue")
+    venue = Venue.create!(Name: "ZZ Reorder Venue", City: "ZZ City", Country: "ZZ Country")
     gig = Gig.create!(GigDate: "1990-01-01", GigYear: 1990, Venue: "ZZ Reorder Venue", venue: venue)
     a = gig.gigsets.create!(Song: "A", Chrono: 10)
     b = gig.gigsets.create!(Song: "B", Chrono: 20)

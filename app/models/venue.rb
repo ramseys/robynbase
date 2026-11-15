@@ -10,6 +10,8 @@ class Venue < ApplicationRecord
 
   has_many :gigs, -> { order('GIG.GigDate ASC') }, foreign_key: "VENUEID"
 
+  validates :Name, :City, :Country, presence: true
+
   audited
 
   # Configure which fields to sanitize on save

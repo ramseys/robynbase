@@ -26,7 +26,7 @@
     </div>
 
     <%= f.fields_for :gigsets, gset do |gigset_fields| %>
-        <tr data-row=<%= sequenceIndex %>>
+        <%= nested_form_row_tag(gigset_fields, sequenceIndex) do %>
             <td class="drag-handle">
                 <i class="bi bi-grip-vertical"></i>
                 <%= gigset_fields.hidden_field :id %>
@@ -48,7 +48,7 @@
                 </Button>
             </td>
 
-        </tr>
+        <% end %>
 
         <% sequenceIndex+=1 %>
 

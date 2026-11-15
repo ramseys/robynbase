@@ -2,13 +2,15 @@
 
 <%= search_back_field %>
 
+<%= render "shared/form_errors", record: @gig %>
+
 <div class="item-form" data-controller="gig">
         
     <div class="row">
 
         <div class="col-sm-6">
             <%= f.label :VENUEID, "Venue" %> <span class="required">*</span>
-            <%= f.select(:VENUEID, Venue.order(:Name).collect{|v| [v.Name, v.VENUEID]}, { include_blank: true } , {class: "form-control"}) %>
+            <%= f.select(:VENUEID, Venue.order(:Name).collect{|v| [v.Name, v.VENUEID]}, { include_blank: true } , {class: ["form-control", invalid_class_for(@gig, :venue)]}) %>
         </div>
     
         <div class="col-sm-6">

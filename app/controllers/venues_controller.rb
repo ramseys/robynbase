@@ -4,6 +4,7 @@ class VenuesController < ApplicationController
   include ImageUtils
   include ImageOrderingConcern
   include SearchNavigable
+  include FormRerendering
 
   RESOURCE_TYPE = :venue
   TABLE_ID = 'venue-main'.freeze
@@ -48,20 +49,21 @@ class VenuesController < ApplicationController
   # Update existing venue
   def update
 
-    venue = Venue.find(params[:id])
+    @venue = Venue.find(params[:id])
 
     filtered_params, images = prepare_params
 
     purge_marked_images(params)
     optimize_images({ images: images }) if images.present?
 
-    if venue.update(filtered_params)
-      venue.images.attach(images) if images.present?
-      assign_positions_to_new_images(venue)
+    if @venue.update(filtered_params)
+      @venue.images.attach(images) if images.present?
+      assign_positions_to_new_images(@venue)
       update_image_positions
+      redirect_to_updated(@venue)
+    else
+      render_form_with_errors("edit")
     end
-
-    redirect_to_updated(venue)
 
   end
 
@@ -79,7 +81,7 @@ class VenuesController < ApplicationController
       assign_positions_to_new_images(@venue)
       redirect_to(@venue)
     else
-      render "new"
+      render_form_with_errors("new")
     end
 
   end
@@ -144,10 +146,10 @@ class VenuesController < ApplicationController
     end
 
     def venue_params
+      # a venue's required name, city and country are model validations (not checked
+      # here), so leaving them blank re-renders the form with the user's input instead of a 400
       params.require(:venue).
-        permit(:Name, :street_address1, :street_address2, :City, :SubCity, :State, :Country, :longitude, :latitude, :Notes, images: [], deleted_img_ids: []).tap do |params|
-        params.require([:Name, :City, :Country])
-      end
+        permit(:Name, :street_address1, :street_address2, :City, :SubCity, :State, :Country, :longitude, :latitude, :Notes, images: [], deleted_img_ids: [])
     end
 
 end

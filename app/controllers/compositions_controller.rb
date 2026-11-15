@@ -5,6 +5,7 @@ class CompositionsController < ApplicationController
   include Paginated
   include InfiniteScrollConcern
   include SearchNavigable
+  include SongListLoading
 
   RESOURCE_TYPE = :composition
   TABLE_ID = 'album-main'.freeze
@@ -58,7 +59,7 @@ class CompositionsController < ApplicationController
     @comp = Composition.new
 
     # get a list of all songs (for the songs selection dropdown)
-    @song_list = Song.order(:Song).collect{|s| [s.full_name, s.SONGID]}
+    load_song_list
 
   end
 
@@ -68,8 +69,8 @@ class CompositionsController < ApplicationController
 
     @comp = Composition.find(params[:id])
 
-    # get a list of all songs (for the songs selection dropddown)
-    @song_list = Song.order(:Song).collect{|s| [s.full_name, s.SONGID]}
+    # get a list of all songs (for the songs selection dropdown)
+    load_song_list
 
   end
 
@@ -91,9 +92,7 @@ class CompositionsController < ApplicationController
         redirect_to(@comp)
 
       else
-        # This line overrides the default rendering behavior, which
-        # would have been to render the "create" view.
-        render "new"
+        render_form_with_errors("new")
       end
     end
 
@@ -102,7 +101,7 @@ class CompositionsController < ApplicationController
   # update existing composition
   def update
 
-    comp = Composition.find(params[:id])
+    @comp = Composition.find(params[:id])
 
     filtered_params, images = prepare_params(true)
 
@@ -113,23 +112,23 @@ class CompositionsController < ApplicationController
     optimize_images({ images: images }) if images.present?
 
     ActiveRecord::Base.transaction do
-      if comp.update(filtered_params)
+      if @comp.update(filtered_params)
 
         # if there are any image updates, attach them to the composition
         # note: we can't rely on the model to do this for us, because rails
         # will always replace existing images with the new ones; we need to
         # append these to existing images
-        comp.images.attach(images) if images.present?
+        @comp.images.attach(images) if images.present?
 
         # assign positions to newly uploaded images
-        assign_positions_to_new_images(comp)
+        assign_positions_to_new_images(@comp)
 
         # update positions for reordered images
         update_image_positions
 
-        redirect_to_updated(comp)
+        redirect_to_updated(@comp)
       else
-        render "edit"
+        render_form_with_errors("edit")
       end
     end
 
@@ -212,8 +211,8 @@ class CompositionsController < ApplicationController
               images: [],
               tracks_attributes: [ :id, :_destroy, :Seq, :SONGID, :Song, :VersionNotes, :bonus ]).tap do |params|
 
-          # every gig needs at least a title and artist
-          params.require([:Title, :Artist])
+          # a release's required title and artist are model validations (not checked here),
+          # so leaving them blank re-renders the form with the user's input instead of a 400
 
           # every item in a track list requires a sequence number (skip destroy-only entries)
           if params["tracks_attributes"].present?

@@ -5,6 +5,10 @@ class GigMedium < ApplicationRecord
 
     belongs_to :gig, foreign_key: "GIGID", inverse_of: :gigmedia
 
+    # Every media row must identify its media. Checked here rather than in strong params
+    # so a blank row re-renders the gig form with the user's input instead of a 400.
+    validates :mediaid, presence: true
+
     audited
 
     MEDIA_TYPE = {
