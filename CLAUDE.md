@@ -16,6 +16,18 @@
   * After running migrations, check db/schema.rb - the table name may be lowercased to "gig" due to MySQL's lower_case_table_names setting
   * If this happens, change `create_table "gig"` back to `create_table "GIG"` in schema.rb to maintain consistency with the codebase
 
+# Production Environment
+
+Development runs on macOS with Puma; production does not. Keep the differences in mind for any change that could depend on the runtime environment, and flag it when one does.
+
+* Production runs on a Linux server under Passenger, not Puma. Puma is only in the Gemfile's development group, so don't rely on Puma-specific config or plugins (e.g. running Solid Queue inside Puma).
+* Deploys use Capistrano (`config/deploy.rb`): each release is a fresh directory, and Passenger is restarted with `touch tmp/restart.txt`.
+* Linux file names are case-sensitive, unlike macOS's default. File names must match what Zeitwerk expects, and partial/template paths must match their case exactly. Something that works locally can fail in production.
+* Assume MySQL table names are case-sensitive in production (see the GIG table note above). Raw SQL must use each table's exact name (e.g. `GIG`, `GSET`, `COMP`, `TRAK`, `SONG`, `VENUE`, `MUSO`, but `gigmedia`); prefer letting Active Record build queries from `table_name`.
+* No Active Job queue is configured, so background jobs (e.g. Active Storage analysis, `purge_later`) run in threads inside the Passenger process, which Passenger may shut down when idle. Don't rely on a background job for anything that must happen; do it in the request.
+* Passenger can run several app processes, so per-process state (class variables, in-memory caches) isn't shared between requests.
+* `production.rb` logs to standard output, which under Passenger goes to Passenger's/the web server's log, not `log/production.log`.
+
 
 # npm
 
