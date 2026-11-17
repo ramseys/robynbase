@@ -27,6 +27,7 @@ Development runs on macOS with Puma; production does not. Keep the differences i
 * No Active Job queue is configured, so background jobs (e.g. Active Storage analysis, `purge_later`) run in threads inside the Passenger process, which Passenger may shut down when idle. Don't rely on a background job for anything that must happen; do it in the request.
 * Passenger can run several app processes, so per-process state (class variables, in-memory caches) isn't shared between requests.
 * `production.rb` logs to standard output, which under Passenger goes to Passenger's/the web server's log, not `log/production.log`.
+* Production boots with precompiled assets (`assets:precompile` runs on every deploy), so code paths that read the Sprockets manifest run only there. Development has no manifest in `public/assets`, so a gem incompatibility in that path won't show up locally. Example: json 3.x dropped the `create_additions:` option that sprockets < 4.3 passes, which crashed staging at boot but not locally. After changing gem versions, check that the app still boots in production mode with compiled assets.
 
 
 # npm
