@@ -17,10 +17,12 @@ PaperTrail.config.track_associations = false
 # versions are written. Registered here once at boot; PaperTrail::Version is a gem
 # class that is not reloaded, and AuditEvent is resolved at call time.
 #
-# PaperTrail only defines PaperTrail::Version from its own on_load(:active_record)
-# hook, and Rails 8 no longer loads ActiveRecord::Base before app initializers run,
-# so register inside the same lazy hook. PaperTrail's hook is registered first (its
-# railtie initializer runs before load_config_initializers), so Version exists here.
+# PaperTrail defines PaperTrail::Version only once Active Record has loaded (in its
+# own on_load(:active_record) block). Rails 8 no longer loads Active Record before
+# app initializers run, so referencing Version directly here raises NameError.
+# Registering our callback in an on_load(:active_record) block too delays it until
+# then; load hooks run in registration order and PaperTrail's railtie registers
+# first, so Version is defined by the time this runs.
 ActiveSupport.on_load(:active_record) do
   PaperTrail::Version.after_create do |version|
     AuditEvent.record_version(version)
