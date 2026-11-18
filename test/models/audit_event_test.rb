@@ -7,7 +7,7 @@ class AuditEventTest < ActiveSupport::TestCase
 
   test "a composition and its tracks form one grouped audit_event" do
     with_versioning do
-      comp = Composition.create!(Title: "ZZ Grouped Album", Year: 2000,
+      comp = Composition.create!(Title: "ZZ Grouped Album", Artist: "ZZ Artist", Year: 2000,
                tracks_attributes: [{ Song: "A", Seq: 1 }, { Song: "B", Seq: 2 }])
 
       txid = comp.versions.last.transaction_id
@@ -28,7 +28,7 @@ class AuditEventTest < ActiveSupport::TestCase
 
   test "AuditActivity classifies created child rows as added" do
     with_versioning do
-      comp = Composition.create!(Title: "ZZ Added Album",
+      comp = Composition.create!(Title: "ZZ Added Album", Artist: "ZZ Artist",
                tracks_attributes: [{ Song: "A", Seq: 1 }, { Song: "B", Seq: 2 }])
       activity = AuditActivity.new(comp.versions.last.transaction_id)
 
@@ -41,7 +41,7 @@ class AuditEventTest < ActiveSupport::TestCase
 
   test "AuditActivity classifies Seq-only track changes as reordered" do
     # Non-versioned setup, then a single versioned transaction.
-    comp = Composition.create!(Title: "ZZ Reorder Album", Year: 1990,
+    comp = Composition.create!(Title: "ZZ Reorder Album", Artist: "ZZ Artist", Year: 1990,
              tracks_attributes: [{ Song: "A", Seq: 1 }, { Song: "B", Seq: 2 }])
     t1, t2 = comp.tracks.order(:Seq).to_a
 
@@ -62,7 +62,7 @@ class AuditEventTest < ActiveSupport::TestCase
   end
 
   test "AuditActivity classifies a content change as changed" do
-    comp = Composition.create!(Title: "ZZ Changed Album", Year: 1990,
+    comp = Composition.create!(Title: "ZZ Changed Album", Artist: "ZZ Artist", Year: 1990,
              tracks_attributes: [{ Song: "A", Seq: 1 }])
     track = comp.tracks.first
 
@@ -82,7 +82,7 @@ class AuditEventTest < ActiveSupport::TestCase
   test "a tracklist-only edit elevates the headline to the owning composition" do
     # Composition created without versioning; only the added track is audited, so
     # the transaction contains a Track row but no Composition row.
-    comp = Composition.create!(Title: "ZZ Elevate Album", Year: 1995,
+    comp = Composition.create!(Title: "ZZ Elevate Album", Artist: "ZZ Artist", Year: 1995,
              tracks_attributes: [{ Song: "A", Seq: 1 }])
 
     with_versioning do
@@ -108,7 +108,7 @@ class AuditEventTest < ActiveSupport::TestCase
   test "removing a child row elevates via the destroyed row's owner" do
     # Exercises the destroy path: the Track row is gone by the time the version is
     # recorded, so its owner is resolved by reifying the version.
-    comp = Composition.create!(Title: "ZZ Remove Album", Year: 1998,
+    comp = Composition.create!(Title: "ZZ Remove Album", Artist: "ZZ Artist", Year: 1998,
              tracks_attributes: [{ Song: "A", Seq: 1 }, { Song: "B", Seq: 2 }])
     track = comp.tracks.order(:Seq).last
 
@@ -126,7 +126,7 @@ class AuditEventTest < ActiveSupport::TestCase
 
   test "summary_text omits the primary item type" do
     with_versioning do
-      comp = Composition.create!(Title: "ZZ Summary Album",
+      comp = Composition.create!(Title: "ZZ Summary Album", Artist: "ZZ Artist",
                tracks_attributes: [{ Song: "A", Seq: 1 }])
       event = AuditEvent.find_by(transaction_id: comp.versions.last.transaction_id)
       assert_equal "1 track", event.summary_text

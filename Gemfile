@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '~> 7.2.3'
+gem 'rails', '~> 8.1.4'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -15,7 +15,7 @@ gem "sprockets-rails"
 gem 'bcrypt', '~> 3.1.7'
 
 # Authorization
-gem 'cancancan', '~> 3.5.0'
+gem 'cancancan', '~> 3.7'
 
 # Pagination
 gem 'pagy', '~> 9.0'
@@ -78,10 +78,18 @@ group :development do
   gem 'capistrano', '3.19.2', require: false
   gem "puma"
   gem 'capistrano-rails', '1.7.0', require: false
+  # Capistrano dependency; patched for security advisories but held on 7.x until
+  # a deploy has been tested with net-ssh 8.
+  gem 'net-ssh', '~> 7.3', '>= 7.3.5', require: false
   gem 'rvm1-capistrano3', require: false
   gem 'web-console'
   gem 'pry-rails'
   gem 'pry-byebug'
   gem 'ruby-lsp-rails'
   gem 'bundler-audit'
+end
+
+group :test do
+  # Minitest 6 moved Minitest::Mock and Object#stub out into this gem.
+  gem 'minitest-mock'
 end

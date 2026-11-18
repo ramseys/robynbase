@@ -9,6 +9,8 @@ class Composition < ApplicationRecord
 
   accepts_nested_attributes_for :tracks, allow_destroy: true
 
+  validates :Title, :Artist, presence: true
+
   audited
 
   # Human-readable label for the audit trail: release title plus year when present.
@@ -37,13 +39,17 @@ class Composition < ApplicationRecord
   ]
 
   # returns the songs played in the gig (non-encore)
+  #
+  # Filtered in memory rather than queried, so that after a failed save the edit form
+  # still shows the rows the user submitted (they aren't in the database), and so the
+  # show page uses its preloaded tracks.
   def get_tracklist
-    self.tracks.includes(:song).where(bonus: false)
+    tracks.reject(&:bonus).sort_by { |track| track.Seq.to_i }
   end
 
   # returns the songs played in the encore
   def get_tracklist_bonus
-    self.tracks.includes(:song).where(bonus: true)
+    tracks.select(&:bonus).sort_by { |track| track.Seq.to_i }
   end
 
   def self.search_by(kind, search, release_types = nil)

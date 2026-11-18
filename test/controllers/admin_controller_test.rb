@@ -13,7 +13,7 @@ class AdminControllerTest < ActionController::TestCase
   test "index renders, including the recent audit table when activity exists" do
     session[:user_id] = users(:one).id
     with_versioning do
-      Composition.create!(Title: "ZZ Admin Index Album",
+      Composition.create!(Title: "ZZ Admin Index Album", Artist: "ZZ Artist",
         tracks_attributes: [{ Song: "A", Seq: 1 }])
     end
     get :index

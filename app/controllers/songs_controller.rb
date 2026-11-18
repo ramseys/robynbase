@@ -2,6 +2,7 @@ class SongsController < ApplicationController
   include Paginated
   include InfiniteScrollConcern
   include SearchNavigable
+  include FormRerendering
 
   RESOURCE_TYPE = :song
   TABLE_ID = 'song-main'.freeze
@@ -46,22 +47,24 @@ class SongsController < ApplicationController
   # Update existing song
   def update 
     
-    song = Song.find(params[:id])
-    
+    @song = Song.find(params[:id])
+
     filtered_params = prepare_params
-    
+
     # extract the article prefix (if any) from song name
     (prefix, song_name) = Song.parse_song_name(filtered_params[:full_name])
-    
+
     # store prefix and the rest of the song name separately
     filtered_params[:Song] = song_name
     filtered_params[:Prefix] = prefix
     filtered_params.delete(:full_name)
-    
-    song.update!(filtered_params)
-    
-    redirect_to_updated(song)
-    
+
+    if @song.update(filtered_params)
+      redirect_to_updated(@song)
+    else
+      render_form_with_errors("edit")
+    end
+
   end
 
   # Create a new song
@@ -82,9 +85,7 @@ class SongsController < ApplicationController
     if @song.save
       redirect_to(@song)
     else
-      # This line overrides the default rendering behavior, which
-      # would have been to render the "create" view.
-      render "new"
+      render_form_with_errors("new")
     end
 
   end
@@ -159,9 +160,9 @@ class SongsController < ApplicationController
     end
 
     def song_params
-      params.require(:song).permit(:full_name, :Author, :OrigBand, :Improvised, :lyrics_ref, :show_lyrics, :Lyrics, :Comments).tap do |params|
-        params.require(:full_name)
-      end
+      # a song's required name is a model validation (not checked here), so leaving it
+      # blank re-renders the form with the user's input instead of a 400
+      params.require(:song).permit(:full_name, :Author, :OrigBand, :Improvised, :lyrics_ref, :show_lyrics, :Lyrics, :Comments)
     end
 
 end

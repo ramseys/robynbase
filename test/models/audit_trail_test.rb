@@ -28,7 +28,7 @@ class AuditTrailTest < ActiveSupport::TestCase
 
   test "destroying a venue records a destroy version" do
     with_versioning do
-      venue = Venue.create!(Name: "Temporary")
+      venue = Venue.create!(Name: "Temporary", City: "ZZ City", Country: "ZZ Country")
       id = venue.id
       venue.destroy!
       version = PaperTrail::Version.where(item_type: "Venue", item_id: id).last
@@ -40,7 +40,7 @@ class AuditTrailTest < ActiveSupport::TestCase
   test "whodunnit is stored from PaperTrail.request" do
     with_versioning do
       PaperTrail.request.whodunnit = "system:test"
-      venue = Venue.create!(Name: "Attributed")
+      venue = Venue.create!(Name: "Attributed", City: "ZZ City", Country: "ZZ Country")
       assert_equal "system:test", venue.versions.last.whodunnit
     ensure
       PaperTrail.request.whodunnit = nil
@@ -51,7 +51,7 @@ class AuditTrailTest < ActiveSupport::TestCase
     # Regression: the YAML serializer dumped these as embedded Ruby objects that
     # safe_load rejected, blanking the whole changeset. JSON avoids that.
     with_versioning do
-      venue = Venue.create!(Name: "Coords", latitude: 51.5)
+      venue = Venue.create!(Name: "Coords", City: "ZZ City", Country: "ZZ Country", latitude: 51.5)
       gig = Gig.create!(Venue: "Coords", venue: venue, GigDate: "1990-03-12")
       gig.update!(GigDate: "1991-06-01")
       assert gig.versions.last.changeset.key?("GigDate"), "datetime change should be recorded"
@@ -63,8 +63,8 @@ class AuditTrailTest < ActiveSupport::TestCase
 
   test "Gig versions exclude the skipped ModifyDate column" do
     with_versioning do
-      venue = Venue.create!(Name: "Venue For Gig")
-      gig = Gig.create!(Venue: "Venue For Gig", venue: venue, GigYear: "1990")
+      venue = Venue.create!(Name: "Venue For Gig", City: "ZZ City", Country: "ZZ Country")
+      gig = Gig.create!(Venue: "Venue For Gig", venue: venue, GigDate: "1990-01-01", GigYear: "1990")
       gig.update!(GigYear: "1991")
       version = gig.versions.last
 

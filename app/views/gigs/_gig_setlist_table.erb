@@ -26,14 +26,14 @@
     </div>
 
     <%= f.fields_for :gigsets, gset do |gigset_fields| %>
-        <tr data-row=<%= sequenceIndex %>>
+        <%= nested_form_row_tag(gigset_fields, sequenceIndex) do %>
             <td class="drag-handle">
                 <i class="bi bi-grip-vertical"></i>
                 <%= gigset_fields.hidden_field :id %>
                 <%= gigset_fields.hidden_field :Chrono, value: sequenceIndex %>
             </td>
             <td> <%= gigset_fields.select(:SONGID, @song_list, {include_blank: true}, { class: "form-control song-selector" })%> </td>
-            <td> <%= gigset_fields.text_field :Song, :class => "form-control" %></td>
+            <td> <%= gigset_fields.text_field :Song, :value => override_field_value(gigset_fields.object.Song, gigset_fields.object.song&.full_name), :class => "form-control" %></td>
             <td> 
                 <%= gigset_fields.text_field :VersionNotes, :class => "form-control" %> 
                 <%= gigset_fields.hidden_field :Encore %> 
@@ -48,7 +48,7 @@
                 </Button>
             </td>
 
-        </tr>
+        <% end %>
 
         <% sequenceIndex+=1 %>
 

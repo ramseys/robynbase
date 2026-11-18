@@ -26,7 +26,7 @@ class Admin::AuditEventsControllerTest < ActionController::TestCase
     session[:user_id] = users(:one).id
     txid = nil
     with_versioning do
-      comp = Composition.create!(Title: "ZZ Controller Album",
+      comp = Composition.create!(Title: "ZZ Controller Album", Artist: "ZZ Artist",
                tracks_attributes: [{ Song: "A", Seq: 1 }])
       txid = comp.versions.last.transaction_id
     end

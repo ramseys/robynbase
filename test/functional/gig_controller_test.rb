@@ -32,19 +32,142 @@ class GigControllerTest < ActionController::TestCase
 
   test "create with a validation failure does not persist child rows" do
     # VENUEID 9999 passes strong params but fails belongs_to presence validation at model level.
-    # @song_list is not set by the create failure path (benign in practice — form dropdowns are
-    # always valid), so we pre-populate it on the controller so the view can render.
-    @controller.instance_variable_set(:@song_list, [])
     assert_no_difference ['Gig.count', 'Gigset.count', 'GigMedium.count'] do
       post :create, params: gig_create_params(
         overrides: { VENUEID: "9999", Venue: "Ghost Venue" },
         gigsets: { "0" => { Chrono: "10", SONGID: "1", Song: "", Encore: "false", VersionNotes: "", MediaLink: "" } }
       )
     end
+    assert_response :unprocessable_content
+  end
+
+  test "create with a blank media row re-renders the form with the entered values" do
+    assert_no_difference ['Gig.count', 'Gigset.count', 'GigMedium.count'] do
+      post :create, params: gig_create_params(
+        overrides: { BilledAs: "Robyn Hitchcock & the Egyptians" },
+        gigsets: { "0" => { Chrono: "1", SONGID: "1", Song: "", Encore: "false", VersionNotes: "", MediaLink: "" } },
+        gigmedia: { "0" => { Chrono: "1", title: "", mediaid: "", mediatype: "3" } }
+      )
+    end
+    assert_response :unprocessable_content
+    assert_select "input[name='gig[BilledAs]'][value=?]", "Robyn Hitchcock & the Egyptians"
+    assert_select ".alert-danger li", "Each gig media row needs a Media ID"
+  end
+
+  test "create with a media row missing its Media ID field re-renders the form rather than raising" do
+    assert_no_difference 'Gig.count' do
+      post :create, params: gig_create_params(gigmedia: { "0" => { Chrono: "1", title: "", mediatype: "1" } })
+    end
+    assert_response :unprocessable_content
+    assert_select ".alert-danger li", "Each gig media row needs a Media ID"
+  end
+
+  test "create with no venue or date re-renders the form with the entered values" do
+    assert_no_difference 'Gig.count' do
+      post :create, params: gig_create_params(overrides: { VENUEID: "", GigDate: "", BilledAs: "Robyn Hitchcock & the Egyptians" })
+    end
+    assert_response :unprocessable_content
+    assert_select "input[name='gig[BilledAs]'][value=?]", "Robyn Hitchcock & the Egyptians"
+    assert_select ".alert-danger li", "Venue must exist"
+    assert_select ".alert-danger li", "Gig Date can't be blank"
+
+    # errored fields are flagged with Bootstrap's is-invalid, not wrapped in a block-level
+    # div (which pushed the required asterisk below the label)
+    assert_select "div.field_with_errors", 0
+    assert_select "input[name='gig[GigDate]'].form-control.is-invalid"
+    assert_select "label[for='gig_GigDate'] + span.required"
+    # the venue error is on the :venue association, but the VENUEID select is flagged too
+    assert_select "select[name='gig[VENUEID]'].form-control.is-invalid"
+  end
+
+  test "a failed create keeps the unsaved setlist rows in the re-rendered form" do
+    post :create, params: gig_create_params(
+      gigsets: {
+        "0" => { Chrono: "1", SONGID: "", Song: "Unsaved Main Set Song", Encore: "false", VersionNotes: "", MediaLink: "" },
+        "1" => { Chrono: "2", SONGID: "", Song: "Unsaved Encore Song",   Encore: "true",  VersionNotes: "", MediaLink: "" }
+      },
+      gigmedia: { "0" => { Chrono: "1", title: "", mediaid: "", mediatype: "3" } }
+    )
+    assert_response :unprocessable_content
+    assert_select "#setlist input[name$='[Song]'][value=?]", "Unsaved Main Set Song"
+    assert_select "#setlist-encore input[name$='[Song]'][value=?]", "Unsaved Encore Song"
+  end
+
+  test "a failed create leaves the venue and song overrides blank, not filled with the derived names" do
+    post :create, params: gig_create_params(
+      overrides: { GigDate: "" },
+      gigsets: { "0" => { Chrono: "10", SONGID: "1", Song: "", Encore: "false", VersionNotes: "", MediaLink: "" } }
+    )
+    assert_response :unprocessable_content
+    assert_select "input[name='gig[Venue]']"
+    assert_select "input[name='gig[Venue]'][value]", 0
+    assert_select "#setlist input[name$='[Song]']", 1
+    assert_select "#setlist input[name$='[Song]'][value]", 0
+  end
+
+  test "a failed create keeps a real venue or song override" do
+    post :create, params: gig_create_params(
+      overrides: { GigDate: "", Venue: "The Roundhouse Studio" },
+      gigsets: { "0" => { Chrono: "10", SONGID: "1", Song: "Madonna of the Wasps (acoustic)", Encore: "false", VersionNotes: "", MediaLink: "" } }
+    )
+    assert_response :unprocessable_content
+    assert_select "input[name='gig[Venue]'][value=?]", "The Roundhouse Studio"
+    assert_select "#setlist input[name$='[Song]'][value=?]", "Madonna of the Wasps (acoustic)"
+  end
+
+  test "a failed update shows the media rows in the order the user submitted" do
+    media_one = gig_media(:media_one)
+    media_two = gig_media(:media_two)
+
+    # the user drags the second row to the top and adds a new row with no Media ID
+    patch :update, params: gig_update_params(1,
+      gigmedia: {
+        "0" => { "id" => media_one.id.to_s, Chrono: "2", title: media_one.title, mediaid: media_one.mediaid, mediatype: "2" },
+        "1" => { "id" => media_two.id.to_s, Chrono: "1", title: media_two.title, mediaid: media_two.mediaid, mediatype: "2" },
+        "2" => { Chrono: "3", title: "", mediaid: "", mediatype: "3" }
+      }
+    )
+
+    assert_response :unprocessable_content
+    rendered_ids = css_select("#gig-media input[name$='[mediaid]']").map { |input| input["value"].to_s }
+    assert_equal [media_two.mediaid, media_one.mediaid, ""], rendered_ids
+  end
+
+  test "edit leaves overrides blank when they only repeat the venue and song names" do
+    get :edit, params: { id: 1 }
     assert_response :success
+    assert_select "input[name='gig[Venue]'][value]", 0
+    assert_select "#setlist input[name$='[Song]'][value]", 0
+  end
+
+  test "a failed update keeps a removed setlist row hidden and marked for destruction" do
+    patch :update, params: gig_update_params(1,
+      gigsets: {
+        "0" => { "id" => "1", "_destroy" => "1", Chrono: "10", SONGID: "1", Song: "Madonna of the Wasps", Encore: "false", VersionNotes: "", MediaLink: "" }
+      },
+      gigmedia: { "0" => { Chrono: "1", title: "", mediaid: "", mediatype: "3" } }
+    )
+    assert_response :unprocessable_content
+    assert_select "#setlist tr[style='display: none'] input[name$='[_destroy]'][value='1']", 1
+    assert_select "#setlist tr[style='display: none'] input[name$='[id]'][value='1']"
+    assert Gigset.exists?(1)
   end
 
   # --- update ---
+
+  test "update with a blank media row re-renders the submitted values, not the saved ones" do
+    original_billed_as = Gig.find(1).BilledAs
+    assert_no_difference 'GigMedium.count' do
+      patch :update, params: gig_update_params(1,
+        overrides: { BilledAs: "Changed Name" },
+        gigmedia: { "0" => { Chrono: "1", title: "", mediaid: "", mediatype: "3" } }
+      )
+    end
+    assert_response :unprocessable_content
+    assert_select "input[name='gig[BilledAs]'][value=?]", "Changed Name"
+    assert_select ".alert-danger li", "Each gig media row needs a Media ID"
+    assert_equal original_billed_as, Gig.find(1).BilledAs
+  end
 
   test "update with changed parent field persists the change" do
     patch :update, params: gig_update_params(1, overrides: { BilledAs: "Robyn Hitchcock & the Egyptians" })
@@ -113,8 +236,6 @@ class GigControllerTest < ActionController::TestCase
   # --- transaction rollback ---
 
   test "failed parent update does not leave orphaned gigsets" do
-    @controller.instance_variable_set(:@gig, Gig.find(1))
-    @controller.instance_variable_set(:@song_list, [])
     assert_no_difference 'Gigset.count' do
       patch :update, params: gig_update_params(1,
         overrides: { VENUEID: "9999", Venue: "Ghost Venue" },
@@ -129,8 +250,6 @@ class GigControllerTest < ActionController::TestCase
   end
 
   test "failed gigset save rolls back parent update" do
-    @controller.instance_variable_set(:@gig, Gig.find(1))
-    @controller.instance_variable_set(:@song_list, [])
     original_billed_as = Gig.find(1).BilledAs
     assert_no_difference 'Gigset.count' do
       patch :update, params: gig_update_params(1,
@@ -295,13 +414,10 @@ class GigControllerTest < ActionController::TestCase
   end
 
   test "a failed update keeps the search in the re-rendered form" do
-    # pre-populated as in "failed parent update does not leave orphaned gigsets"
-    @controller.instance_variable_set(:@gig, Gig.find(1))
-    @controller.instance_variable_set(:@song_list, [])
 
     patch :update, params: gig_update_params(1, overrides: { VENUEID: "9999", Venue: "Ghost Venue" }).merge(search_back: SEARCH_BACK)
 
-    assert_response :unprocessable_entity
+    assert_response :unprocessable_content
     assert_select "form input[type=hidden][name=search_back][value=?]", SEARCH_BACK
   end
 

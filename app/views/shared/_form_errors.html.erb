@@ -1,0 +1,12 @@
+<%# locals: record — the model being edited; lists its validation errors after a failed save.
+    Nested rows (setlist, tracks, media) can repeat the same message, so duplicates are collapsed. %>
+<% if record.errors.any? %>
+  <div class="alert alert-danger" role="alert">
+    <p class="mb-1"><strong>This could not be saved:</strong></p>
+    <ul class="mb-0">
+      <% record.errors.full_messages.uniq.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

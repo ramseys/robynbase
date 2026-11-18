@@ -45,6 +45,24 @@ module ApplicationHelper
         hidden_field_tag(:search_back, params[:search_back]) if params[:search_back].present?
     end
 
+    # Opening <tr> for a nested row (setlist, track or media) in the gig/release forms.
+    # A row the user removed before a failed save comes back hidden and still marked
+    # with _destroy, as the Stimulus removeTableRow leaves it, so the removal is kept
+    # when the re-rendered form is submitted again.
+    def nested_form_row_tag(row_fields, sequence_index, &block)
+        removed = row_fields.object.marked_for_destruction?
+        content_tag(:tr, data: { row: sequence_index }, style: ("display: none" if removed)) do
+            safe_join([(row_fields.hidden_field(:_destroy, value: "1") if removed), capture(&block)])
+        end
+    end
+
+    # Value for a denormalized "override" text field (a gig's Venue, a setlist or track
+    # row's Song). Blank when it only repeats the name of the chosen venue/song, so
+    # picking a different one re-derives the name on save rather than keeping the old one.
+    def override_field_value(stored_name, derived_name)
+        stored_name == derived_name ? nil : stored_name
+    end
+
     # Renders a sortable column header.
     
     #  1. Up/down icons to indicate sort direction

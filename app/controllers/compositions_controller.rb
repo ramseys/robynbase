@@ -1,10 +1,10 @@
 class CompositionsController < ApplicationController
 
-  include ImageUtils
-  include ImageOrderingConcern
+  include ImageFormHandling
   include Paginated
   include InfiniteScrollConcern
   include SearchNavigable
+  include SongListLoading
 
   RESOURCE_TYPE = :composition
   TABLE_ID = 'album-main'.freeze
@@ -58,7 +58,7 @@ class CompositionsController < ApplicationController
     @comp = Composition.new
 
     # get a list of all songs (for the songs selection dropdown)
-    @song_list = Song.order(:Song).collect{|s| [s.full_name, s.SONGID]}
+    load_song_list
 
   end
 
@@ -66,34 +66,31 @@ class CompositionsController < ApplicationController
   # prepare composition update page
   def edit
 
-    @comp = Composition.find(params[:id])
+    # preload the track songs (the form compares their names to the overrides)
+    @comp = Composition.includes(tracks: :song).find(params[:id])
 
-    # get a list of all songs (for the songs selection dropddown)
-    @song_list = Song.order(:Song).collect{|s| [s.full_name, s.SONGID]}
+    # get a list of all songs (for the songs selection dropdown)
+    load_song_list
 
   end
 
   # create a new composition
   def create
 
-    filtered_params, _images = prepare_params()
-
-    optimize_images(filtered_params)
+    filtered_params, images = prepare_params()
 
     @comp = Composition.new(filtered_params)
 
     ActiveRecord::Base.transaction do
       if @comp.save
 
-        # assign positions to newly uploaded images
-        assign_positions_to_new_images(@comp)
+        # optimize and attach any uploaded images, and assign their positions
+        attach_new_images(@comp, images)
 
         redirect_to(@comp)
 
       else
-        # This line overrides the default rendering behavior, which
-        # would have been to render the "create" view.
-        render "new"
+        render_form_with_errors("new")
       end
     end
 
@@ -102,34 +99,27 @@ class CompositionsController < ApplicationController
   # update existing composition
   def update
 
-    comp = Composition.find(params[:id])
+    @comp = Composition.find(params[:id])
 
-    filtered_params, images = prepare_params(true)
-
-    # purge images marked for removal
-    purge_marked_images(params)
-
-    # optimize new images
-    optimize_images({ images: images }) if images.present?
+    filtered_params, images = prepare_params()
 
     ActiveRecord::Base.transaction do
-      if comp.update(filtered_params)
+      if @comp.update(filtered_params)
 
-        # if there are any image updates, attach them to the composition
-        # note: we can't rely on the model to do this for us, because rails
-        # will always replace existing images with the new ones; we need to
-        # append these to existing images
-        comp.images.attach(images) if images.present?
+        # purge images marked for removal (only once the save succeeds, so a failed
+        # save doesn't lose them)
+        purge_marked_images(@comp, params)
 
-        # assign positions to newly uploaded images
-        assign_positions_to_new_images(comp)
+        # optimize and attach any new images (appended to the existing ones), and
+        # assign their positions
+        attach_new_images(@comp, images)
 
         # update positions for reordered images
         update_image_positions
 
-        redirect_to_updated(comp)
+        redirect_to_updated(@comp)
       else
-        render "edit"
+        render_form_with_errors("edit")
       end
     end
 
@@ -177,7 +167,7 @@ class CompositionsController < ApplicationController
 
   end
 
-  def prepare_params(extract_images = false)
+  def prepare_params
 
     new_params = comp_params()
 
@@ -193,11 +183,8 @@ class CompositionsController < ApplicationController
     # empty comments are stored as nil
     new_params[:Comments] = nil  if new_params[:Comments].strip.empty?
 
-    # if requested, extract images into a separate variable
-    if extract_images
-      images = new_params["images"]
-      new_params.delete("images") if images.present?
-    end
+    # extract images into a separate variable (they're attached after a successful save)
+    images = new_params.delete("images")
 
     [new_params, images]
 
@@ -212,8 +199,8 @@ class CompositionsController < ApplicationController
               images: [],
               tracks_attributes: [ :id, :_destroy, :Seq, :SONGID, :Song, :VersionNotes, :bonus ]).tap do |params|
 
-          # every gig needs at least a title and artist
-          params.require([:Title, :Artist])
+          # a release's required title and artist are model validations (not checked here),
+          # so leaving them blank re-renders the form with the user's input instead of a 400
 
           # every item in a track list requires a sequence number (skip destroy-only entries)
           if params["tracks_attributes"].present?

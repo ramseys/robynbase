@@ -13,6 +13,9 @@ class Song < ApplicationRecord
   has_many :tracks, foreign_key: "SONGID"
   has_many :compositions, through: :tracks, foreign_key: "SONGID"
 
+  # the name (without its leading article, which is stored in Prefix)
+  validates :Song, presence: true
+
   audited
 
   # Configure which fields to sanitize on save
@@ -132,7 +135,8 @@ class Song < ApplicationRecord
 
   def self.parse_song_name(name)
 
-    words = name.split(/\s+/)
+    # a missing name is passed through as nil (the Song presence validation reports it)
+    words = name.to_s.split(/\s+/)
     article = nil
 
     # separate leading articles (a/an/the) from the rest of the song name

@@ -74,3 +74,39 @@ en:
     compositions:
       major_cd_releases: "Somewhat chronological list of major releases on CD"
       other_bands: "Records recorded with non-Robyn bands"
+  # Readable validation messages for the category forms (Gig, Release, Song, Venue).
+  # The "parent/association" keys name the attribute when the error comes through the
+  # parent's nested rows (e.g. "gig/gigmedia" for a gig's media rows).
+  activerecord:
+    attributes:
+      gig:
+        GigDate: "Gig Date"
+      # the song form edits Song (plus Prefix) through a single "Name" field
+      song:
+        Song: "Name"
+      # nested rows are named as the row, so the message says which part of the form
+      # is incomplete, e.g. "Each gig media row needs a Media ID"
+      gig/gigmedia:
+        mediaid: "Each gig media row"
+      gig_medium:
+        mediaid: "Each gig media row"
+      gig/gigsets:
+        SONGID: "Each set list row"
+      composition/tracks:
+        SONGID: "Each track row"
+    errors:
+      models:
+        gig_medium:
+          attributes:
+            mediaid:
+              blank: "needs a Media ID"
+        gigset:
+          attributes:
+            SONGID:
+              not_a_number: "needs a Song or a Song Name Override"
+              greater_than: "needs a Song or a Song Name Override"
+        track:
+          attributes:
+            SONGID:
+              not_a_number: "needs a Song or a Song Name Override"
+              greater_than: "needs a Song or a Song Name Override"

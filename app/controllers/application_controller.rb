@@ -3,6 +3,9 @@ class ApplicationController < ActionController::Base
 
   protect_from_forgery
 
+  # flags fields with validation errors (see app/form_builders/application_form_builder.rb)
+  default_form_builder ApplicationFormBuilder
+
   # Records who made each audited change. Uses current_user.id via PaperTrail's
   # default user_for_paper_trail. Non-request writes (rake tasks, console, data
   # migrations) bypass this and should set PaperTrail.request.whodunnit = "system:<task>"

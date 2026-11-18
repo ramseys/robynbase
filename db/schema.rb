@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_06_10_234243) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_10_234243) do
   create_table "COMP", primary_key: "COMPID", id: :integer, charset: "utf8mb3", force: :cascade do |t|
     t.string "Artist", limit: 64
     t.string "Title", limit: 64
